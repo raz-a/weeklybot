@@ -25,7 +25,7 @@ function onMessageHandler(target, context, msg, self) {
 
     for (const channel of channels) {
         if (channel !== target) {
-            client.say(channel, `[${target}'s chat] ${context.username}: ${msg}`);
+            client.say(channel, `[${target}'s chat] ${context["display-name"]}: ${msg}`);
         }
     }
 }
