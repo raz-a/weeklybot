@@ -1,4 +1,5 @@
-const tmi = require("tmi.js");
+import tmi from 'tmi.js';
+import chalk from 'chalk';
 
 // Define channels to connect to.
 const channels = ["razstrats", "naircat"];
@@ -55,10 +56,11 @@ function onMessageHandler(target, user, msg, self) {
         return;
     }
 
+    console.log(`${chalk.hex(user.color)(user["display-name"] + `:`)} ${msg}\n`);
     // Broadcast to all other channels.
     for (const channel of client.getChannels()) {
         if (channel !== target) {
-            console.log(`Sending message from ${target} to ${channel}`);
+            //console.log(`Sending message from ${target} to ${channel}`);
             switch (user["message-type"]) {
                 case "action":
                     client.action(channel, `【${user["display-name"]}】 ${msg}`).catch((err) => {
