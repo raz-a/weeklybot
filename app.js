@@ -56,7 +56,14 @@ function onMessageHandler(target, user, msg, self) {
         return;
     }
 
-    console.log(`${chalk.hex(user.color)(user["display-name"] + `:`)} ${msg}\n`);
+    if (user.color) {
+        console.log(`${chalk.hex(user.color)(user["display-name"] + `:`)} ${msg}\n`);
+
+    } else {
+        console.log(`${chalk.hex('#FFFFFF')(user["display-name"] + `:`)} ${msg}\n`);
+    }
+
+
     // Broadcast to all other channels.
     for (const channel of client.getChannels()) {
         if (channel !== target) {
