@@ -1,6 +1,6 @@
 // Contains commands usable by users in the stream.
 
-import { weeklyBotPrint, send, broadcast } from "./util.js";
+import { weeklyBotPrint, send, broadcast, clip } from "./util.js";
 
 // Define available commands.
 const usercommands = {
@@ -31,6 +31,10 @@ const usercommands = {
             cmd: ads,
             desc: "Provides set of resources for blocking ads on Twitch."
         },
+        clip: {
+            cmd: clip,
+            desc: "[COMING SOON] Take a clip on all the live streams!"
+        }
     }
 };
 
@@ -134,4 +138,8 @@ function ads(channel, user) {
      weeklyBotPrintUserCommandLog(`${user["display-name"]} hates ads.`);
 
     broadcast(null, msg, "chat");
+}
+
+function clip(channel, user) {
+
 }

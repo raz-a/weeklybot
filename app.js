@@ -7,6 +7,8 @@ import { processTermCommand } from './termcommands.js'
 // Define channels to connect to.
 const channels = ["razstrats", "naircat"];
 
+const client_id = "djqbdijhq8toqqnlnm1t6d6tu95qhd"
+
 // Define the bot's login info.
 const opts = {
     identity: {
@@ -35,7 +37,7 @@ client.connect().then(() => {
             process.exit(1);
         }).then(() => {
             send(channel, "WeeklyBot initialized!", "chat");
-            //broadcaster_id_map[channel] = getBroadcasterId(channel);
+            broadcaster_id_map[channel] = getBroadcasterId(channel);
         });
     }
 
