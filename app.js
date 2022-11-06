@@ -5,7 +5,7 @@ import { processUserCommand } from './usercommands.js';
 import { processTermCommand } from './termcommands.js'
 
 // Define channels to connect to.
-const channels = ["razstrats"];//, "naircat"];
+const channels = ["razstrats", "naircat"];
 
 // Define the bot's login info.
 const opts = {
@@ -35,7 +35,7 @@ client.connect().then(() => {
             process.exit(1);
         }).then(() => {
             send(channel, "WeeklyBot initialized!", "chat");
-            broadcaster_id_map[channel] = getBroadcasterId(channel);
+            //broadcaster_id_map[channel] = getBroadcasterId(channel);
         });
     }
 
@@ -111,8 +111,6 @@ function isFilteredUser(user) {
 
 
 function getBroadcasterId(channel) {
-    console.log(client.getOptions())
-
     fetch(`https://api.twitch.tv/helix/users?login=${channel}`, {credentials: 'include'}).then((response) => {
         console.log(response);
     })

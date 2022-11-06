@@ -26,7 +26,11 @@ const usercommands = {
         isitwednesday: {
             cmd: isItWednesday,
             desc: "Have WeeklyBot tell you if it is Wednesday!"
-        }
+        },
+        ads: {
+            cmd: ads,
+            desc: "Provides set of resources for blocking ads on Twitch."
+        },
     }
 };
 
@@ -57,7 +61,6 @@ function weeklyBotPrintUserCommandLog(msg) {
 function help(channel, user) {
     weeklyBotPrintUserCommandLog(`Listing commands for ${user["display-name"]}.`);
 
-    let prefix = usercommands.prefix;
     let msg =
         `Hi there, ${user["display-name"]}!
          I'm WeeklyBot. The Official Weekly Wednesday chat combining bot.
@@ -69,6 +72,8 @@ function help(channel, user) {
 }
 
 function getCommandsString() {
+    let prefix = usercommands.prefix;
+
     let msg = "";
     for (const command in usercommands.commands) {
         msg += `${prefix}${command} - ${usercommands.commands[command].desc}`;
@@ -120,4 +125,13 @@ function isItWednesday(channel, user) {
     } else {
         broadcast(null, "It's not Wednesday yet :(", "chat");
     }
+}
+
+function ads(channel, user) {
+
+    const msg = `Ads suck. Block twitch ads with: https://chrome.google.com/webstore/detail/twitch-adblock-plus/mdohdkncgoaamplcaokhmlppgafhlima`;
+
+     weeklyBotPrintUserCommandLog(`${user["display-name"]} hates ads.`);
+
+    broadcast(null, msg, "chat");
 }
