@@ -1,8 +1,11 @@
-import tmi from 'tmi.js';
 import chalk from 'chalk';
 
+import { weeklyBotPrint, createClient, prompt, send, broadcast } from './util.js';
+import { processUserCommand } from './usercommands.js';
+import { processTermCommand } from './termcommands.js'
+
 // Define channels to connect to.
-const channels = ["razstrats", "naircat"];
+const channels = ["razstrats"];//, "naircat"];
 
 // Define the bot's login info.
 const opts = {
@@ -16,7 +19,8 @@ const opts = {
 process.stdin.on("data", onTextInput);
 
 // Create the client object.
-const client = new tmi.client(opts);
+const client = createClient(opts);
+let broadcaster_id_map = {};
 
 // Register the message handler.
 client.on("message", onMessageHandler);
@@ -29,6 +33,9 @@ client.connect().then(() => {
         client.join(channel).catch((err) => {
             weeklyBotPrint(`ERROR: ${err}`);
             process.exit(1);
+        }).then(() => {
+            send(channel, "WeeklyBot initialized!", "chat");
+            broadcaster_id_map[channel] = getBroadcasterId(channel);
         });
     }
 
@@ -36,6 +43,7 @@ client.connect().then(() => {
     client.color("SpringGreen");
 
     // Set the command line prompt.
+    console.clear();
     prompt();
 
 }).catch((err) => {
@@ -46,6 +54,10 @@ client.connect().then(() => {
 function onMessageHandler(target, user, msg, self) {
     // Ignore messages from self.
     if (self) {
+        return;
+    }
+
+    if (isFilteredUser(user)) {
         return;
     }
 
@@ -62,6 +74,10 @@ function onMessageHandler(target, user, msg, self) {
         return;
     }
 
+    if (processUserCommand(target, user, msg)) {
+        return;
+    }
+
     if (user.color) {
         weeklyBotPrint(`${chalk.hex(user.color)(user["display-name"] + `:`)} ${msg}`);
 
@@ -69,49 +85,35 @@ function onMessageHandler(target, user, msg, self) {
         weeklyBotPrint(`${chalk.hex('#FFFFFF')(user["display-name"] + `:`)} ${msg}`);
     }
 
-
     // Broadcast to all other channels.
-    for (const channel of client.getChannels()) {
-        if (channel !== target) {
-            //weeklyBotPrint(`Sending message from ${target} to ${channel}`);
-            switch (user["message-type"]) {
-                case "action":
-                    client.action(channel, `【${user["display-name"]}】 ${msg}`).catch((err) => {
-                        weeklyBotPrint(`ERROR: ${err}`);
-                    });
-
-                    break;
-
-                case "chat":
-                    client.say(channel, `【${user["display-name"]}】 ${msg}`).catch((err) => {
-                        weeklyBotPrint(`ERROR: ${err}`);
-                    });
-
-                    break;
-            }
-        }
-    }
+    broadcast(target, `【${user["display-name"]}】 ${msg}`, user["message-type"]);
 }
 
 // Allow for commandline text input.
 function onTextInput(line) {
-    for (const channel of client.getChannels()) {
-        client.say(channel, line.toString()).catch((err) => {
-            weeklyBotPrint(`ERROR: ${err}`);
-        });
+    if (!processTermCommand(line.toString().trim())) {
+        for (const channel of client.getChannels()) {
+            client.say(channel, line.toString()).catch((err) => {
+                weeklyBotPrint(`ERROR: ${err}`);
+            });
+        }
+
+        prompt();
     }
-
-    prompt();
 }
 
-// Function to keep weekly bot text on the bottom.
-function weeklyBotPrint(message) {
-    process.stdout.cursorTo(0);
-    process.stdout.clearLine();
-    process.stdout.write(message + `\n`);
-    prompt();
+const filteredUsers = ['streamelements', 'soundalerts']
+
+function isFilteredUser(user) {
+    let lc = user["display-name"].toLowerCase();
+    return filteredUsers.includes(lc);
 }
 
-function prompt() {
-    process.stdout.write(chalk.green(client.getUsername() + `:`));
+
+function getBroadcasterId(channel) {
+    console.log(client.getOptions())
+
+    fetch(`https://api.twitch.tv/helix/users?login=${channel}`, {credentials: 'include'}).then((response) => {
+        console.log(response);
+    })
 }
