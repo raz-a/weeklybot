@@ -1,6 +1,6 @@
 // Contains commands usable from the terminal.
 
-import { broadcast, weeklyBotPrint } from "./util.js";
+import { broadcast, clip, weeklyBotPrint } from "./util.js";
 
 const termcommands = {
     prefix: '!',
@@ -9,9 +9,17 @@ const termcommands = {
             cmd: help,
             desc: "Displays this help message."
         },
+        clear: {
+            cmd: clearScreen,
+            desc: "Clears the screen."
+        },
         exit: {
             cmd: exit,
             desc: "Exits the program."
+        },
+        clip: {
+            cmd: clipThat,
+            desc: "Takes a clip of the current streams."
         }
     }
 };
@@ -46,4 +54,13 @@ function help(args) {
 
 function exit(args) {
     process.exit();
+}
+
+function clipThat(args) {
+    clip(false);
+}
+
+function clearScreen(args) {
+    console.clear();
+    weeklyBotPrint("");
 }

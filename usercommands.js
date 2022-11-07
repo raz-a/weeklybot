@@ -32,8 +32,8 @@ const usercommands = {
             desc: "Provides set of resources for blocking ads on Twitch."
         },
         clip: {
-            cmd: clip,
-            desc: "[COMING SOON] Take a clip on all the live streams!"
+            cmd: clipThat,
+            desc: "Take a clip on all the live streams!"
         }
     }
 };
@@ -80,7 +80,7 @@ function getCommandsString() {
 
     let msg = "";
     for (const command in usercommands.commands) {
-        msg += `${prefix}${command} - ${usercommands.commands[command].desc}`;
+        msg += ` ${prefix}${command} - ${usercommands.commands[command].desc} `;
     }
 
     return msg;
@@ -135,11 +135,15 @@ function ads(channel, user) {
 
     const msg = `Ads suck. Block twitch ads with: https://chrome.google.com/webstore/detail/twitch-adblock-plus/mdohdkncgoaamplcaokhmlppgafhlima`;
 
-     weeklyBotPrintUserCommandLog(`${user["display-name"]} hates ads.`);
+    weeklyBotPrintUserCommandLog(`${user["display-name"]} hates ads.`);
 
     broadcast(null, msg, "chat");
 }
 
-function clip(channel, user) {
-
+function clipThat(channel, user) {
+    weeklyBotPrintUserCommandLog(`${user["display-name"]} is taking a clip`);
+    let channel_str = channel.substring(1).toLowerCase();
+    let user_str = user["display-name"].toLowerCase();
+    let delay = channel_str.localeCompare(user_str) !== 0;
+    clip(delay);
 }

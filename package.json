@@ -10,6 +10,9 @@
   "author": "Raz Aloni",
   "license": "ISC",
   "dependencies": {
+    "@twurple/api": "^5.2.5",
+    "@twurple/auth": "^5.2.5",
+    "@twurple/eventsub": "^5.2.5",
     "chalk": "^5.0.0",
     "tmi.js": "^1.8.5"
   },
