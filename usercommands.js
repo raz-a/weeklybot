@@ -124,7 +124,7 @@ function isItWednesday(channel, user) {
     weeklyBotPrintUserCommandLog(`Telling ${user["display-name"]} if it is Wednesday.`);
 
     let d = new Date();
-    if (d.getDay === 3) {
+    if (d.getDay() === 3) {
         broadcast(null, "IT IS WEDNESDAY!!!! WOOHOO!!!!", "chat");
     } else {
         broadcast(null, "It's not Wednesday yet :(", "chat");
