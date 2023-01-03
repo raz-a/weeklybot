@@ -16,6 +16,17 @@ export function prompt() {
     process.stdout.write(chalk.green(tmiClient.getUsername() + `:`));
 }
 
+export function timeout(excludeChannel, username, duration, reason) {
+    for (const channel of tmiClient.getChannels()) {
+        if (channel != excludeChannel) {
+            tmiClient.timeout(channel, username, duration, reason).catch((err) => {
+                weeklyBotPrint(`ERROR: ${err}`)
+            });
+        }
+    }
+
+}
+
 export function broadcast(excludeChannel, msg, type) {
     for (const channel of tmiClient.getChannels()) {
         if (channel != excludeChannel) {
@@ -63,7 +74,7 @@ export function clip(delay) {
                     // Capture a clip.
                     apiClient.clips.createClip({ channelId: broadcaster_id, createAfterDelay: delay }).then((id) => {
                         if ((id !== null) && (id !== undefined) && (id.length > 0)) {
-                            broadcast(null, `${channel} clip: https://clips.twitch.tv/${id}`, "chat");
+                            send(channel, `${channel} clip: https://clips.twitch.tv/${id}`, "chat");
                         }
                     });
                 }

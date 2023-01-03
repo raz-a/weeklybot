@@ -57,9 +57,7 @@ function onMessageHandler(target, user, msg, self) {
         weeklyBotPrint("b*nis detected");
         tmiClient.say(target, `Yo ${user["display-name"]}. What the fuck is wrong with you?`);
         if ((user.mod === false) && (user.username !== target.slice(1))) {
-            tmiClient.timeout(target, user.username, 10, "Bro you can't say that shit here").catch((err) => {
-                weeklyBotPrint(`ERROR: ${err}`)
-            });
+            timeout(null, user.username, 10, "Bro you can't say that shit here");
         }
 
         return;
