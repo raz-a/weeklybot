@@ -224,4 +224,6 @@ function loveMe(channel, user, args) {
             LoveStats[user["display-name"]] = 0;
             break;
     }
+
+    weeklyBotPrintUserCommandLog(`${user["display-name"]} is loved: ${LoveStats[user["display-name"]]}`);
 }
