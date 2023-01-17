@@ -14,8 +14,8 @@ process.stdin.on("data", onTextInput);
 // Register the message handler.
 chatClient.onMessage(onMessageHandler);
 
-// Connect to the twitch server.
-chatClient.connect().then(() => {
+// Register the "on registration handler"
+chatClient.onRegister(() => {
 
     // Set the color.
     chatClient.changeColor("SpringGreen");
@@ -24,10 +24,11 @@ chatClient.connect().then(() => {
     console.clear();
     prompt();
 
-}).catch((err) => {
-    weeklyBotPrint(`ERROR: ${err}`);
-    process.exit(1);
+    broadcast(null, "Weekly Bot Connected!");
 });
+
+// Connect to the twitch server.
+chatClient.connect();
 
 function onMessageHandler(target: string, user: string, text: string, msg: PrivateMessage) {
     var userinfo = msg.userInfo;
