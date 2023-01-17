@@ -10,11 +10,14 @@
   "author": "Raz Aloni",
   "license": "ISC",
   "dependencies": {
-    "@twurple/api": "^5.2.5",
-    "@twurple/auth": "^5.2.5",
-    "@twurple/eventsub": "^5.2.5",
-    "chalk": "^5.0.0",
-    "tmi.js": "^1.8.5"
+    "@twurple/api": "^5.3.3",
+    "@twurple/auth": "^5.3.3",
+    "@twurple/chat": "^5.3.3",
+    "@twurple/eventsub": "^5.3.3",
+    "chalk": "^5.0.0"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "typescript": "^4.9.4"
+  }
 }
