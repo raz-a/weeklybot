@@ -1,12 +1,9 @@
 import chalk from 'chalk';
 
-import { chatClient, apiClient, PrivateMessage } from './client.js';
-import { weeklyBotPrint, prompt, broadcast, timeout } from './util.js';
+import { chatClient, apiClient, PrivateMessage, clientChannels } from './client.js';
+import { weeklyBotPrint, prompt, broadcast, timeout, addNewBroadcasterId } from './util.js';
 import { processUserCommand } from './usercommands.js';
 import { processTermCommand } from './termcommands.js'
-
-// Define channels to connect to.
-const channels = ["razstrats", "naircat"];
 
 // Define the readline interface
 process.stdin.on("data", onTextInput);
@@ -25,6 +22,14 @@ chatClient.onRegister(() => {
     prompt();
 
     broadcast(null, "Weekly Bot Connected!");
+
+    for (const channel of clientChannels) {
+        getBroadcasterId(channel).then((id) => {
+            if (id) {
+                addNewBroadcasterId(channel, id);
+            }
+        });
+    }
 });
 
 // Connect to the twitch server.

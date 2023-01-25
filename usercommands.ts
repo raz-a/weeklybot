@@ -131,6 +131,7 @@ function selectALevel(channel: string, user: string, args: string[]) {
 export var PoopCamStats = {
     count: 0,
     max: 0,
+    numbuhOne: "",
     dict: {} as { [key: string]: number }
 };
 
@@ -149,7 +150,10 @@ function poopCam(channel: string, user: string, args: string[]) {
 
     if (++PoopCamStats.dict[user] > PoopCamStats.max) {
         PoopCamStats.max = PoopCamStats.dict[user];
-        broadcast(null, `${user} is now the #1 poopcammer with ${PoopCamStats.max} requests!`);
+        if (PoopCamStats.numbuhOne != user) {
+            broadcast(null, `${user} is now the #1 poopcammer with ${PoopCamStats.max} requests!`);
+            PoopCamStats.numbuhOne = user;
+        }
     }
 }
 

@@ -22,5 +22,5 @@ const authProvider = new RefreshingAuthProvider(
 
 export const clientChannels = ["razstrats", "naircat"];
 export const apiClient = new ApiClient({ authProvider });
-export const chatClient = new ChatClient({ authProvider, channels: clientChannels });
+export const chatClient = new ChatClient({ authProvider, channels: clientChannels, isAlwaysMod: true, botLevel: 'known' });
 

@@ -36,8 +36,8 @@ export function broadcast(excludeChannel: string | null, msg: string) {
 }
 
 export function send(channel: string, msg: string) {
-    chatClient.say(channel, msg,).catch((err) => {
-        weeklyBotPrint(`Broadcast Chat Error: ${err}`);
+    chatClient.say(channel, msg, undefined, {limitReachedBehavior: 'throw'} ).catch((err) => {
+        weeklyBotPrint(`${err}`);
     });
 }
 
