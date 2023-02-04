@@ -161,7 +161,7 @@ function poopCam(channel: string, user: string, args: string[]) {
         cammer.requests++;
     }
 
-    PoopCamStats.cammers.sort((a, b) => a.requests - b.requests);
+    PoopCamStats.cammers.sort((a, b) => b.requests - a.requests);
 
     if (PoopCamStats.cammers[0].user !== topCammer.user) {
         topCammer = PoopCamStats.cammers[0];
