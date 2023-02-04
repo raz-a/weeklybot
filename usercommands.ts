@@ -173,11 +173,11 @@ function getPoopCamStats(channel: string, user: string, args: string[]) {
     weeklyBotPrintUserCommandLog(`Giving ${user} the PoopCam (TM) stats`);
 
     var found = false;
-    var msg = "PoopCam (TM) Stats.....";
-    msg += `\nTotal Requests ${PoopCamStats.totalrequests}.....`;
-    msg += "\n Rankings:";
+    var msg = "PoopCam (TM) Stats";
+    msg += `...Total Requests ${PoopCamStats.totalrequests}`;
+    msg += "...Rankings:";
     for (let i = 0; (i < PoopCamStats.cammers.length && i < 3); i++) {
-        msg += `\n${i + 1}: ${PoopCamStats.cammers[i].user} - ${PoopCamStats.cammers[i].requests} request(s)`;
+        msg += `...${i + 1}: ${PoopCamStats.cammers[i].user} - ${PoopCamStats.cammers[i].requests} request(s)`;
         if (PoopCamStats.cammers[i].user === user) {
             found = true;
         }
@@ -186,8 +186,7 @@ function getPoopCamStats(channel: string, user: string, args: string[]) {
     if (!found) {
         var idx = PoopCamStats.cammers.findIndex((p) => p.user === user);
         if (idx !== -1) {
-            msg += ".....";
-            msg += `\n${idx + 1}: ${PoopCamStats.cammers[idx].user} - ${PoopCamStats.cammers[idx].requests} request(s)`;
+            msg += `...${idx + 1}: ${PoopCamStats.cammers[idx].user} - ${PoopCamStats.cammers[idx].requests} request(s)`;
         }
     }
 
