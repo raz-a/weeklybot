@@ -59,8 +59,8 @@ The private folder needs to contain the following two files:
         "clips:edit",
         "user:read:email"
     ],
-    "expiresIn": __,
-    "obtainmentTimestamp": __
+    "expiresIn": "__",
+    "obtainmentTimestamp": "__"
 }
 ```
 
