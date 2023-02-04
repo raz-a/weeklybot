@@ -7,15 +7,13 @@ import { promises as fs } from 'fs';
 
 export { PrivateMessage } from '@twurple/chat';
 
-const client_id = "djqbdijhq8toqqnlnm1t6d6tu95qhd"
-const client_secret = "pysjd1ir2fq7bqpcu7dvjqcfkmpu1k";
-
-const tokenData = JSON.parse(await fs.readFile('./private/tokens.json', {encoding: 'utf-8'}));
+const clientInfo = JSON.parse(await fs.readFile('./private/clientinfo.json', { encoding: 'utf-8' }));
+const tokenData = JSON.parse(await fs.readFile('./private/token.json', {encoding: 'utf-8'}));
 const authProvider = new RefreshingAuthProvider(
     {
-        clientId: client_id,
-        clientSecret: client_secret,
-        onRefresh: async newTokenData => await fs.writeFile('./private/tokens.json', JSON.stringify(newTokenData, null, 4))
+        clientId: clientInfo.id,
+        clientSecret: clientInfo.secret,
+        onRefresh: async newTokenData => await fs.writeFile('./private/token.json', JSON.stringify(newTokenData, null, 4))
 	},
 	tokenData
 );
