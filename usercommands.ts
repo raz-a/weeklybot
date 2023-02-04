@@ -14,7 +14,7 @@ const usercommands = {
         },
         bingo: {
             cmd: bingo,
-            desc: "Gets the link to the current Mario Kart 64 Hard-Mode Bingo Sheet."
+            desc: "Gets the link to the current Super Mario 64 Co-Op Speedrun Bingo Sheet."
         },
         selectalevel: {
             cmd: selectALevel,
@@ -110,7 +110,7 @@ function getCommandsString() {
 
 function bingo(channel: string, user: string, args: string[]) {
     weeklyBotPrintUserCommandLog(`Printing Bingo Board for ${user}`);
-    broadcast(null, `Mario Kart 64 Hard Mode Bingo Board: https://i.imgur.com/Tt7iU4I.png`);
+    broadcast(null, `Super Mario 64 Co-Op 120 star Bingo Board: https://mfbc.us/m/ed53p9x`);
 }
 
 function selectALevel(channel: string, user: string, args: string[]) {
@@ -144,13 +144,13 @@ function poopCam(channel: string, user: string, args: string[]) {
         broadcast(null, `PoopCam (TM) has been requested ${PoopCamStats.count} times this stream. Keep it up!`);
     }
 
-    if ((user in PoopCamStats.dict) == false) {
+    if ((user in PoopCamStats.dict) === false) {
         PoopCamStats.dict[user] = 0;
     }
 
     if (++PoopCamStats.dict[user] > PoopCamStats.max) {
         PoopCamStats.max = PoopCamStats.dict[user];
-        if (PoopCamStats.numbuhOne != user) {
+        if (PoopCamStats.numbuhOne !== user) {
             broadcast(null, `${user} is now the #1 poopcammer with ${PoopCamStats.max} requests!`);
             PoopCamStats.numbuhOne = user;
         }

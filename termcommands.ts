@@ -1,6 +1,7 @@
 // Contains commands usable from the terminal.
 
 import { broadcast, clip, weeklyBotPrint } from "./util.js";
+import { PoopCamStats } from "./usercommands.js";
 
 const termcommands = {
     prefix: '!',
@@ -20,6 +21,10 @@ const termcommands = {
         clip: {
             cmd: clipThat,
             desc: "Takes a clip of the current streams."
+        },
+        stats: {
+            cmd: getStats,
+            desc: "Gets the current poopcam stats."
         }
     }
 };
@@ -65,4 +70,8 @@ function clipThat(args: string[]) {
 function clearScreen(args: string[]) {
     console.clear();
     weeklyBotPrint("");
+}
+
+function getStats(args: string[]) {
+    weeklyBotPrint(`${JSON.stringify(PoopCamStats)}`);
 }

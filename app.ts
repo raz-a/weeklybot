@@ -53,10 +53,6 @@ function onMessageHandler(target: string, user: string, text: string, msg: Priva
         return;
     }
 
-    if (processUserCommand(target, user, text)) {
-        return;
-    }
-
     if (userinfo.color) {
         weeklyBotPrint(`${chalk.hex(userinfo.color)(user + `:`)} ${text}`);
 
@@ -66,6 +62,8 @@ function onMessageHandler(target: string, user: string, text: string, msg: Priva
 
     // Broadcast to all other channels.
     broadcast(target.slice(1), `【${user}】 ${text}`);
+
+    processUserCommand(target, user, text);
 }
 
 // Allow for commandline text input.
