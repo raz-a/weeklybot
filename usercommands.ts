@@ -24,6 +24,10 @@ const usercommands = {
             cmd: poopCam,
             desc: "Keep up to date with the latest PoopCam (TM) news!"
         },
+        stats: {
+            cmd: getPoopCamStats,
+            desc: "Get the latest PoopCam (TM) stats!"
+        },
         isitwednesday: {
             cmd: isItWednesday,
             desc: "Have WeeklyBot tell you if it is Wednesday!"
@@ -128,33 +132,66 @@ function selectALevel(channel: string, user: string, args: string[]) {
     broadcast(null, msg);
 }
 
+export type PoopCammer = {
+    user: string,
+    requests: number
+};
+
 export var PoopCamStats = {
-    count: 0,
-    max: 0,
-    numbuhOne: "",
-    dict: {} as { [key: string]: number }
+    cammers: [] as PoopCammer[],
+    totalrequests: 0
 };
 
 function poopCam(channel: string, user: string, args: string[]) {
     weeklyBotPrintUserCommandLog(`Telling ${user} about PoopCam (TM)`);
 
-    if (++PoopCamStats.count == 1) {
+    if (++PoopCamStats.totalrequests == 1) {
         broadcast(null, `PoopCam (TM) has been requested 1 time this stream. Keep it up!`);
     } else {
-        broadcast(null, `PoopCam (TM) has been requested ${PoopCamStats.count} times this stream. Keep it up!`);
+        broadcast(null, `PoopCam (TM) has been requested ${PoopCamStats.totalrequests} times this stream. Keep it up!`);
     }
 
-    if ((user in PoopCamStats.dict) === false) {
-        PoopCamStats.dict[user] = 0;
+    var topCammer = PoopCamStats.cammers.length > 0 ? PoopCamStats.cammers[0] : {user:"", requests:0};
+
+    var cammer = PoopCamStats.cammers.find((c) => c.user === user);
+    if (cammer === undefined) {
+        PoopCamStats.cammers.push({ user: user, requests: 1 });
+
+    } else {
+        cammer.requests++;
     }
 
-    if (++PoopCamStats.dict[user] > PoopCamStats.max) {
-        PoopCamStats.max = PoopCamStats.dict[user];
-        if (PoopCamStats.numbuhOne !== user) {
-            broadcast(null, `${user} is now the #1 poopcammer with ${PoopCamStats.max} requests!`);
-            PoopCamStats.numbuhOne = user;
+    PoopCamStats.cammers.sort((a, b) => a.requests - b.requests);
+
+    if (PoopCamStats.cammers[0].user !== topCammer.user) {
+        topCammer = PoopCamStats.cammers[0];
+        broadcast(null, `${topCammer.user} is now the #1 poopcammer with ${topCammer.requests} requests!`);
+    }
+}
+
+function getPoopCamStats(channel: string, user: string, args: string[]) {
+    weeklyBotPrintUserCommandLog(`Giving ${user} the PoopCam (TM) stats`);
+
+    var found = false;
+    var msg = "PoopCam (TM) Stats.....";
+    msg += `\nTotal Requests ${PoopCamStats.totalrequests}.....`;
+    msg += "\n Rankings:";
+    for (let i = 0; (i < PoopCamStats.cammers.length && i < 3); i++) {
+        msg += `\n${i + 1}: ${PoopCamStats.cammers[i].user} - ${PoopCamStats.cammers[i].requests} request(s)`;
+        if (PoopCamStats.cammers[i].user === user) {
+            found = true;
         }
     }
+
+    if (!found) {
+        var idx = PoopCamStats.cammers.findIndex((p) => p.user === user);
+        if (idx !== -1) {
+            msg += ".....";
+            msg += `\n${idx + 1}: ${PoopCamStats.cammers[idx].user} - ${PoopCamStats.cammers[idx].requests} request(s)`;
+        }
+    }
+
+    broadcast(null, msg);
 }
 
 function isItWednesday(channel: string, user: string, args: string[]) {

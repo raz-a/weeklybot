@@ -73,5 +73,11 @@ function clearScreen(args: string[]) {
 }
 
 function getStats(args: string[]) {
-    weeklyBotPrint(`${JSON.stringify(PoopCamStats)}`);
+    var msg = `Total Requests: ${PoopCamStats.totalrequests}\nRankings:`;
+    var rank = 1;
+    for (let cammer of PoopCamStats.cammers) {
+        msg = msg.concat(`\n[${rank++}]: ${cammer.user} - ${cammer.requests} request(s)`);
+    }
+
+    weeklyBotPrint(msg);
 }
