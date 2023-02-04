@@ -47,6 +47,10 @@ const usercommands = {
         love: {
             cmd: loveMe,
             desc: "Find out if WeeklyBot loves you!"
+        },
+        leaderboard: {
+            cmd: leaderboard,
+            desc: "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard."
         }
     }
 };
@@ -265,4 +269,8 @@ function loveMe(channel: string, user: string , args: string[]) {
     }
 
     weeklyBotPrintUserCommandLog(`${user} is loved: ${LoveStats[user]}`);
+}
+
+function leaderboard(channel: string, user: string, args: string[]) {
+    broadcast(null, "SM64 Co-Op Speedrun Leaderboard: https://www.speedrun.com/sm64coop?h=120_Star-Vanilla-2P&x=9d8l4x32-onvv5y7n.4qy2gr21-ylp6yk6n.810nk82q");
 }
