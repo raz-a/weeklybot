@@ -27,16 +27,19 @@ export function timeout(excludeChannel: string | null, username: string, duratio
 
 }
 
-export function broadcast(excludeChannel: string | null, msg: string) {
+export function broadcast(excludeChannel: string | null, msg: string): Promise<void[]> {
+    var promises: Promise<void>[] = [];
     for (const channel of clientChannels) {
         if (channel != excludeChannel) {
-            send(channel, msg);
+            promises.push(send(channel, msg));
         }
     }
+
+    return Promise.all(promises);
 }
 
-export function send(channel: string, msg: string) {
-    chatClient.say(channel, msg, undefined, {limitReachedBehavior: 'throw'} ).catch((err) => {
+export function send(channel: string, msg: string): Promise<void> {
+    return chatClient.say(channel, msg, undefined, {limitReachedBehavior: 'throw'} ).catch((err) => {
         weeklyBotPrint(`${err}`);
     });
 }

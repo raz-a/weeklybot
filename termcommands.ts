@@ -60,7 +60,7 @@ function help(args: string[]) {
 }
 
 function exit(args: string[]) {
-    process.exit();
+    broadcast(null, "Thanks for watching! Weeklybot out!").then((v) => process.exit());
 }
 
 function clipThat(args: string[]) {
