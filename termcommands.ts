@@ -16,7 +16,7 @@ const termcommands = {
         },
         exit: {
             cmd: exit,
-            desc: "Exits the program."
+            desc: "Exits the program.[Provide extra text to add a custom good-bye message]"
         },
         clip: {
             cmd: clipThat,
