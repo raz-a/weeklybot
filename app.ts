@@ -12,7 +12,7 @@ process.stdin.on("data", onTextInput);
 chatClient.onMessage(onMessageHandler);
 
 // Register the "on registration handler"
-chatClient.onRegister(() => {
+chatClient.onRegister(async () => {
 
     // Set the color.
     chatClient.changeColor("SpringGreen");
@@ -24,11 +24,11 @@ chatClient.onRegister(() => {
     broadcast(null, "Weekly Bot Connected!");
 
     for (const channel of clientChannels) {
-        getBroadcasterId(channel).then((id) => {
-            if (id) {
-                addNewBroadcasterId(channel, id);
-            }
-        });
+        let id = await getBroadcasterId(channel);
+
+        if (id) {
+            addNewBroadcasterId(channel, id);
+        }
     }
 });
 
@@ -81,12 +81,11 @@ function isFilteredUser(user: string) {
     return filteredUsers.includes(lc);
 }
 
-function getBroadcasterId(channel : string) {
-    return apiClient.users.getUserByName(channel).then((user) => {
-        if (user) {
-            return user.id;
-        }
+async function getBroadcasterId(channel: string) {
+    let user = await apiClient.users.getUserByName(channel);
+    if (user) {
+        return user.id;
+    }
 
-        return null;
-    });
+    return null;
 }
