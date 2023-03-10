@@ -63,6 +63,8 @@ export function clip(delay: boolean) {
                         if ((id !== null) && (id !== undefined) && (id.length > 0)) {
                             send(channel, `${channel} clip: https://clips.twitch.tv/${id}`);
                         }
+                    }).catch((err) => {
+                        weeklyBotPrint(`${err}`)
                     });
                 }
             });
