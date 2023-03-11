@@ -59,7 +59,7 @@ function help(args: string[]) {
     }
 }
 
-function exit(args: string[]) {
+async function exit(args: string[]) {
     var msg: string;
     if (args.length > 0) {
         msg = args.join(" ");
@@ -67,7 +67,8 @@ function exit(args: string[]) {
         msg = "Thanks for watching! Weeklybot out!";
     }
 
-    broadcast(null, msg).then((v) => process.exit());
+    await broadcast(null, msg);
+    process.exit();
 }
 
 function clipThat(args: string[]) {
