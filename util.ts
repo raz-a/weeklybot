@@ -16,18 +16,19 @@ export function prompt() {
     process.stdout.write(chalk.green(chatClient.currentNick + `:`));
 }
 
-export function timeout(excludeChannel: string | null, username: string, duration: number, reason: string) {
+export async function timeout(excludeChannel: string | null, username: string, duration: number, reason: string) {
     for (const channel of clientChannels) {
         if (channel != excludeChannel) {
-            chatClient.timeout(channel, username, duration, reason).catch((err) => {
+            try {
+                await chatClient.timeout(channel, username, duration, reason);
+            } catch (err) {
                 weeklyBotPrint(`ERROR: ${err}`)
-            });
+            }
         }
     }
-
 }
 
-export function broadcast(excludeChannel: string | null, msg: string): Promise<void[]> {
+export async function broadcast(excludeChannel: string | null, msg: string) {
     var promises: Promise<void>[] = [];
     for (const channel of clientChannels) {
         if (channel != excludeChannel) {
@@ -35,40 +36,39 @@ export function broadcast(excludeChannel: string | null, msg: string): Promise<v
         }
     }
 
-    return Promise.all(promises);
+    await Promise.all(promises);
 }
 
-export function send(channel: string, msg: string): Promise<void> {
-    return chatClient.say(channel, msg, undefined, {limitReachedBehavior: 'throw'} ).catch((err) => {
+export async function send(channel: string, msg: string): Promise<void> {
+    try {
+        await chatClient.say(channel, msg, undefined, { limitReachedBehavior: 'throw' });
+    } catch (err) {
         weeklyBotPrint(`${err}`);
-    });
+    }
 }
 
-export function addNewBroadcasterId(user: string, id: string ) {
+export function addNewBroadcasterId(user: string, id: string) {
     broadcaster_id_map[user] = id;
 }
 
-export function clip(delay: boolean) {
+export async function clip(delay: boolean) {
     for (let channel of clientChannels) {
         let broadcaster_id = broadcaster_id_map[channel];
         if (broadcaster_id !== undefined) {
+            let stream = await apiClient.streams.getStreamByUserId(broadcaster_id);
+            if (stream === null) {
+                weeklyBotPrint(`${channel} is not live.`);
+            } else {
+                try {
+                    let id = await apiClient.clips.createClip(({ channelId: broadcaster_id, createAfterDelay: delay }));
+                    if ((id !== null) && (id !== undefined) && (id.length > 0)) {
+                        send(channel, `${channel} clip: https://clips.twitch.tv/${id}`);
+                    }
 
-            apiClient.streams.getStreamByUserId(broadcaster_id).then((stream) => {
-                if (stream === null) {
-                    weeklyBotPrint(`${channel} is not live.`);
-                } else {
-
-                    // Capture a clip.
-                    apiClient.clips.createClip({ channelId: broadcaster_id, createAfterDelay: delay }).then((id) => {
-                        if ((id !== null) && (id !== undefined) && (id.length > 0)) {
-                            send(channel, `${channel} clip: https://clips.twitch.tv/${id}`);
-                        }
-                    }).catch((err) => {
-                        weeklyBotPrint(`${err}`)
-                    });
+                } catch (err) {
+                    weeklyBotPrint(`${err}`);
                 }
-            });
-
+            }
         } else {
             weeklyBotPrint(`Could not find matching id for ${channel}`);
         }
