@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { chatClient, apiClient, PrivateMessage, clientChannels } from './client.js';
-import { weeklyBotPrint, prompt, broadcast, timeout, addNewBroadcasterId } from './util.js';
+import { weeklyBotPrint, prompt, broadcast, timeout, addNewBroadcasterId, me } from './util.js';
 import { processUserCommand } from './usercommands.js';
 import { processTermCommand } from './termcommands.js'
 
@@ -15,7 +15,7 @@ chatClient.onMessage(onMessageHandler);
 chatClient.onRegister(async () => {
 
     // Set the color.
-    chatClient.changeColor("SpringGreen");
+    await apiClient.chat.setColorForUser(me.id, "spring_green");
 
     // Set the command line prompt.
     console.clear();
@@ -53,7 +53,7 @@ function onMessageHandler(target: string, user: string, text: string, msg: Priva
         return;
     }
 
-    if (userinfo.color) {
+    if (userinfo.color || userinfo.color === "#000000") {
         weeklyBotPrint(`${chalk.hex(userinfo.color)(user + `:`)} ${text}`);
 
     } else {

@@ -4,6 +4,7 @@ import { chatClient, apiClient, clientChannels } from './client.js';
 import chalk from 'chalk';
 
 let broadcaster_id_map: { [key: string]: string } = {};
+export const me = await apiClient.users.getMe();
 
 export function weeklyBotPrint(message: string) {
     process.stdout.cursorTo(0);
@@ -20,7 +21,10 @@ export async function timeout(excludeChannel: string | null, username: string, d
     for (const channel of clientChannels) {
         if (channel != excludeChannel) {
             try {
-                await chatClient.timeout(channel, username, duration, reason);
+                const user = await apiClient.users.getUserByName(username);
+                if (user) {
+                    await apiClient.moderation.banUser(broadcaster_id_map[channel], me.id, { duration: duration, reason: reason, userId: user.id });
+                }
             } catch (err) {
                 weeklyBotPrint(`ERROR: ${err}`)
             }
