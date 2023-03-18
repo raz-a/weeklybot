@@ -1,64 +1,63 @@
 // Contains commands usable by users in the stream.
 
 import { weeklyBotPrint, send, broadcast, clip, timeout } from "./util.js";
-import * as fs from 'fs'
+import * as fs from "fs";
 
 // Define available commands.
 const usercommands = {
-    prefix: '!',
+    prefix: "!",
     header: "User Command",
     commands: {
         help: {
             cmd: help,
-            desc: "Displays this help message."
+            desc: "Displays this help message.",
         },
         bingo: {
             cmd: bingo,
-            desc: "Gets the link to the current Super Mario 64 Co-Op Speedrun Bingo Sheet."
+            desc: "Gets the link to the current Super Mario 64 Co-Op Speedrun Bingo Sheet.",
         },
         selectalevel: {
             cmd: selectALevel,
-            desc: "Get WeeklyBot involved in the \"Select A Level\" shenanigans."
+            desc: 'Get WeeklyBot involved in the "Select A Level" shenanigans.',
         },
         poopcam: {
             cmd: poopCam,
-            desc: "Keep up to date with the latest PoopCam (TM) news!"
+            desc: "Keep up to date with the latest PoopCam (TM) news!",
         },
         stats: {
             cmd: getPoopCamStats,
-            desc: "Get the latest PoopCam (TM) stats!"
+            desc: "Get the latest PoopCam (TM) stats!",
         },
         isitwednesday: {
             cmd: isItWednesday,
-            desc: "Have WeeklyBot tell you if it is Wednesday!"
+            desc: "Have WeeklyBot tell you if it is Wednesday!",
         },
         clip: {
             cmd: clipThat,
-            desc: "Take a clip on all the live streams!"
+            desc: "Take a clip on all the live streams!",
         },
         plates: {
             cmd: plates,
-            desc: "PLATES"
+            desc: "PLATES",
         },
         request: {
             cmd: requestFeature,
-            desc: "Request a feature for WeeklyBot."
+            desc: "Request a feature for WeeklyBot.",
         },
         love: {
             cmd: loveMe,
-            desc: "Find out if WeeklyBot loves you!"
+            desc: "Find out if WeeklyBot loves you!",
         },
         leaderboard: {
             cmd: leaderboard,
-            desc: "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard."
-        }
-    }
+            desc: "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard.",
+        },
+    },
 };
 
 type commandIdx = keyof typeof usercommands.commands;
 
-export function processUserCommand(channel: string, user: string, msg: string ) {
-
+export function processUserCommand(channel: string, user: string, msg: string) {
     let prefix = usercommands.prefix;
 
     if (!msg.startsWith(prefix)) {
@@ -71,7 +70,6 @@ export function processUserCommand(channel: string, user: string, msg: string ) 
 
     if (command in usercommands.commands) {
         usercommands.commands[command as commandIdx].cmd(channel, user, args);
-
     } else {
         weeklyBotPrintUserCommandLog(`Invalid Command "${command}" from ${user}`);
     }
@@ -90,13 +88,15 @@ function help(channel: string, user: string, args: string[]) {
     if (args.length == 1) {
         let command = args[0];
         if (command in usercommands.commands) {
-            send(channel, `${prefix}${command}: ${usercommands.commands[command as commandIdx].desc}`);
+            send(
+                channel,
+                `${prefix}${command}: ${usercommands.commands[command as commandIdx].desc}`
+            );
             return;
         }
     }
 
-    let msg =
-        `Hi there, ${user}!
+    let msg = `Hi there, ${user}!
          I'm WeeklyBot. The Official Weekly Wednesday chat combining bot.
          You can use the following commands to interact with me:`;
 
@@ -122,7 +122,6 @@ function bingo(channel: string, user: string, args: string[]) {
 }
 
 function selectALevel(channel: string, user: string, args: string[]) {
-
     weeklyBotPrintUserCommandLog(`Select A Level for ${user}`);
 
     const messages = [
@@ -137,13 +136,13 @@ function selectALevel(channel: string, user: string, args: string[]) {
 }
 
 export type PoopCammer = {
-    user: string,
-    requests: number
+    user: string;
+    requests: number;
 };
 
 export var PoopCamStats = {
     cammers: [] as PoopCammer[],
-    totalrequests: 0
+    totalrequests: 0,
 };
 
 function poopCam(channel: string, user: string, args: string[]) {
@@ -152,15 +151,18 @@ function poopCam(channel: string, user: string, args: string[]) {
     if (++PoopCamStats.totalrequests == 1) {
         broadcast(null, `PoopCam (TM) has been requested 1 time this stream. Keep it up!`);
     } else {
-        broadcast(null, `PoopCam (TM) has been requested ${PoopCamStats.totalrequests} times this stream. Keep it up!`);
+        broadcast(
+            null,
+            `PoopCam (TM) has been requested ${PoopCamStats.totalrequests} times this stream. Keep it up!`
+        );
     }
 
-    var topCammer = PoopCamStats.cammers.length > 0 ? PoopCamStats.cammers[0] : {user:"", requests:0};
+    var topCammer =
+        PoopCamStats.cammers.length > 0 ? PoopCamStats.cammers[0] : { user: "", requests: 0 };
 
     var cammer = PoopCamStats.cammers.find((c) => c.user === user);
     if (cammer === undefined) {
         PoopCamStats.cammers.push({ user: user, requests: 1 });
-
     } else {
         cammer.requests++;
     }
@@ -169,7 +171,10 @@ function poopCam(channel: string, user: string, args: string[]) {
 
     if (PoopCamStats.cammers[0].user !== topCammer.user) {
         topCammer = PoopCamStats.cammers[0];
-        broadcast(null, `${topCammer.user} is now the #1 poopcammer with ${topCammer.requests} requests!`);
+        broadcast(
+            null,
+            `${topCammer.user} is now the #1 poopcammer with ${topCammer.requests} requests!`
+        );
     }
 }
 
@@ -180,8 +185,10 @@ function getPoopCamStats(channel: string, user: string, args: string[]) {
     var msg = "PoopCam (TM) Stats";
     msg += `...Total Requests ${PoopCamStats.totalrequests}`;
     msg += "...Rankings:";
-    for (let i = 0; (i < PoopCamStats.cammers.length && i < 3); i++) {
-        msg += `...${i + 1}: ${PoopCamStats.cammers[i].user} - ${PoopCamStats.cammers[i].requests} request(s)`;
+    for (let i = 0; i < PoopCamStats.cammers.length && i < 3; i++) {
+        msg += `...${i + 1}: ${PoopCamStats.cammers[i].user} - ${
+            PoopCamStats.cammers[i].requests
+        } request(s)`;
         if (PoopCamStats.cammers[i].user === user) {
             found = true;
         }
@@ -190,7 +197,9 @@ function getPoopCamStats(channel: string, user: string, args: string[]) {
     if (!found) {
         var idx = PoopCamStats.cammers.findIndex((p) => p.user === user);
         if (idx !== -1) {
-            msg += `...${idx + 1}: ${PoopCamStats.cammers[idx].user} - ${PoopCamStats.cammers[idx].requests} request(s)`;
+            msg += `...${idx + 1}: ${PoopCamStats.cammers[idx].user} - ${
+                PoopCamStats.cammers[idx].requests
+            } request(s)`;
         }
     }
 
@@ -218,7 +227,10 @@ function clipThat(channel: string, user: string, args: string[]) {
 
 function plates(channel: string, user: string, args: string[]) {
     weeklyBotPrintUserCommandLog(`${user} is commenting on plates`);
-    broadcast(null, "Plates are an archaic invention. A bowl can do the exact same thing, but with protective walls. Did you buy the ice cream I asked for? My 20% down payment for it is on the counter. I spent the rest of my money on this small ax.");
+    broadcast(
+        null,
+        "Plates are an archaic invention. A bowl can do the exact same thing, but with protective walls. Did you buy the ice cream I asked for? My 20% down payment for it is on the counter. I spent the rest of my money on this small ax."
+    );
 }
 
 function requestFeature(channel: string, user: string, args: string[]) {
@@ -231,8 +243,8 @@ function requestFeature(channel: string, user: string, args: string[]) {
 
 export var LoveStats: { [key: string]: number } = {};
 
-function loveMe(channel: string, user: string , args: string[]) {
-    if ((user in LoveStats) == false) {
+function loveMe(channel: string, user: string, args: string[]) {
+    if (user in LoveStats == false) {
         LoveStats[user] = 0;
     }
 
@@ -243,7 +255,7 @@ function loveMe(channel: string, user: string , args: string[]) {
 
         case 5:
             broadcast(null, `I love you ${user}.`);
-            break
+            break;
 
         case 6:
             broadcast(null, `I love you ${user}...`);
@@ -272,5 +284,8 @@ function loveMe(channel: string, user: string , args: string[]) {
 }
 
 function leaderboard(channel: string, user: string, args: string[]) {
-    broadcast(null, "SM64 Co-Op Speedrun Leaderboard: https://www.speedrun.com/sm64coop?h=120_Star-Vanilla-2P&x=9d8l4x32-onvv5y7n.4qy2gr21-ylp6yk6n.810nk82q");
+    broadcast(
+        null,
+        "SM64 Co-Op Speedrun Leaderboard: https://www.speedrun.com/sm64coop?h=120_Star-Vanilla-2P&x=9d8l4x32-onvv5y7n.4qy2gr21-ylp6yk6n.810nk82q"
+    );
 }

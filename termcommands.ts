@@ -4,29 +4,29 @@ import { broadcast, clip, weeklyBotPrint } from "./util.js";
 import { PoopCamStats } from "./usercommands.js";
 
 const termcommands = {
-    prefix: '!',
+    prefix: "!",
     commands: {
         help: {
             cmd: help,
-            desc: "Displays this help message."
+            desc: "Displays this help message.",
         },
         clear: {
             cmd: clearScreen,
-            desc: "Clears the screen."
+            desc: "Clears the screen.",
         },
         exit: {
             cmd: exit,
-            desc: "Exits the program.[Provide extra text to add a custom good-bye message]"
+            desc: "Exits the program.[Provide extra text to add a custom good-bye message]",
         },
         clip: {
             cmd: clipThat,
-            desc: "Takes a clip of the current streams."
+            desc: "Takes a clip of the current streams.",
         },
         stats: {
             cmd: getStats,
-            desc: "Gets the current poopcam stats."
-        }
-    }
+            desc: "Gets the current poopcam stats.",
+        },
+    },
 };
 
 type commandIdx = keyof typeof termcommands.commands;
@@ -44,7 +44,6 @@ export function processTermCommand(command: string) {
 
     if (command in termcommands.commands) {
         termcommands.commands[command as commandIdx].cmd(args);
-
     } else {
         weeklyBotPrint(`Invalid Command "${command}"`);
     }
@@ -55,7 +54,11 @@ export function processTermCommand(command: string) {
 function help(args: string[]) {
     weeklyBotPrint("Available commands: ");
     for (const command in termcommands.commands) {
-        weeklyBotPrint(`\t${termcommands.prefix}${command} - ${termcommands.commands[command as commandIdx].desc}`);
+        weeklyBotPrint(
+            `\t${termcommands.prefix}${command} - ${
+                termcommands.commands[command as commandIdx].desc
+            }`
+        );
     }
 }
 

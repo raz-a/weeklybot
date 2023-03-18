@@ -1,9 +1,9 @@
-import chalk from 'chalk';
+import chalk from "chalk";
 
-import { chatClient, apiClient, PrivateMessage, clientChannels } from './client.js';
-import { weeklyBotPrint, prompt, broadcast, timeout, addNewBroadcasterId, me } from './util.js';
-import { processUserCommand } from './usercommands.js';
-import { processTermCommand } from './termcommands.js'
+import { chatClient, apiClient, PrivateMessage, clientChannels } from "./client.js";
+import { weeklyBotPrint, prompt, broadcast, timeout, addNewBroadcasterId, me } from "./util.js";
+import { processUserCommand } from "./usercommands.js";
+import { processTermCommand } from "./termcommands.js";
 
 // Define the readline interface
 process.stdin.on("data", onTextInput);
@@ -13,7 +13,6 @@ chatClient.onMessage(onMessageHandler);
 
 // Register the "on registration handler"
 chatClient.onRegister(async () => {
-
     // Set the color.
     await apiClient.chat.setColorForUser(me.id, "spring_green");
 
@@ -46,7 +45,7 @@ function onMessageHandler(target: string, user: string, text: string, msg: Priva
     if (text.toLowerCase().includes("benis")) {
         weeklyBotPrint("b*nis detected");
         chatClient.say(target, `Yo ${user}. What the fuck is wrong with you?`);
-        if ((userinfo.isMod === false) && (user !== target.slice(1))) {
+        if (userinfo.isMod === false && user !== target.slice(1)) {
             timeout(null, user, 10, "Bro you can't say that shit here");
         }
 
@@ -55,9 +54,8 @@ function onMessageHandler(target: string, user: string, text: string, msg: Priva
 
     if (userinfo.color || userinfo.color === "#000000") {
         weeklyBotPrint(`${chalk.hex(userinfo.color)(user + `:`)} ${text}`);
-
     } else {
-        weeklyBotPrint(`${chalk.hex('#FFFFFF')(user + `:`)} ${text}`);
+        weeklyBotPrint(`${chalk.hex("#FFFFFF")(user + `:`)} ${text}`);
     }
 
     // Broadcast to all other channels.
@@ -74,7 +72,7 @@ function onTextInput(line: Buffer) {
     }
 }
 
-const filteredUsers = ['streamelements', 'soundalerts']
+const filteredUsers = ["streamelements", "soundalerts"];
 
 function isFilteredUser(user: string) {
     let lc = user.toLowerCase();

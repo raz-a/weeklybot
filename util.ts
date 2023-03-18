@@ -1,7 +1,7 @@
 // Common utiliy functions.
-import { chatClient, apiClient, clientChannels } from './client.js';
+import { chatClient, apiClient, clientChannels } from "./client.js";
 
-import chalk from 'chalk';
+import chalk from "chalk";
 
 let broadcaster_id_map: { [key: string]: string } = {};
 export const me = await apiClient.users.getMe();
@@ -17,16 +17,25 @@ export function prompt() {
     process.stdout.write(chalk.green(chatClient.currentNick + `:`));
 }
 
-export async function timeout(excludeChannel: string | null, username: string, duration: number, reason: string) {
+export async function timeout(
+    excludeChannel: string | null,
+    username: string,
+    duration: number,
+    reason: string
+) {
     for (const channel of clientChannels) {
         if (channel != excludeChannel) {
             try {
                 const user = await apiClient.users.getUserByName(username);
                 if (user) {
-                    await apiClient.moderation.banUser(broadcaster_id_map[channel], me.id, { duration: duration, reason: reason, userId: user.id });
+                    await apiClient.moderation.banUser(broadcaster_id_map[channel], me.id, {
+                        duration: duration,
+                        reason: reason,
+                        userId: user.id,
+                    });
                 }
             } catch (err) {
-                weeklyBotPrint(`ERROR: ${err}`)
+                weeklyBotPrint(`ERROR: ${err}`);
             }
         }
     }
@@ -45,7 +54,7 @@ export async function broadcast(excludeChannel: string | null, msg: string) {
 
 export async function send(channel: string, msg: string): Promise<void> {
     try {
-        await chatClient.say(channel, msg, undefined, { limitReachedBehavior: 'throw' });
+        await chatClient.say(channel, msg, undefined, { limitReachedBehavior: "throw" });
     } catch (err) {
         weeklyBotPrint(`${err}`);
     }
@@ -64,11 +73,13 @@ export async function clip(delay: boolean) {
                 weeklyBotPrint(`${channel} is not live.`);
             } else {
                 try {
-                    let id = await apiClient.clips.createClip(({ channelId: broadcaster_id, createAfterDelay: delay }));
-                    if ((id !== null) && (id !== undefined) && (id.length > 0)) {
+                    let id = await apiClient.clips.createClip({
+                        channelId: broadcaster_id,
+                        createAfterDelay: delay,
+                    });
+                    if (id !== null && id !== undefined && id.length > 0) {
                         send(channel, `${channel} clip: https://clips.twitch.tv/${id}`);
                     }
-
                 } catch (err) {
                     weeklyBotPrint(`${err}`);
                 }
