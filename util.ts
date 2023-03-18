@@ -64,7 +64,7 @@ export function addNewBroadcasterId(user: string, id: string) {
     broadcaster_id_map[user] = id;
 }
 
-export async function clip(delay: boolean) {
+export async function clipIt(delay: boolean) {
     for (let channel of clientChannels) {
         let broadcaster_id = broadcaster_id_map[channel];
         if (broadcaster_id !== undefined) {

@@ -2,8 +2,8 @@ import chalk from "chalk";
 
 import { chatClient, apiClient, PrivateMessage, clientChannels } from "./client.js";
 import { weeklyBotPrint, prompt, broadcast, timeout, addNewBroadcasterId, me } from "./util.js";
-import { processUserCommand } from "./usercommands.js";
-import { processTermCommand } from "./termcommands.js";
+import { usercommands } from "./usercommands.js";
+import { termcommands } from "./termcommands.js";
 
 // Define the readline interface
 process.stdin.on("data", onTextInput);
@@ -35,7 +35,7 @@ chatClient.onRegister(async () => {
 chatClient.connect();
 
 function onMessageHandler(target: string, user: string, text: string, msg: PrivateMessage) {
-    var userinfo = msg.userInfo;
+    var userInfo = msg.userInfo;
 
     if (isFilteredUser(user)) {
         return;
@@ -45,15 +45,15 @@ function onMessageHandler(target: string, user: string, text: string, msg: Priva
     if (text.toLowerCase().includes("benis")) {
         weeklyBotPrint("b*nis detected");
         chatClient.say(target, `Yo ${user}. What the fuck is wrong with you?`);
-        if (userinfo.isMod === false && user !== target.slice(1)) {
+        if (userInfo.isMod === false && user !== target.slice(1)) {
             timeout(null, user, 10, "Bro you can't say that shit here");
         }
 
         return;
     }
 
-    if (userinfo.color || userinfo.color === "#000000") {
-        weeklyBotPrint(`${chalk.hex(userinfo.color)(user + `:`)} ${text}`);
+    if (userInfo.color || userInfo.color === "#000000") {
+        weeklyBotPrint(`${chalk.hex(userInfo.color)(user + `:`)} ${text}`);
     } else {
         weeklyBotPrint(`${chalk.hex("#FFFFFF")(user + `:`)} ${text}`);
     }
@@ -61,12 +61,12 @@ function onMessageHandler(target: string, user: string, text: string, msg: Priva
     // Broadcast to all other channels.
     broadcast(target.slice(1), `【${user}】 ${text}`);
 
-    processUserCommand(target, user, text);
+    usercommands.processInput(text, target, userInfo);
 }
 
 // Allow for commandline text input.
 function onTextInput(line: Buffer) {
-    if (!processTermCommand(line.toString().trim())) {
+    if (!termcommands.processInput(line.toString().trim())) {
         broadcast(null, line.toString());
         prompt();
     }

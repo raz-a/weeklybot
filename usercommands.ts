@@ -1,102 +1,44 @@
 // Contains commands usable by users in the stream.
 
-import { weeklyBotPrint, send, broadcast, clip, timeout } from "./util.js";
+import { send, broadcast, clipIt, timeout } from "./util.js";
 import * as fs from "fs";
+import { Command, CommandSet } from "./commands.js";
+import { ChatUser } from "@twurple/chat";
 
-// Define available commands.
-const usercommands = {
-    prefix: "!",
-    header: "User Command",
-    commands: {
-        help: {
-            cmd: help,
-            desc: "Displays this help message.",
-        },
-        bingo: {
-            cmd: bingo,
-            desc: "Gets the link to the current Super Mario 64 Co-Op Speedrun Bingo Sheet.",
-        },
-        selectalevel: {
-            cmd: selectALevel,
-            desc: 'Get WeeklyBot involved in the "Select A Level" shenanigans.',
-        },
-        poopcam: {
-            cmd: poopCam,
-            desc: "Keep up to date with the latest PoopCam (TM) news!",
-        },
-        stats: {
-            cmd: getPoopCamStats,
-            desc: "Get the latest PoopCam (TM) stats!",
-        },
-        isitwednesday: {
-            cmd: isItWednesday,
-            desc: "Have WeeklyBot tell you if it is Wednesday!",
-        },
-        clip: {
-            cmd: clipThat,
-            desc: "Take a clip on all the live streams!",
-        },
-        plates: {
-            cmd: plates,
-            desc: "PLATES",
-        },
-        request: {
-            cmd: requestFeature,
-            desc: "Request a feature for WeeklyBot.",
-        },
-        love: {
-            cmd: loveMe,
-            desc: "Find out if WeeklyBot loves you!",
-        },
-        leaderboard: {
-            cmd: leaderboard,
-            desc: "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard.",
-        },
-    },
-};
+export const usercommands = new CommandSet(
+    "User Command",
+    "!",
+    new Command(help, "Displays this help message"),
+    new Command(bingo, "Gets the link to the current Super Mario 64 Co-Op Speedrun Bingo Sheet."),
+    new Command(selectALevel, 'Get WeeklyBot involved in the "Select A Level" shenanigans.'),
+    new Command(poopCam, "Keep up to date with the latest PoopCam (TM) news!"),
+    new Command(stats, "Get the latest PoopCam (TM) stats!"),
+    new Command(isItWednesday, "Have WeeklyBot tell you if it is Wednesday!"),
+    new Command(clip, "Take a clip on all the live streams!"),
+    new Command(plates, "PLATES"),
+    new Command(request, "Request a feature for WeeklyBot."),
+    new Command(love, "Find out if WeeklyBot loves you!"),
+    new Command(leaderboard, "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard.")
+);
 
-type commandIdx = keyof typeof usercommands.commands;
-
-export function processUserCommand(channel: string, user: string, msg: string) {
-    let prefix = usercommands.prefix;
-
-    if (!msg.startsWith(prefix)) {
-        return false;
+function help(args: string[], channel?: string, user?: ChatUser) {
+    if (!user || !channel) {
+        return;
     }
 
-    let words = msg.split(" ");
-    let command = words[0].slice(prefix.length).toLowerCase();
-    let args = words.slice(1);
+    const userName = user.displayName;
 
-    if (command in usercommands.commands) {
-        usercommands.commands[command as commandIdx].cmd(channel, user, args);
-    } else {
-        weeklyBotPrintUserCommandLog(`Invalid Command "${command}" from ${user}`);
-    }
-
-    return true;
-}
-
-function weeklyBotPrintUserCommandLog(msg: string) {
-    weeklyBotPrint(`[${usercommands.header}]: ${msg}`);
-}
-
-function help(channel: string, user: string, args: string[]) {
-    let prefix = usercommands.prefix;
-    weeklyBotPrintUserCommandLog(`Listing commands for ${user}.`);
+    usercommands.log(`Listing commands for ${userName}.`);
 
     if (args.length == 1) {
-        let command = args[0];
-        if (command in usercommands.commands) {
-            send(
-                channel,
-                `${prefix}${command}: ${usercommands.commands[command as commandIdx].desc}`
-            );
-            return;
+        let command = args[0].toLowerCase();
+        let desc = usercommands.getDescription(command);
+        if (desc) {
+            send(channel, `${command}: ${desc}`);
         }
     }
 
-    let msg = `Hi there, ${user}!
+    let msg = `Hi there, ${userName}!
          I'm WeeklyBot. The Official Weekly Wednesday chat combining bot.
          You can use the following commands to interact with me:`;
 
@@ -106,23 +48,31 @@ function help(channel: string, user: string, args: string[]) {
 }
 
 function getCommandsString() {
-    let prefix = usercommands.prefix;
-
     let msg = "";
-    for (const command in usercommands.commands) {
-        msg += ` ${prefix}${command} `;
+    for (const command of usercommands.getCommands()) {
+        msg += ` ${usercommands.prefix}${command} `;
     }
 
     return msg;
 }
 
-function bingo(channel: string, user: string, args: string[]) {
-    weeklyBotPrintUserCommandLog(`Printing Bingo Board for ${user}`);
+function bingo(args: string[], channel?: string, user?: ChatUser) {
+    if (!user) {
+        return;
+    }
+
+    const userName = user.displayName;
+    usercommands.log(`Printing Bingo Board for ${userName}`);
     broadcast(null, `Super Mario 64 Co-Op 120 star Bingo Board: https://mfbc.us/m/ed53p9x`);
 }
 
-function selectALevel(channel: string, user: string, args: string[]) {
-    weeklyBotPrintUserCommandLog(`Select A Level for ${user}`);
+function selectALevel(args: string[], channel?: string, user?: ChatUser) {
+    if (!user) {
+        return;
+    }
+
+    const userName = user.displayName;
+    usercommands.log(`Select A Level for ${userName}`);
 
     const messages = [
         "sElEcT a LeVeL",
@@ -145,8 +95,14 @@ export var PoopCamStats = {
     totalrequests: 0,
 };
 
-function poopCam(channel: string, user: string, args: string[]) {
-    weeklyBotPrintUserCommandLog(`Telling ${user} about PoopCam (TM)`);
+function poopCam(args: string[], channel?: string, user?: ChatUser) {
+    if (!user) {
+        return;
+    }
+
+    const userName = user.displayName;
+
+    usercommands.log(`Telling ${userName} about PoopCam (TM)`);
 
     if (++PoopCamStats.totalrequests == 1) {
         broadcast(null, `PoopCam (TM) has been requested 1 time this stream. Keep it up!`);
@@ -160,9 +116,9 @@ function poopCam(channel: string, user: string, args: string[]) {
     var topCammer =
         PoopCamStats.cammers.length > 0 ? PoopCamStats.cammers[0] : { user: "", requests: 0 };
 
-    var cammer = PoopCamStats.cammers.find((c) => c.user === user);
+    var cammer = PoopCamStats.cammers.find((c) => c.user === userName);
     if (cammer === undefined) {
-        PoopCamStats.cammers.push({ user: user, requests: 1 });
+        PoopCamStats.cammers.push({ user: userName, requests: 1 });
     } else {
         cammer.requests++;
     }
@@ -178,8 +134,13 @@ function poopCam(channel: string, user: string, args: string[]) {
     }
 }
 
-function getPoopCamStats(channel: string, user: string, args: string[]) {
-    weeklyBotPrintUserCommandLog(`Giving ${user} the PoopCam (TM) stats`);
+function stats(args: string[], channel?: string, user?: ChatUser) {
+    if (!user) {
+        return;
+    }
+
+    const userName = user.displayName;
+    usercommands.log(`Giving ${userName} the PoopCam (TM) stats`);
 
     var found = false;
     var msg = "PoopCam (TM) Stats";
@@ -189,13 +150,13 @@ function getPoopCamStats(channel: string, user: string, args: string[]) {
         msg += `...${i + 1}: ${PoopCamStats.cammers[i].user} - ${
             PoopCamStats.cammers[i].requests
         } request(s)`;
-        if (PoopCamStats.cammers[i].user === user) {
+        if (PoopCamStats.cammers[i].user === userName) {
             found = true;
         }
     }
 
     if (!found) {
-        var idx = PoopCamStats.cammers.findIndex((p) => p.user === user);
+        var idx = PoopCamStats.cammers.findIndex((p) => p.user === userName);
         if (idx !== -1) {
             msg += `...${idx + 1}: ${PoopCamStats.cammers[idx].user} - ${
                 PoopCamStats.cammers[idx].requests
@@ -206,8 +167,13 @@ function getPoopCamStats(channel: string, user: string, args: string[]) {
     broadcast(null, msg);
 }
 
-function isItWednesday(channel: string, user: string, args: string[]) {
-    weeklyBotPrintUserCommandLog(`Telling ${user} if it is Wednesday.`);
+function isItWednesday(args: string[], channel?: string, user?: ChatUser) {
+    if (!user) {
+        return;
+    }
+
+    const userName = user.displayName;
+    usercommands.log(`Telling ${userName} if it is Wednesday.`);
 
     let d = new Date();
     if (d.getDay() === 3) {
@@ -217,73 +183,97 @@ function isItWednesday(channel: string, user: string, args: string[]) {
     }
 }
 
-function clipThat(channel: string, user: string, args: string[]) {
-    weeklyBotPrintUserCommandLog(`${user} is taking a clip`);
+function clip(args: string[], channel?: string, user?: ChatUser) {
+    if (!user || !channel) {
+        return;
+    }
+
+    const userName = user.displayName;
+
+    usercommands.log(`${userName} is taking a clip`);
     let channel_str = channel.substring(1).toLowerCase();
-    let user_str = user.toLowerCase();
+    let user_str = userName.toLowerCase();
     let delay = channel_str.localeCompare(user_str) !== 0;
-    clip(delay);
+    clipIt(delay);
 }
 
-function plates(channel: string, user: string, args: string[]) {
-    weeklyBotPrintUserCommandLog(`${user} is commenting on plates`);
+function plates(args: string[], channel?: string, user?: ChatUser) {
+    if (!user) {
+        return;
+    }
+
+    const userName = user.displayName;
+    usercommands.log(`${userName} is commenting on plates`);
     broadcast(
         null,
         "Plates are an archaic invention. A bowl can do the exact same thing, but with protective walls. Did you buy the ice cream I asked for? My 20% down payment for it is on the counter. I spent the rest of my money on this small ax."
     );
 }
 
-function requestFeature(channel: string, user: string, args: string[]) {
-    let request = args.join(" ");
-    weeklyBotPrintUserCommandLog(`${user} is requesting a feature: ${request}`);
+function request(args: string[], channel?: string, user?: ChatUser) {
+    if (!user) {
+        return;
+    }
 
-    fs.appendFileSync("./requests.txt", `[${new Date().toLocaleString()}] ${user} - ${request} \n`);
+    const userName = user.displayName;
+    let request = args.join(" ");
+    usercommands.log(`${userName} is requesting a feature: ${request}`);
+
+    fs.appendFileSync(
+        "./requests.txt",
+        `[${new Date().toLocaleString()}] ${userName} - ${request} \n`
+    );
     broadcast(null, "Feature requested!");
 }
 
 export var LoveStats: { [key: string]: number } = {};
 
-function loveMe(channel: string, user: string, args: string[]) {
-    if (user in LoveStats == false) {
-        LoveStats[user] = 0;
+function love(args: string[], channel?: string, user?: ChatUser) {
+    if (!user) {
+        return;
     }
 
-    switch (++LoveStats[user]) {
+    const userName = user.displayName;
+    if (userName in LoveStats == false) {
+        LoveStats[userName] = 0;
+    }
+
+    switch (++LoveStats[userName]) {
         default:
-            broadcast(null, `I love you ${user}!`);
+            broadcast(null, `I love you ${userName}!`);
             break;
 
         case 5:
-            broadcast(null, `I love you ${user}.`);
+            broadcast(null, `I love you ${userName}.`);
             break;
 
         case 6:
-            broadcast(null, `I love you ${user}...`);
+            broadcast(null, `I love you ${userName}...`);
             break;
 
         case 7:
-            broadcast(null, `I love you ${user}, but this is getting a bit much...`);
+            broadcast(null, `I love you ${userName}, but this is getting a bit much...`);
             break;
 
         case 8:
-            broadcast(null, `${user} you gotta learn to love yourself.`);
+            broadcast(null, `${userName} you gotta learn to love yourself.`);
             break;
 
         case 9:
-            broadcast(null, `Yo ${user}, you gotta stop with this. I'm warning you.`);
+            broadcast(null, `Yo ${userName}, you gotta stop with this. I'm warning you.`);
             break;
 
         case 10:
-            broadcast(null, `${user} you messed up by asking for too much love.`);
-            timeout(null, user, 10, "You are too desperate for love.");
-            LoveStats[user] = 0;
+            broadcast(null, `${userName} you messed up by asking for too much love.`);
+            timeout(null, userName, 10, "You are too desperate for love.");
+            LoveStats[userName] = 0;
             break;
     }
 
-    weeklyBotPrintUserCommandLog(`${user} is loved: ${LoveStats[user]}`);
+    usercommands.log(`${userName} is loved: ${LoveStats[userName]}`);
 }
 
-function leaderboard(channel: string, user: string, args: string[]) {
+function leaderboard(args: string[], channel?: string, user?: ChatUser) {
     broadcast(
         null,
         "SM64 Co-Op Speedrun Leaderboard: https://www.speedrun.com/sm64coop?h=120_Star-Vanilla-2P&x=9d8l4x32-onvv5y7n.4qy2gr21-ylp6yk6n.810nk82q"

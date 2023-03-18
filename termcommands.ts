@@ -1,68 +1,30 @@
 // Contains commands usable from the terminal.
 
-import { broadcast, clip, weeklyBotPrint } from "./util.js";
+import { broadcast, clipIt, weeklyBotPrint } from "./util.js";
 import { PoopCamStats } from "./usercommands.js";
+import { Command, CommandSet } from "./commands.js";
+import { ChatUser } from "@twurple/chat";
 
-const termcommands = {
-    prefix: "!",
-    commands: {
-        help: {
-            cmd: help,
-            desc: "Displays this help message.",
-        },
-        clear: {
-            cmd: clearScreen,
-            desc: "Clears the screen.",
-        },
-        exit: {
-            cmd: exit,
-            desc: "Exits the program.[Provide extra text to add a custom good-bye message]",
-        },
-        clip: {
-            cmd: clipThat,
-            desc: "Takes a clip of the current streams.",
-        },
-        stats: {
-            cmd: getStats,
-            desc: "Gets the current poopcam stats.",
-        },
-    },
-};
+export const termcommands = new CommandSet(
+    "Terminal Command",
+    "!",
+    new Command(help, "Displays this help message."),
+    new Command(clear, "Clears the screen."),
+    new Command(exit, "Exits the program.[Provide extra text to add a custom good-bye message]"),
+    new Command(clip, "Takes a clip of the current streams."),
+    new Command(stats, "Gets the current poopcam stats.")
+);
 
-type commandIdx = keyof typeof termcommands.commands;
-
-export function processTermCommand(command: string) {
-    if (!command.startsWith(termcommands.prefix)) {
-        return false;
-    }
-
-    command = command.slice(termcommands.prefix.length).toLowerCase();
-    let components = command.split(" ");
-
-    command = components[0];
-    let args = components.slice(1);
-
-    if (command in termcommands.commands) {
-        termcommands.commands[command as commandIdx].cmd(args);
-    } else {
-        weeklyBotPrint(`Invalid Command "${command}"`);
-    }
-
-    return true;
-}
-
-function help(args: string[]) {
+function help(args: string[], channel?: string, user?: ChatUser) {
     weeklyBotPrint("Available commands: ");
-    for (const command in termcommands.commands) {
+    for (const command of termcommands.getCommands()) {
         weeklyBotPrint(
-            `\t${termcommands.prefix}${command} - ${
-                termcommands.commands[command as commandIdx].desc
-            }`
+            `\t${termcommands.prefix}${command} - ${termcommands.getDescription(command)}`
         );
     }
 }
 
-async function exit(args: string[]) {
+async function exit(args: string[], channel?: string, user?: ChatUser) {
     var msg: string;
     if (args.length > 0) {
         msg = args.join(" ");
@@ -74,16 +36,16 @@ async function exit(args: string[]) {
     process.exit();
 }
 
-function clipThat(args: string[]) {
-    clip(false);
+function clip(args: string[], channel?: string, user?: ChatUser) {
+    clipIt(false);
 }
 
-function clearScreen(args: string[]) {
+function clear(args: string[], channel?: string, user?: ChatUser) {
     console.clear();
     weeklyBotPrint("");
 }
 
-function getStats(args: string[]) {
+function stats(args: string[], channel?: string, user?: ChatUser) {
     var msg = `Total Requests: ${PoopCamStats.totalrequests}\nRankings:`;
     var rank = 1;
     for (let cammer of PoopCamStats.cammers) {
