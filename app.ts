@@ -61,12 +61,12 @@ function onMessageHandler(target: string, user: string, text: string, msg: Priva
     // Broadcast to all other channels.
     broadcast(target.slice(1), `【${user}】 ${text}`);
 
-    usercommands.processInput(text, target, userInfo);
+    usercommands.processInput(text, {channel: target, user: userInfo});
 }
 
 // Allow for commandline text input.
 function onTextInput(line: Buffer) {
-    if (!termcommands.processInput(line.toString().trim())) {
+    if (!termcommands.processInput(line.toString().trim(), undefined)) {
         broadcast(null, line.toString());
         prompt();
     }

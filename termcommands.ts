@@ -8,6 +8,7 @@ import { ChatUser } from "@twurple/chat";
 export const termcommands = new CommandSet(
     "Terminal Command",
     "!",
+    undefined,
     new Command(help, "Displays this help message."),
     new Command(clear, "Clears the screen."),
     new Command(exit, "Exits the program.[Provide extra text to add a custom good-bye message]"),
@@ -15,7 +16,7 @@ export const termcommands = new CommandSet(
     new Command(stats, "Gets the current poopcam stats.")
 );
 
-function help(args: string[], channel?: string, user?: ChatUser) {
+function help(args: string[], state: undefined) {
     weeklyBotPrint("Available commands: ");
     for (const command of termcommands.getCommands()) {
         weeklyBotPrint(
@@ -24,7 +25,7 @@ function help(args: string[], channel?: string, user?: ChatUser) {
     }
 }
 
-async function exit(args: string[], channel?: string, user?: ChatUser) {
+async function exit(args: string[], state: undefined) {
     var msg: string;
     if (args.length > 0) {
         msg = args.join(" ");
@@ -36,16 +37,16 @@ async function exit(args: string[], channel?: string, user?: ChatUser) {
     process.exit();
 }
 
-function clip(args: string[], channel?: string, user?: ChatUser) {
+function clip(args: string[], state: undefined) {
     clipIt(false);
 }
 
-function clear(args: string[], channel?: string, user?: ChatUser) {
+function clear(args: string[], state: undefined) {
     console.clear();
     weeklyBotPrint("");
 }
 
-function stats(args: string[], channel?: string, user?: ChatUser) {
+function stats(args: string[], state: undefined) {
     var msg = `Total Requests: ${PoopCamStats.totalrequests}\nRankings:`;
     var rank = 1;
     for (let cammer of PoopCamStats.cammers) {

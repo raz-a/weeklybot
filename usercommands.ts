@@ -5,9 +5,12 @@ import * as fs from "fs";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
 
+export type  UserCommandState = {channel: string, user: ChatUser};
+
 export const usercommands = new CommandSet(
     "User Command",
     "!",
+    undefined,
     new Command(help, "Displays this help message"),
     new Command(bingo, "Gets the link to the current Super Mario 64 Co-Op Speedrun Bingo Sheet."),
     new Command(selectALevel, 'Get WeeklyBot involved in the "Select A Level" shenanigans.'),
@@ -21,12 +24,8 @@ export const usercommands = new CommandSet(
     new Command(leaderboard, "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard.")
 );
 
-function help(args: string[], channel?: string, user?: ChatUser) {
-    if (!user || !channel) {
-        return;
-    }
-
-    const userName = user.displayName;
+function help(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
 
     usercommands.log(`Listing commands for ${userName}.`);
 
@@ -34,7 +33,7 @@ function help(args: string[], channel?: string, user?: ChatUser) {
         let command = args[0].toLowerCase();
         let desc = usercommands.getDescription(command);
         if (desc) {
-            send(channel, `${command}: ${desc}`);
+            send(state.channel, `${command}: ${desc}`);
         }
     }
 
@@ -44,7 +43,7 @@ function help(args: string[], channel?: string, user?: ChatUser) {
 
     msg += getCommandsString();
 
-    send(channel, msg);
+    send(state.channel, msg);
 }
 
 function getCommandsString() {
@@ -56,22 +55,14 @@ function getCommandsString() {
     return msg;
 }
 
-function bingo(args: string[], channel?: string, user?: ChatUser) {
-    if (!user) {
-        return;
-    }
-
-    const userName = user.displayName;
+function bingo(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
     usercommands.log(`Printing Bingo Board for ${userName}`);
     broadcast(null, `Super Mario 64 Co-Op 120 star Bingo Board: https://mfbc.us/m/ed53p9x`);
 }
 
-function selectALevel(args: string[], channel?: string, user?: ChatUser) {
-    if (!user) {
-        return;
-    }
-
-    const userName = user.displayName;
+function selectALevel(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
     usercommands.log(`Select A Level for ${userName}`);
 
     const messages = [
@@ -95,12 +86,8 @@ export var PoopCamStats = {
     totalrequests: 0,
 };
 
-function poopCam(args: string[], channel?: string, user?: ChatUser) {
-    if (!user) {
-        return;
-    }
-
-    const userName = user.displayName;
+function poopCam(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
 
     usercommands.log(`Telling ${userName} about PoopCam (TM)`);
 
@@ -134,12 +121,8 @@ function poopCam(args: string[], channel?: string, user?: ChatUser) {
     }
 }
 
-function stats(args: string[], channel?: string, user?: ChatUser) {
-    if (!user) {
-        return;
-    }
-
-    const userName = user.displayName;
+function stats(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
     usercommands.log(`Giving ${userName} the PoopCam (TM) stats`);
 
     var found = false;
@@ -167,12 +150,8 @@ function stats(args: string[], channel?: string, user?: ChatUser) {
     broadcast(null, msg);
 }
 
-function isItWednesday(args: string[], channel?: string, user?: ChatUser) {
-    if (!user) {
-        return;
-    }
-
-    const userName = user.displayName;
+function isItWednesday(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
     usercommands.log(`Telling ${userName} if it is Wednesday.`);
 
     let d = new Date();
@@ -183,26 +162,18 @@ function isItWednesday(args: string[], channel?: string, user?: ChatUser) {
     }
 }
 
-function clip(args: string[], channel?: string, user?: ChatUser) {
-    if (!user || !channel) {
-        return;
-    }
-
-    const userName = user.displayName;
+function clip(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
 
     usercommands.log(`${userName} is taking a clip`);
-    let channel_str = channel.substring(1).toLowerCase();
+    let channel_str = state.channel.substring(1).toLowerCase();
     let user_str = userName.toLowerCase();
     let delay = channel_str.localeCompare(user_str) !== 0;
     clipIt(delay);
 }
 
-function plates(args: string[], channel?: string, user?: ChatUser) {
-    if (!user) {
-        return;
-    }
-
-    const userName = user.displayName;
+function plates(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
     usercommands.log(`${userName} is commenting on plates`);
     broadcast(
         null,
@@ -210,12 +181,8 @@ function plates(args: string[], channel?: string, user?: ChatUser) {
     );
 }
 
-function request(args: string[], channel?: string, user?: ChatUser) {
-    if (!user) {
-        return;
-    }
-
-    const userName = user.displayName;
+function request(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
     let request = args.join(" ");
     usercommands.log(`${userName} is requesting a feature: ${request}`);
 
@@ -228,12 +195,8 @@ function request(args: string[], channel?: string, user?: ChatUser) {
 
 export var LoveStats: { [key: string]: number } = {};
 
-function love(args: string[], channel?: string, user?: ChatUser) {
-    if (!user) {
-        return;
-    }
-
-    const userName = user.displayName;
+function love(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
     if (userName in LoveStats == false) {
         LoveStats[userName] = 0;
     }
@@ -273,7 +236,7 @@ function love(args: string[], channel?: string, user?: ChatUser) {
     usercommands.log(`${userName} is loved: ${LoveStats[userName]}`);
 }
 
-function leaderboard(args: string[], channel?: string, user?: ChatUser) {
+function leaderboard(args: string[], state: UserCommandState) {
     broadcast(
         null,
         "SM64 Co-Op Speedrun Leaderboard: https://www.speedrun.com/sm64coop?h=120_Star-Vanilla-2P&x=9d8l4x32-onvv5y7n.4qy2gr21-ylp6yk6n.810nk82q"

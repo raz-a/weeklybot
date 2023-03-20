@@ -1,40 +1,43 @@
 import { ChatUser } from "@twurple/chat";
 import { weeklyBotPrint } from "./util.js";
 
-type CommandFn = (args: string[], channel?: string, user?: ChatUser) => void;
+type CommandFn<CallingState> = (args: string[], state: CallingState) => void;
+type StateValidator<CallingState> = (state: CallingState) => boolean;
 
-export class Command {
+export class Command<CallingState> {
     readonly name: string;
     readonly desc: string;
-    #fn: CommandFn;
+    #fn: CommandFn<CallingState>;
 
-    constructor(fn: CommandFn, desc: string) {
+    constructor(fn: CommandFn<CallingState>, desc: string) {
         this.name = fn.name.toLowerCase();
         this.desc = desc;
         this.#fn = fn;
     }
 
-    invoke(args: string[], channel?: string, user?: ChatUser): void {
-        this.#fn(args, channel, user);
+    invoke(args: string[], state: CallingState): void {
+        this.#fn(args, state);
     }
 }
 
-export class CommandSet {
+export class CommandSet<CallingState> {
     readonly name: string;
     readonly prefix: string;
-    #commands: { [key: string]: Command };
-
-    constructor(name: string, prefix: string, ...commands: Command[]) {
+    #stateValidator: StateValidator<CallingState>;
+    #commands: { [key: string]: Command<CallingState> };
+    constructor(name: string, prefix: string, stateValidator: StateValidator<CallingState> | undefined, ...commands: Command<CallingState>[]) {
         this.name = name;
         this.prefix = prefix;
+        this.#stateValidator = (stateValidator !== undefined) ? stateValidator : CommandSet.#allowAllState;
+
         this.#commands = {};
         for (const c of commands) {
             this.#commands[c.name] = c;
         }
     }
 
-    processInput(input: string, channel?: string, user?: ChatUser): boolean {
-        if (!input.startsWith(this.prefix)) {
+    processInput(input: string, state: CallingState): boolean {
+        if (!this.#stateValidator(state) ||!input.startsWith(this.prefix)) {
             return false;
         }
 
@@ -43,7 +46,7 @@ export class CommandSet {
         const args = tokens.slice(1);
 
         if (command in this.#commands) {
-            this.#commands[command].invoke(args, channel, user);
+            this.#commands[command].invoke(args, state);
             return true;
         }
 
@@ -73,5 +76,9 @@ export class CommandSet {
 
     log(msg: string) {
         weeklyBotPrint(`[${this.name}]: ${msg}`);
+    }
+
+    static #allowAllState<S>(state: S) {
+        return true;
     }
 }
