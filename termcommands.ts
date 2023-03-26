@@ -1,9 +1,9 @@
 // Contains commands usable from the terminal.
 
 import { broadcast, clipIt, weeklyBotPrint } from "./util.js";
-import { PoopCamStats } from "./usercommands.js";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
+import { PoopCam } from "./poopcam.js";
 
 export const termcommands = new CommandSet(
     "Terminal Command",
@@ -47,10 +47,14 @@ function clear(args: string[], state: undefined) {
 }
 
 function stats(args: string[], state: undefined) {
-    var msg = `Total Requests: ${PoopCamStats.totalrequests}\nRankings:`;
-    var rank = 1;
-    for (let cammer of PoopCamStats.cammers) {
-        msg = msg.concat(`\n[${rank++}]: ${cammer.user} - ${cammer.requests} request(s)`);
+    var msg = `Total Requests: ${PoopCam.getTotalRequests}\nRankings:`;
+    for (let rank = 0; rank < PoopCam.getTotalParticipants(); rank++) {
+        const cammer = PoopCam.getCammerByRank(rank);
+        if (cammer !== undefined) {
+            msg = msg.concat(
+                `\n[${rank + 1}]: ${cammer.userName} - ${cammer.requestCount} request(s)`
+            );
+        }
     }
 
     weeklyBotPrint(msg);

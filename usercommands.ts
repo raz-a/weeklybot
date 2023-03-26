@@ -4,8 +4,9 @@ import { send, broadcast, clipIt, timeout } from "./util.js";
 import * as fs from "fs";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
+import { PoopCam } from "./poopcam.js";
 
-export type  UserCommandState = {channel: string, user: ChatUser};
+export type UserCommandState = { channel: string; user: ChatUser };
 
 export const usercommands = new CommandSet(
     "User Command",
@@ -76,47 +77,30 @@ function selectALevel(args: string[], state: UserCommandState) {
     broadcast(null, msg);
 }
 
-export type PoopCammer = {
-    user: string;
-    requests: number;
-};
-
-export var PoopCamStats = {
-    cammers: [] as PoopCammer[],
-    totalrequests: 0,
-};
-
 function poopCam(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
 
     usercommands.log(`Telling ${userName} about PoopCam (TM)`);
 
-    if (++PoopCamStats.totalrequests == 1) {
+    const topCammer = PoopCam.getTopCammer();
+    PoopCam.request(userName);
+
+    const totalRequests = PoopCam.getTotalRequests();
+    if (totalRequests == 1) {
         broadcast(null, `PoopCam (TM) has been requested 1 time this stream. Keep it up!`);
     } else {
         broadcast(
             null,
-            `PoopCam (TM) has been requested ${PoopCamStats.totalrequests} times this stream. Keep it up!`
+            `PoopCam (TM) has been requested ${totalRequests} times this stream. Keep it up!`
         );
     }
 
-    var topCammer =
-        PoopCamStats.cammers.length > 0 ? PoopCamStats.cammers[0] : { user: "", requests: 0 };
+    const newTopCammer = PoopCam.getTopCammer();
 
-    var cammer = PoopCamStats.cammers.find((c) => c.user === userName);
-    if (cammer === undefined) {
-        PoopCamStats.cammers.push({ user: userName, requests: 1 });
-    } else {
-        cammer.requests++;
-    }
-
-    PoopCamStats.cammers.sort((a, b) => b.requests - a.requests);
-
-    if (PoopCamStats.cammers[0].user !== topCammer.user) {
-        topCammer = PoopCamStats.cammers[0];
+    if (newTopCammer !== topCammer && newTopCammer !== undefined) {
         broadcast(
             null,
-            `${topCammer.user} is now the #1 poopcammer with ${topCammer.requests} requests!`
+            `${newTopCammer.userName} is now the #1 poopcammer with ${newTopCammer.requestCount} requests!`
         );
     }
 }
@@ -127,23 +111,23 @@ function stats(args: string[], state: UserCommandState) {
 
     var found = false;
     var msg = "PoopCam (TM) Stats";
-    msg += `...Total Requests ${PoopCamStats.totalrequests}`;
+    msg += `...Total Requests ${PoopCam.getTotalRequests()}`;
     msg += "...Rankings:";
-    for (let i = 0; i < PoopCamStats.cammers.length && i < 3; i++) {
-        msg += `...${i + 1}: ${PoopCamStats.cammers[i].user} - ${
-            PoopCamStats.cammers[i].requests
-        } request(s)`;
-        if (PoopCamStats.cammers[i].user === userName) {
-            found = true;
+    for (let i = 0; i < PoopCam.getTotalParticipants() && i < 3; i++) {
+        const cammer = PoopCam.getCammerByRank(i);
+        if (cammer !== undefined) {
+            msg += `...${i + 1}: ${cammer.userName} - ${cammer.requestCount} request(s)`;
+            if (cammer?.userName === userName) {
+                found = true;
+            }
         }
     }
 
     if (!found) {
-        var idx = PoopCamStats.cammers.findIndex((p) => p.user === userName);
-        if (idx !== -1) {
-            msg += `...${idx + 1}: ${PoopCamStats.cammers[idx].user} - ${
-                PoopCamStats.cammers[idx].requests
-            } request(s)`;
+        const cammer = PoopCam.getCammerByName(userName);
+        if (cammer !== undefined) {
+            const rank = PoopCam.getRankByName(userName);
+            msg += `...${rank + 1}: ${cammer.userName} - ${cammer.requestCount} request(s)`;
         }
     }
 
