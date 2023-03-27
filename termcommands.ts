@@ -47,7 +47,7 @@ function clear(args: string[], state: undefined) {
 }
 
 function stats(args: string[], state: undefined) {
-    var msg = `Total Requests: ${PoopCam.getTotalRequests}\nRankings:`;
+    var msg = `Total Requests: ${PoopCam.getTotalRequests()}\nRankings:`;
     for (let rank = 0; rank < PoopCam.getTotalParticipants(); rank++) {
         const cammer = PoopCam.getCammerByRank(rank);
         if (cammer !== undefined) {

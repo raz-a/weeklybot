@@ -14,7 +14,8 @@
     "@twurple/auth": "^5.3.3",
     "@twurple/chat": "^5.3.3",
     "@twurple/eventsub": "^5.3.3",
-    "chalk": "^5.0.0"
+    "chalk": "^5.0.0",
+    "tsc": "^2.0.4"
   },
   "type": "module",
   "devDependencies": {
