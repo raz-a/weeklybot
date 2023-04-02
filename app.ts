@@ -1,9 +1,10 @@
 import chalk from "chalk";
 
 import { chatClient, apiClient, PrivateMessage, clientChannels } from "./client.js";
-import { weeklyBotPrint, prompt, broadcast, timeout, addNewBroadcasterId, me } from "./util.js";
+import { weeklyBotPrint, prompt, broadcast, timeout, addNewBroadcaster, me } from "./util.js";
 import { usercommands } from "./usercommands.js";
 import { termcommands } from "./termcommands.js";
+import { modcommands } from "./modcommands.js";
 
 // Define the readline interface
 process.stdin.on("data", onTextInput);
@@ -23,10 +24,10 @@ chatClient.onRegister(async () => {
     broadcast(null, "Weekly Bot Connected!");
 
     for (const channel of clientChannels) {
-        let id = await getBroadcasterId(channel);
+        let user = await getBroadcasterId(channel);
 
-        if (id) {
-            addNewBroadcasterId(channel, id);
+        if (user) {
+            addNewBroadcaster(channel, user);
         }
     }
 });
@@ -34,7 +35,7 @@ chatClient.onRegister(async () => {
 // Connect to the twitch server.
 chatClient.connect();
 
-function onMessageHandler(target: string, user: string, text: string, msg: PrivateMessage) {
+async function onMessageHandler(target: string, user: string, text: string, msg: PrivateMessage) {
     var userInfo = msg.userInfo;
 
     if (isFilteredUser(user)) {
@@ -61,7 +62,11 @@ function onMessageHandler(target: string, user: string, text: string, msg: Priva
     // Broadcast to all other channels.
     broadcast(target.slice(1), `【${user}】 ${text}`);
 
-    usercommands.processInput(text, {channel: target, user: userInfo});
+    if (await modcommands.processInput(text, user)) {
+        return;
+    }
+
+    usercommands.processInput(text, { channel: target, user: userInfo });
 }
 
 // Allow for commandline text input.
@@ -80,10 +85,5 @@ function isFilteredUser(user: string) {
 }
 
 async function getBroadcasterId(channel: string) {
-    let user = await apiClient.users.getUserByName(channel);
-    if (user) {
-        return user.id;
-    }
-
-    return null;
+    return await apiClient.users.getUserByName(channel);
 }

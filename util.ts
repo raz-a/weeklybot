@@ -1,9 +1,10 @@
 // Common utiliy functions.
+import { HelixUser } from "@twurple/api";
 import { chatClient, apiClient, clientChannels } from "./client.js";
 
 import chalk from "chalk";
 
-let broadcaster_id_map: { [key: string]: string } = {};
+let broadcaster_id_map: { [key: string]: HelixUser } = {};
 export const me = await apiClient.users.getMe();
 
 export function weeklyBotPrint(message: string) {
@@ -28,7 +29,7 @@ export async function timeout(
             try {
                 const user = await apiClient.users.getUserByName(username);
                 if (user) {
-                    await apiClient.moderation.banUser(broadcaster_id_map[channel], me.id, {
+                    await apiClient.moderation.banUser(broadcaster_id_map[channel], me, {
                         duration: duration,
                         reason: reason,
                         userId: user.id,
@@ -60,7 +61,7 @@ export async function send(channel: string, msg: string): Promise<void> {
     }
 }
 
-export function addNewBroadcasterId(user: string, id: string) {
+export function addNewBroadcaster(user: string, id: HelixUser) {
     broadcaster_id_map[user] = id;
 }
 
@@ -88,4 +89,8 @@ export async function clipIt(delay: boolean) {
             weeklyBotPrint(`Could not find matching id for ${channel}`);
         }
     }
+}
+
+export function getBroadcasterList(): Readonly<HelixUser>[] {
+    return Object.values(broadcaster_id_map);
 }

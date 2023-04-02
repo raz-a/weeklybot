@@ -2,7 +2,7 @@ import { ChatUser } from "@twurple/chat";
 import { weeklyBotPrint } from "./util.js";
 
 type CommandFn<CallingState> = (args: string[], state: CallingState) => void;
-type StateValidator<CallingState> = (state: CallingState) => boolean;
+type StateValidator<CallingState> = (state: CallingState) => Promise<boolean>;
 
 export class Command<CallingState> {
     readonly name: string;
@@ -25,10 +25,16 @@ export class CommandSet<CallingState> {
     readonly prefix: string;
     #stateValidator: StateValidator<CallingState>;
     #commands: { [key: string]: Command<CallingState> };
-    constructor(name: string, prefix: string, stateValidator: StateValidator<CallingState> | undefined, ...commands: Command<CallingState>[]) {
+    constructor(
+        name: string,
+        prefix: string,
+        stateValidator: StateValidator<CallingState> | undefined,
+        ...commands: Command<CallingState>[]
+    ) {
         this.name = name;
         this.prefix = prefix;
-        this.#stateValidator = (stateValidator !== undefined) ? stateValidator : CommandSet.#allowAllState;
+        this.#stateValidator =
+            stateValidator !== undefined ? stateValidator : CommandSet.#allowAllState;
 
         this.#commands = {};
         for (const c of commands) {
@@ -36,8 +42,8 @@ export class CommandSet<CallingState> {
         }
     }
 
-    processInput(input: string, state: CallingState): boolean {
-        if (!this.#stateValidator(state) ||!input.startsWith(this.prefix)) {
+    async processInput(input: string, state: CallingState) {
+        if ((await !this.#stateValidator(state)) || !input.startsWith(this.prefix)) {
             return false;
         }
 
@@ -78,7 +84,7 @@ export class CommandSet<CallingState> {
         weeklyBotPrint(`[${this.name}]: ${msg}`);
     }
 
-    static #allowAllState<S>(state: S) {
+    static async #allowAllState<S>(state: S) {
         return true;
     }
 }
