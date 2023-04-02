@@ -70,8 +70,8 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
 }
 
 // Allow for commandline text input.
-function onTextInput(line: Buffer) {
-    if (!termcommands.processInput(line.toString().trim(), undefined)) {
+async function onTextInput(line: Buffer) {
+    if (!(await termcommands.processInput(line.toString().trim(), undefined))) {
         broadcast(null, line.toString());
         prompt();
     }

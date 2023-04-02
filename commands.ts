@@ -43,7 +43,7 @@ export class CommandSet<CallingState> {
     }
 
     async processInput(input: string, state: CallingState) {
-        if ((await !this.#stateValidator(state)) || !input.startsWith(this.prefix)) {
+        if (!(await this.#stateValidator(state)) || !input.startsWith(this.prefix)) {
             return false;
         }
 
