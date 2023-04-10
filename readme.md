@@ -59,7 +59,8 @@ The private folder needs to contain the following two files:
         "clips:edit",
         "user:read:email",
         "user:manage:chat_color"
-        "moderator:manage:banned_users"
+        "moderator:manage:banned_users",
+        "moderation:read"
     ],
     "expiresIn": "__",
     "obtainmentTimestamp": "__"

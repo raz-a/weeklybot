@@ -62,7 +62,7 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
     // Broadcast to all other channels.
     broadcast(target.slice(1), `【${user}】 ${text}`);
 
-    if (await modcommands.processInput(text, user)) {
+    if (await modcommands.processInput(text, userInfo)) {
         return;
     }
 

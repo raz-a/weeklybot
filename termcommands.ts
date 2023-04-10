@@ -34,7 +34,7 @@ async function exit(args: string[], state: undefined) {
     }
 
     await broadcast(null, msg);
-    process.exit();
+    process.exit(0);
 }
 
 function clip(args: string[], state: undefined) {
