@@ -14,6 +14,7 @@ export const usercommands = new CommandSet(
     undefined,
     new Command(help, "Displays this help message"),
     new Command(bingo, "Gets the link to the current Super Mario 64 Co-Op Speedrun Bingo Sheet."),
+    new Command(discord, "Posts a link to the community discord."),
     new Command(selectALevel, 'Get WeeklyBot involved in the "Select A Level" shenanigans.'),
     new Command(poopCam, "Keep up to date with the latest PoopCam (TM) news!"),
     new Command(stats, "Get the latest PoopCam (TM) stats!"),
@@ -61,6 +62,12 @@ function bingo(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     usercommands.log(`Printing Bingo Board for ${userName}`);
     broadcast(null, `Super Mario 64 Co-Op 120 star Bingo Board: https://mfbc.us/m/ed53p9x`);
+}
+
+function discord(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+    usercommands.log(`Posting a discord invite for ${userName}`);
+    broadcast(null, `Here's your discord invite: https://discord.gg/MCedstXWgH`);
 }
 
 function selectALevel(args: string[], state: UserCommandState) {
@@ -238,6 +245,7 @@ function hate(args: string[], state: UserCommandState) {
     ];
     let msg = messages[Math.floor(Math.random() * messages.length)];
     LoveStats[userName] = 0;
+    usercommands.log(`${userName} is hated.`);
     broadcast(null, msg);
 }
 
