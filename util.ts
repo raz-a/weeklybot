@@ -65,7 +65,7 @@ export function addNewBroadcaster(user: string, id: HelixUser) {
     broadcaster_id_map[user] = id;
 }
 
-export async function clipIt(delay: boolean, user: ChatUser) {
+export async function clipIt(delay: boolean) {
     for (let channel of clientChannels) {
         let broadcaster_id = broadcaster_id_map[channel];
         if (broadcaster_id !== undefined) {
@@ -81,6 +81,7 @@ export async function clipIt(delay: boolean, user: ChatUser) {
                     if (id !== null && id !== undefined && id.length > 0) {
                         let clip = 'https://clips.twitch.tv/' + id.toString()
                         send(channel, `${channel} clip: ${clip}`);
+                        let user = ChatUser.userId
                         await HelixUser.whispers.sendWhisper( /*weeklybot id, */ user, clip)
                         //note: there are many ways this command could fail
                         //weeklybot needs to have a phonenumber associated with it to be allowed to send whispers
