@@ -1,21 +1,45 @@
 [12/27/2022, 12:13:38 AM] chimierss - TTS
+    this would require interaction with the streamer's broadcast, perhaps an external program to which weeklybot
+    sends requests to that then reads out the message from the request. a bit beyond the scope of weeklybot atm
 [12/28/2022, 11:31:27 PM] chimierss - spookycock wise words
+    not too hard to impliment. Requires cooporation on spookycock's behalf to either generate wise words for
+    weeklybot to pull from, or something to train a GPT instance on in order to generate new wise words in the
+    form of spookycock
 [1/3/2023, 10:10:25 PM] prismaweaver - !hate
+    put in as a joke, but I could probably add it no problem
 [1/4/2023, 11:37:23 PM] prismaweaver - add argument after clip to name clip
-[1/4/2023, 11:39:50 PM] Shadowcat2525 - an in-depth user specific pregnancy command that will impregnate your user name and simulate (in real time) a full 9 month pregnancy with random birth defects, variables, and shiny baby features.  along with a baby leader board for the most babies carried and baby names
+    actually impossible. There used to be a trick to do this, but Twitch removed it in 2022
+[1/4/2023, 11:39:50 PM] Shadowcat2525 - an in-depth user specific pregnancy command that will impregnate your 
+                        user name and simulate (in real time) a full 9 month pregnancy with random birth defects, 
+                        variables, and shiny baby features.  along with a baby leader board for the most babies 
+                        carried and baby names
+    This is the whole reason I started this fork. There are a couple of ways of going about this.
+    method A: baby name is generated from the half of each user name (will look like shit)
+    method B: baby names are randomly selected from a list, possibly via API
+    method C: commands are added to let carrier or impregnator name the child
+    all defects/shiny-whatever is randomly generated at time of command as part of the baby ID
+    pregnancy is tracked through the database: (ID, baby names & associations, the time-tracking, leaderboards)
+    requires the following commands: 
+        !impregnante [user] - checks if [user] is already pregnant, if not, generates baby ID from both parties
+        !checkpreg [user] - checks how far along the user is, maybe some random rp fluff too about kicks or something
+        !babyleaderboard [user] - checks the user's baby leaderboard stats
 [1/7/2023, 7:41:43 PM] chimierss - !peecam
+    poopcam is bad enough
 [1/7/2023, 7:42:30 PM] chimierss - make it so you can track the request of the poopcam from all time
-[1/27/2023, 5:42:03 PM] prismaweaver - meow feature[2/5/2023, 7:45:45 PM] hankuspankus574 - discord command 
-[2/5/2023, 7:47:03 PM] hankuspankus574 - bi-weekly community speedrun 
+    this can be added as part of the database expansion
+[1/27/2023, 5:42:03 PM] prismaweaver - meow feature
+    same problem as the TTS feature, it wouldnt be hard to have a soundboard of nair meows extracted from clips
+    but to play the sounds on stream would require softward being run on the streamer's end
+[2/5/2023, 7:45:45 PM] hankuspankus574 - discord command 
+    a command to generate the discord invite could be easily added, otherwise idk what this means
+[2/5/2023, 7:47:03 PM] hankuspankus574 - bi-weekly community speedrun
 [2/5/2023, 9:03:57 PM] chimierss - poop gif 
 [2/5/2023, 10:23:50 PM] hankuspankus574 - raz' discord name "The Harem Globetrotters" 
 [2/8/2023, 7:52:46 PM] chimierss - luigi goatse 
 [2/8/2023, 10:03:28 PM] chimierss - headpats 
 [2/8/2023, 10:19:43 PM] chimierss - bombclip 
-[2/12/2023, 8:32:52 PM] shadowcat2525 - intention poopcam desync that adds a random variation of 10seconds to two minutes of when weeklybot responds 
-[2/12/2023, 8:33:24 PM] shadowcat2525 - *intentional 
+[2/12/2023, 8:32:52 PM] shadowcat2525 - intentional poopcam desync that adds a random variation of 10seconds to two minutes of when weeklybot responds 
 [2/12/2023, 9:46:46 PM] chimierss - !nairfans 
 [3/1/2023, 7:51:36 PM] prismaweaver - ban everyone 
 [3/18/2023, 12:21:06 AM] Weekly_Bot - huzzah 
-[3/26/2023, 5:11:48 PM] DynamicProgrammer -  
 [3/26/2023, 5:12:10 PM] DynamicProgrammer - flirtwithraz 
