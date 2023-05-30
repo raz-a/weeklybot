@@ -1,7 +1,7 @@
 // Common utiliy functions.
 import { HelixUser } from "@twurple/api";
 import { chatClient, apiClient, clientChannels } from "./client.js";
-
+import { ChatUser } from "@twurple/chat";
 import chalk from "chalk";
 
 let broadcaster_id_map: { [key: string]: HelixUser } = {};
@@ -79,7 +79,18 @@ export async function clipIt(delay: boolean) {
                         createAfterDelay: delay,
                     });
                     if (id !== null && id !== undefined && id.length > 0) {
-                        send(channel, `${channel} clip: https://clips.twitch.tv/${id}`);
+                        let clip = 'https://clips.twitch.tv/' + id.toString()
+                        send(channel, `${channel} clip: ${clip}`);
+                        //let user = ChatUser.userId
+                        //await HelixUser.whispers.sendWhisper( /*weeklybot id, */ user, clip)
+                        //note: there are many ways this command could fail
+                        //weeklybot needs to have a phonenumber associated with it to be allowed to send whispers
+                        //additionally so does the user receiving the whisper
+                        //the user making the command also needs to have whispers turned on 
+                        //weeklybot needs the whisper permission included as part of its token
+                        //both weeklybot and the receiving user have a limit of 40 unique user whispers per day
+                        //full documentation: https://dev.twitch.tv/docs/api/reference/#send-whisper
+                        //it would likely be better if this was a separate method in order to check for all of these errors
                     }
                 } catch (err) {
                     weeklyBotPrint(`${err}`);
