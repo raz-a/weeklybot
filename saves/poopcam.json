@@ -1,3 +1,7 @@
 {
-    
+    "example": {
+        "user": "example",
+        "total": "1",
+        "highest": "1"
+    }
 }

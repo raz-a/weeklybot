@@ -1,18 +1,18 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-interface JSONObject {
+export interface JSONObject {
   [key: string]: any;
 }
 
-class LibraryDB {
-    private filePathString = '/saves';
+class saveSystem {
+    private static filePathString = '/saves';
 
     constructor() {}
 
     // pass: filename (works as a key: poopcam || pregnancy || etc...)
     // returns: full JSON of specified file
-    private getFileFromJSON(fileName: string): JSONObject {
+    private static getFileFromJSON(fileName: string): JSONObject {
         const filePath = path.join(this.filePathString, `${fileName}.json`);
         if (fs.existsSync(filePath)) {
             const fileContent = fs.readFileSync(filePath, 'utf8');
@@ -26,7 +26,7 @@ class LibraryDB {
     //       filename (works as a key: poopcam || pregnancy || etc...),
     //       Key is usually the user issuing the command
     // returns: nothing, updates entires correlating to the key with new values
-    public saveRecordToJSON(obj: JSONObject, filename: string, key: string): void {
+    public static saveRecordToJSON(obj: JSONObject, filename: string, key: string): void {
         const dbObject = this.getFileFromJSON(filename);
         dbObject[key] = obj;
 
@@ -41,7 +41,7 @@ class LibraryDB {
     // pass: searchKey (search term to scan JSON for),
     //       filename (works as a key: poopcam || pregnancy || etc...),
     // returns: the JSON object containing the key from the file
-    public getRecordFromJSON(searchKey: string, filename: string): JSONObject | null {
+    public static getRecordFromJSON(searchKey: string, filename: string): JSONObject | null {
         try {
             const jsonObject = this.getFileFromJSON(filename);
 
@@ -57,4 +57,4 @@ class LibraryDB {
     }
 }
 
-export default LibraryDB;
+export default saveSystem;

@@ -1,3 +1,5 @@
+import saveSystem, { JSONObject } from './saveSystem.js';
+
 export type PoopCammer = {
     userName: string;
     requestCount: number;
@@ -14,9 +16,49 @@ export abstract class PoopCam {
         } else {
             cammer.requestCount++;
         }
-
+        this.genRecord(userName);
         this.#participants.sort((a, b) => b.requestCount - a.requestCount);
         this.#totalRequests++;
+    }
+
+    static async genRecord(userName: string): Promise<void> {
+        let cammerJSON = await saveSystem.getRecordFromJSON(userName, 'poopcam');
+        let cammer = this.#participants.find((c) => c.userName === userName);
+        if (cammer === undefined) return;
+        let save: JSONObject;
+        if (cammerJSON === null) {
+            save = {
+                user: userName,
+                total: "1",
+                highest: "1",
+            };
+            this.saveRecord(save, userName);
+        } else {
+            const total = parseInt(cammerJSON.total.toString(), 10) + 1;
+            if (parseInt(cammerJSON.highest.toString(), 10) < cammer!.requestCount) {
+                const save: JSONObject = {
+                    user: userName,
+                    total: total.toString(),
+                    highest: cammer!.requestCount.toString(),
+                };
+                this.saveRecord(save, userName);
+            } else {
+                const save: JSONObject = {
+                    user: userName,
+                    total: total.toString(),
+                    highest: cammerJSON.highest.toString(),
+                };
+                this.saveRecord(save, userName);
+            }
+        }
+    }
+
+    static async saveRecord(save: JSONObject, userName: string): Promise<void> {
+        try {
+            saveSystem.saveRecordToJSON(save, 'poopcam', userName);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     static getTotalRequests(): number {
