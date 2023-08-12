@@ -11,10 +11,29 @@ export abstract class PoopCam {
     static readonly #total_key = "/total_requests";
 
     static async request(userName: string): Promise<void> {
+        let index = '';
+        let cammer: PoopCammer | undefined;
+        try {
+            cammer = await this.#db.find<PoopCammer>(this.#cammers_key, function(entry, idx) {
+                let c = <PoopCammer>entry;
+                if (c.userName === userName) {
+                    index = idx.toString();
+                    return true;
+                }
 
-        let key = this.#cammers_key.concat('/', userName);
-        let cammer = await this.#db.getObjectDefault<PoopCammer>(key, { userName: userName, requestCount: 0 });
+                return false;
+            });
+        } catch(err) {
+            cammer = undefined;
+        }
+
+        if (cammer === undefined) {
+            cammer = {userName: userName, requestCount: 0};
+
+        }
+
         cammer.requestCount++;
+        let key = this.#cammers_key.concat('[', index.toString(),']');
         await this.#db.push(key, cammer);
         await this.#db.push(this.#total_key, (await this.getTotalRequests()) + 1);
     }
@@ -32,7 +51,7 @@ export abstract class PoopCam {
             return undefined;
         }
 
-        let cammer_list = await this.get_sorted_list();
+        let cammer_list = await this.load_sorted_cammer_list();
         if (cammer_list === undefined) {
             return undefined;
         }
@@ -41,17 +60,23 @@ export abstract class PoopCam {
     }
 
     static async getCammerByName(userName: string): Promise<Readonly<PoopCammer> | undefined> {
-        let key = this.#cammers_key.concat('/', userName);
-        if (await this.#db.exists(key) === false) {
+        try {
+            return await this.#db.find<PoopCammer>(this.#cammers_key, function(entry, idx) {
+                let c = <PoopCammer>entry;
+                if (c.userName === userName) {
+                    return true;
+                }
+
+                return false;
+            });
+        } catch(err) {
             return undefined;
         }
-
-        return await this.#db.getObject<PoopCammer>(key);
     }
 
     static async getRankByName(userName: string): Promise<number> {
 
-        let cammer_list = await this.get_sorted_list();
+        let cammer_list = await this.load_sorted_cammer_list();
         if (cammer_list === undefined) {
             return -1
         }
@@ -60,31 +85,16 @@ export abstract class PoopCam {
     }
 
     static async getTotalParticipants(): Promise<number> {
-        let cammer_list = await this.get_sorted_list();
-        if (cammer_list === undefined) {
+        try {
+            return await this.#db.count(this.#cammers_key);
+        } catch(err) {
             return 0;
         }
-        return cammer_list.length;
     }
 
-    private static async get_sorted_list(): Promise<PoopCammer[] | undefined> {
-        try {
-
-            let cammerList: PoopCammer[] = [];
-
-            // todo
-            let cammers = await this.#db.getData(this.#cammers_key);
-            for (const c in cammers) {
-                let cammer = <PoopCammer>cammers[c];
-                cammerList.push(cammer)
-            }
-
-            return cammerList.sort(function(a,b) {
-                return b.requestCount - a.requestCount
-            });
-
-        } catch (err) {
-            return undefined;
-        }
+    private static async load_sorted_cammer_list(): Promise<PoopCammer[] | undefined> {
+        return (await this.#db.getObjectDefault<PoopCammer[]>(this.#cammers_key, undefined))?.sort(function(a,b) {
+            return b.requestCount - a.requestCount;
+        });
     }
 }
