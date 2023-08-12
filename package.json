@@ -15,7 +15,7 @@
     "@twurple/chat": "^5.3.3",
     "@twurple/eventsub": "^5.3.3",
     "chalk": "^5.0.0",
-    "tsc": "^2.0.4"
+    "node-json-db": "^2.2.0"
   },
   "type": "module",
   "devDependencies": {

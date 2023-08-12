@@ -78,25 +78,25 @@ function selectALevel(args: string[], state: UserCommandState) {
     broadcast(null, msg);
 }
 
-function poopCam(args: string[], state: UserCommandState) {
+async function poopCam(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
 
     usercommands.log(`Telling ${userName} about PoopCam (TM)`);
 
-    const topCammer = PoopCam.getTopCammer();
-    PoopCam.request(userName);
+    const topCammer = await PoopCam.getTopCammer();
+    await PoopCam.request(userName);
 
-    const totalRequests = PoopCam.getTotalRequests();
+    const totalRequests = await PoopCam.getTotalRequests();
     if (totalRequests == 1) {
-        broadcast(null, `PoopCam (TM) has been requested 1 time this stream. Keep it up!`);
+        broadcast(null, `PoopCam (TM) has been requested 1 time. Keep it up!`);
     } else {
         broadcast(
             null,
-            `PoopCam (TM) has been requested ${totalRequests} times this stream. Keep it up!`
+            `PoopCam (TM) has been requested ${totalRequests} times. Keep it up!`
         );
     }
 
-    const newTopCammer = PoopCam.getTopCammer();
+    const newTopCammer = await PoopCam.getTopCammer();
 
     if (newTopCammer !== topCammer && newTopCammer !== undefined) {
         broadcast(
@@ -106,16 +106,16 @@ function poopCam(args: string[], state: UserCommandState) {
     }
 }
 
-function stats(args: string[], state: UserCommandState) {
+async function stats(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     usercommands.log(`Giving ${userName} the PoopCam (TM) stats`);
 
     var found = false;
     var msg = "PoopCam (TM) Stats";
-    msg += `...Total Requests ${PoopCam.getTotalRequests()}`;
+    msg += `...Total Requests ${await PoopCam.getTotalRequests()}`;
     msg += "...Rankings:";
-    for (let i = 0; i < PoopCam.getTotalParticipants() && i < 3; i++) {
-        const cammer = PoopCam.getCammerByRank(i);
+    for (let i = 0; i < await PoopCam.getTotalParticipants() && i < 3; i++) {
+        const cammer = await PoopCam.getCammerByRank(i);
         if (cammer !== undefined) {
             msg += `...${i + 1}: ${cammer.userName} - ${cammer.requestCount} request(s)`;
             if (cammer?.userName === userName) {
@@ -125,9 +125,9 @@ function stats(args: string[], state: UserCommandState) {
     }
 
     if (!found) {
-        const cammer = PoopCam.getCammerByName(userName);
+        const cammer = await PoopCam.getCammerByName(userName);
         if (cammer !== undefined) {
-            const rank = PoopCam.getRankByName(userName);
+            const rank = await PoopCam.getRankByName(userName);
             msg += `...${rank + 1}: ${cammer.userName} - ${cammer.requestCount} request(s)`;
         }
     }

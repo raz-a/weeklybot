@@ -46,10 +46,10 @@ function clear(args: string[], state: undefined) {
     weeklyBotPrint("");
 }
 
-function stats(args: string[], state: undefined) {
-    var msg = `Total Requests: ${PoopCam.getTotalRequests()}\nRankings:`;
-    for (let rank = 0; rank < PoopCam.getTotalParticipants(); rank++) {
-        const cammer = PoopCam.getCammerByRank(rank);
+async function stats(args: string[], state: undefined) {
+    var msg = `Total Requests: ${await PoopCam.getTotalRequests()}\nRankings:`;
+    for (let rank = 0; rank < await PoopCam.getTotalParticipants(); rank++) {
+        const cammer = await PoopCam.getCammerByRank(rank);
         if (cammer !== undefined) {
             msg = msg.concat(
                 `\n[${rank + 1}]: ${cammer.userName} - ${cammer.requestCount} request(s)`
