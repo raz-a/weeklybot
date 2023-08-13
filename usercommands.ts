@@ -332,7 +332,11 @@ async function childStats(args: string[], state: UserCommandState) {
     const childName = args[0];
     const child: Child | undefined = await Pregnancy.getChild(childName);
     if (child) {
-        broadcast(null, `${childName}'s stats are: Appearance: ${child?.appearance}, Pulse: ${child?.pulse}, Grimace: ${child?.grimace}, Activity: ${child?.activity}, Respiration: ${child?.respiration}`);
+        const birthMonth = child.birthDate.getMonth();
+        const birthDay = child.birthDate.getDate();
+        broadcast(null, `${childName} is the child of ${child.mother} and ${child.father}. 
+        ${child.mother} gave birth to ${childName} on the ${birthDay} of ${birthMonth}. 
+        ${childName}'s stats are: Appearance: ${child?.appearance}, Pulse: ${child?.pulse}, Grimace: ${child?.grimace}, Activity: ${child?.activity}, Respiration: ${child?.respiration}`);
     } else {
         broadcast(null, `${childName} doesn't seem to be at this Daycare.`);
     }
