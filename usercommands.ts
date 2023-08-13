@@ -5,7 +5,7 @@ import * as fs from "fs";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
 import { PoopCam } from "./poopcam.js";
-import { Pregnancy, Child } from './dayCare.js';
+import { Pregnancy, Child, Baby } from './dayCare.js';
 
 export type UserCommandState = { channel: string; user: ChatUser };
 
@@ -312,13 +312,23 @@ async function checkPregnancy(args: string[], state: UserCommandState) {
 async function giveBirth(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     const childName = args[0];
-    if (await Pregnancy.birth(userName, childName)) {
+    const baby: Baby | undefined  = await Pregnancy.checkPregnancy(userName);
+    if (baby) {
         const child: Child | undefined = await Pregnancy.getChild(childName);
-        broadcast(null, `Congrats on your new child, ${userName} and ${child?.father}!!!`);
-        broadcast(null, `${childName}'s stats are: Appearance: ${child?.appearance}, Pulse: ${child?.pulse}, Grimace: ${child?.grimace}, Activity: ${child?.activity}, Respiration: ${child?.respiration}`);
-        console.log(`${childName} was born to ${userName} and ${child?.father}`);
+        if (!child && childName != '') {
+            if (await Pregnancy.birth(userName, childName)) {
+                const child: Child | undefined = await Pregnancy.getChild(childName);
+                broadcast(null, `Congrats on your new child, ${userName} and ${child?.father}!!!`);
+                broadcast(null, `${childName}'s stats are: Appearance: ${child?.appearance}, Pulse: ${child?.pulse}, Grimace: ${child?.grimace}, Activity: ${child?.activity}, Respiration: ${child?.respiration}`);
+                console.log(`${childName} was born to ${userName} and ${child?.father}`);
+            } else {
+                broadcast(null, `${userName} isn't ready to give birth.`);
+            }
+        } else {
+            broadcast(null, `Please choose a different name for your child.`);
+        }
     } else {
-        broadcast(null, `${userName} isn't ready to give birth.`);
+        broadcast(null, `${userName} is not pregnant.`);
     }
 }
 
