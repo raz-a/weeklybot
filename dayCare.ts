@@ -33,12 +33,12 @@ export abstract class Pregnancy {
     static async impregnate(mother: string, father: string): Promise<void> { 
         let date: Date = new Date();
         let baby = <Baby>{mother: mother, father:father, conceptionDate:date};
-        await this.#db.push(this.#baby_key, baby);
+        await this.#db.push(this.#baby_key + '[]', baby);
     }
 
     static async birth(userName: string, babyName: string): Promise<Boolean> {
-        const baby = await this.checkPregnancy(userName);
-        if (!baby) {
+        const baby: Baby | undefined  = await Pregnancy.checkPregnancy(userName);
+        if (baby) {
             let date: Date = new Date();
             if (date.getTime() > baby.conceptionDate.getTime() + 1814400000) { //3 weeks in miliseconds
                 let appearance = 0, pulse = 0, grimace = 0, activity = 0, respiration = 0;
@@ -48,7 +48,7 @@ export abstract class Pregnancy {
                     let appearance = randomInt(1, 10), pulse = randomInt(1, 10), grimace = randomInt(1, 10), activity = randomInt(1, 10), respiration = randomInt(1, 10);
                 }
                 let child = <Child>{name:babyName, mother:baby.mother, father:baby.father, birthDate:date, appearance:appearance, pulse:pulse, grimace:grimace, activity:activity, respiration:respiration};
-                await this.#db.push(this.#child_key, child);
+                await this.#db.push(this.#child_key + '[]', child);
                 this.abortion(userName);
                 return true;
             }
@@ -57,13 +57,25 @@ export abstract class Pregnancy {
     }
 
     static async abortion(userName: string): Promise<Boolean> {
+        let index = '';
+        let baby: Baby | undefined;
         try {
-            const baby = await this.checkPregnancy(userName);
-            if (baby) {
-                await this.#db.delete(this.#baby_key + `[/${baby.mother}]`);
-                return true;
-            }
-        } catch (err) {}
+            return await this.#db.find<Baby>(this.#baby_key, function(entry, idx) {
+                let c = <Baby>entry;
+                if (c.mother === userName) {
+                    index = idx.toString();
+                    return true;
+                }
+                return false;
+            });
+        } catch(err) {
+            baby = undefined;
+        }
+        if (baby) {
+            let key = this.#baby_key.concat('[', index.toString(),']');
+            await this.#db.delete(key);
+            return true;
+        }
         return false;
     }
 
@@ -103,9 +115,14 @@ export abstract class Pregnancy {
 
     static async getChild(childName: string): Promise<Child | undefined> {
         try {
-            const children = await this.#db.getData(this.#child_key);
-            return children.find((child: Child) => child.name === childName);
-        } catch (err) {
+            return await this.#db.find<Child>(this.#child_key, function(entry, idx) {
+                let c = <Child>entry;
+                if (c.name === childName) {
+                    return true;
+                }
+                return false;
+            });
+        } catch(err) {
             return undefined;
         }
     }

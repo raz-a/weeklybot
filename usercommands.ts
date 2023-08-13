@@ -289,17 +289,18 @@ async function abort(args: string[], state: UserCommandState) {
 async function checkPregnancy(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     const pregnancy = await Pregnancy.checkPregnancy(userName);
+    const weekOne = 604800000, weekTwo = 1209600000, weekThree = 1814400000;
     
     if (pregnancy) {
         const currentDate = new Date();
         const conceptionDate = pregnancy.conceptionDate;
         const timeDifference = currentDate.getTime() - conceptionDate.getTime();
 
-        if (timeDifference < 604800000) {
+        if (timeDifference < weekOne) {
             broadcast(null, `Nobody would know that ${userName} is even pregnant.`);
-        } else if (timeDifference < 1209600000) {
+        } else if (timeDifference < weekTwo) {
             broadcast(null, `${userName}'s tummy is starting to grow`);
-        } else if (timeDifference < 1814400000) {
+        } else if (timeDifference < weekThree) {
             broadcast(null, `${userName} is as plump as a pumpkin!`);
         } else {
             broadcast(null, `${userName}'s water just broke!`);
