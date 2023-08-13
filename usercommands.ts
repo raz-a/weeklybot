@@ -5,6 +5,7 @@ import * as fs from "fs";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
 import { PoopCam } from "./poopcam.js";
+import { Pregnancy, Child } from './dayCare.js';
 
 export type UserCommandState = { channel: string; user: ChatUser };
 
@@ -24,7 +25,14 @@ export const usercommands = new CommandSet(
     new Command(request, "Request a feature for WeeklyBot."),
     new Command(love, "Find out if WeeklyBot loves you!"),
     new Command(hate, "Learn WeeklyBot's true feelings."),
-    new Command(leaderboard, "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard.")
+    new Command(leaderboard, "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard."),
+    new Command(impregnate, "Get your fellow chat members knocked up"),
+    new Command(abort, "Yeetus that digital fetus"),
+    new Command(checkPregnancy, "See how far along you are"),
+    new Command(giveBirth, "Pop that baby out when it's ready"),
+    new Command(checkChildren, "Fetches a list of all your children's names"),
+    new Command(childStats, "See the APGAR stats of a given child"),
+    new Command(happyBirthday, "Wish a child a happy birthday")
 );
 
 function help(args: string[], state: UserCommandState) {
@@ -254,4 +262,118 @@ function leaderboard(args: string[], state: UserCommandState) {
         null,
         "SM64 Co-Op Speedrun Leaderboard: https://www.speedrun.com/sm64coop?h=120_Star-Vanilla-2P&x=9d8l4x32-onvv5y7n.4qy2gr21-ylp6yk6n.810nk82q"
     );
+}
+
+async function impregnate(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+    const existingPregnancy = await Pregnancy.checkPregnancy(userName);
+    if (!existingPregnancy) {
+        await Pregnancy.impregnate(userName, args[0]);
+        broadcast(null, `${args[0]} has been impregnated by ${userName}!`);
+        usercommands.log(`${userName} is impregnated.`);
+    } else {
+        broadcast(null, `${args[0]} is already pregnant.`);
+    }
+}
+
+async function abort(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+    if (await Pregnancy.abortion(userName)) {
+        broadcast(null, `${userName} is fertile again!`);
+        usercommands.log(`${userName}'s baby was aborted.`);
+    } else {
+        broadcast(null, `${userName} isn't pregnant.`);
+    }
+}
+
+async function checkPregnancy(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+    const pregnancy = await Pregnancy.checkPregnancy(userName);
+    
+    if (pregnancy) {
+        const currentDate = new Date();
+        const conceptionDate = pregnancy.conceptionDate;
+        const timeDifference = currentDate.getTime() - conceptionDate.getTime();
+
+        if (timeDifference < 604800000) {
+            broadcast(null, `Nobody would know that ${userName} is even pregnant.`);
+        } else if (timeDifference < 1209600000) {
+            broadcast(null, `${userName}'s tummy is starting to grow`);
+        } else if (timeDifference < 1814400000) {
+            broadcast(null, `${userName} is as plump as a pumpkin!`);
+        } else {
+            broadcast(null, `${userName}'s water just broke!`);
+        }
+    } else {
+        broadcast(null, `${userName} isn't pregnant.`);
+    }
+}
+
+async function giveBirth(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+    const childName = args[0];
+    if (await Pregnancy.birth(userName, childName)) {
+        const child: Child | undefined = await Pregnancy.getChild(childName);
+        broadcast(null, `Congrats on your new child, ${userName} and ${child?.father}!!!`);
+        broadcast(null, `${childName}'s stats are: Appearance: ${child?.appearance}, Pulse: ${child?.pulse}, Grimace: ${child?.grimace}, Activity: ${child?.activity}, Respiration: ${child?.respiration}`);
+        console.log(`${childName} was born to ${userName} and ${child?.father}`);
+    } else {
+        broadcast(null, `${userName} isn't ready to give birth.`);
+    }
+}
+
+async function checkChildren(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+    const childrenList = await Pregnancy.listChildren(userName);
+    broadcast(null, `${userName}'s children: ${childrenList}`);
+}
+
+async function childStats(args: string[], state: UserCommandState) {
+    const childName = args[0];
+    const child: Child | undefined = await Pregnancy.getChild(childName);
+    if (child) {
+        broadcast(null, `${childName}'s stats are: Appearance: ${child?.appearance}, Pulse: ${child?.pulse}, Grimace: ${child?.grimace}, Activity: ${child?.activity}, Respiration: ${child?.respiration}`);
+    } else {
+        broadcast(null, `${childName} doesn't seem to be at this Daycare.`);
+    }
+}
+
+async function happyBirthday(args: string[], state: UserCommandState) {
+    const childName = args[0];
+    const child: Child | undefined = await Pregnancy.getChild(childName);
+
+    if (child) {
+        const currentDate = new Date();
+        const birthDate = child.birthDate;
+        const birthMonth = birthDate.getMonth();
+        const birthDay = birthDate.getDate();
+        const birthYear = birthDate.getFullYear();
+
+        if (
+            currentDate.getMonth() === birthMonth &&
+            currentDate.getDate() === birthDay &&
+            currentDate.getFullYear() === birthYear
+        ) {
+            broadcast(null, `${childName}: "I was just born"`);
+        } else if (
+            currentDate.getMonth() === birthMonth &&
+            currentDate.getDate() === birthDay
+        ) {
+            broadcast(null, `${childName}: "It's my birthday!!!"`);
+        } else if (
+            currentDate.getMonth() === birthMonth &&
+            currentDate.getDate() < birthDay
+        ) {
+            broadcast(null, `${childName}: "My birthday is later this month!"`);
+        } else if (
+            currentDate.getMonth() === birthMonth &&
+            currentDate.getDate() > birthDay
+        ) {
+            broadcast(null, `${childName}: "I can't believe you missed my birthday"`);
+        } else {
+            broadcast(null, `${childName}: "It's not my birthday."`);
+        }
+    } else {
+        broadcast(null, `${childName} doesn't seem to be at this Daycare.`);
+    }
 }
