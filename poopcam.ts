@@ -33,19 +33,19 @@ export abstract class PoopCam {
 
         }
         let date: Date = new Date();
-        let rate_limit = false;
+        let rate_limited = true;
         if (cammer.date === undefined) {
-            rate_limit = true;
+            rate_limited = false;
         } else {
-            rate_limit = (cammer.date.getTime() + 60000 < date.getTime()); //rate limit of 1 min
+            rate_limited = (cammer.date.getTime() + 60000 > date.getTime()); //rate limit of 1 min
         }
-        if (rate_limit) { 
+        if (!rate_limited) { 
             cammer.requestCount++;
         }
         cammer.date = date;
         let key = this.#cammers_key.concat('[', index.toString(),']');
         await this.#db.push(key, cammer);
-        if (rate_limit) { 
+        if (!rate_limited) { 
             await this.#db.push(this.#total_key, (await this.getTotalRequests()) + 1);
         }
     }
