@@ -13,7 +13,8 @@ export const termcommands = new CommandSet(
     new Command(clear, "Clears the screen."),
     new Command(exit, "Exits the program.[Provide extra text to add a custom good-bye message]"),
     new Command(clip, "Takes a clip of the current streams."),
-    new Command(stats, "Gets the current poopcam stats.")
+    new Command(stats, "Gets the current poopcam stats."),
+    new Command(rate, "Sets the poopcam rate limit in seconds")
 );
 
 function help(args: string[], state: undefined) {
@@ -39,6 +40,7 @@ async function exit(args: string[], state: undefined) {
 
 function clip(args: string[], state: undefined) {
     clipIt(false);
+    weeklyBotPrint("Took a clip.");
 }
 
 function clear(args: string[], state: undefined) {
@@ -48,7 +50,7 @@ function clear(args: string[], state: undefined) {
 
 async function stats(args: string[], state: undefined) {
     var msg = `Total Requests: ${await PoopCam.getTotalRequests()}\nRankings:`;
-    for (let rank = 0; rank < await PoopCam.getTotalParticipants(); rank++) {
+    for (let rank = 0; rank < (await PoopCam.getTotalParticipants()); rank++) {
         const cammer = await PoopCam.getCammerByRank(rank);
         if (cammer !== undefined) {
             msg = msg.concat(
@@ -58,4 +60,14 @@ async function stats(args: string[], state: undefined) {
     }
 
     weeklyBotPrint(msg);
+}
+
+function rate(args: string[], state: undefined) {
+    let seconds = Number(args[0]);
+    if (isNaN(seconds) || !PoopCam.setRateLimit(seconds)) {
+        weeklyBotPrint("Invalid limit provided");
+    }
+
+    weeklyBotPrint(`Set rate limit to ${seconds} seconds`);
+    broadcast(null, `Poopcam (TM) Rate limit is now ${seconds} seconds`);
 }

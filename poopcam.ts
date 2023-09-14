@@ -7,15 +7,16 @@ export type PoopCammer = {
 };
 
 export abstract class PoopCam {
-    static #db = new JsonDB(new Config('./save/poopcam.json', true, true));
+    static #db = new JsonDB(new Config("./save/poopcam.json", true, true));
     static readonly #cammers_key = "/poopcammers";
     static readonly #total_key = "/total_requests";
+    static #rate_limit_seconds = 60;
 
     static async request(userName: string): Promise<void> {
-        let index = '';
+        let index = "";
         let cammer: PoopCammer | undefined;
         try {
-            cammer = await this.#db.find<PoopCammer>(this.#cammers_key, function(entry, idx) {
+            cammer = await this.#db.find<PoopCammer>(this.#cammers_key, function (entry, idx) {
                 let c = <PoopCammer>entry;
                 if (c.userName === userName) {
                     index = idx.toString();
@@ -24,28 +25,27 @@ export abstract class PoopCam {
 
                 return false;
             });
-        } catch(err) {
+        } catch (err) {
             cammer = undefined;
         }
 
         if (cammer === undefined) {
-            cammer = {userName: userName, requestCount: 0, date: new Date(0)};
-
+            cammer = { userName: userName, requestCount: 0, date: new Date(0) };
         }
         let date: Date = new Date();
         let rate_limited = true;
         if (cammer.date === undefined) {
             rate_limited = false;
         } else {
-            rate_limited = (cammer.date.getTime() + 60000 > date.getTime()); //rate limit of 1 min
+            rate_limited = cammer.date.getTime() + this.#rate_limit_seconds > date.getTime();
         }
-        if (!rate_limited) { 
+        if (!rate_limited) {
             cammer.requestCount++;
         }
         cammer.date = date;
-        let key = this.#cammers_key.concat('[', index.toString(),']');
+        let key = this.#cammers_key.concat("[", index.toString(), "]");
         await this.#db.push(key, cammer);
-        if (!rate_limited) { 
+        if (!rate_limited) {
             await this.#db.push(this.#total_key, (await this.getTotalRequests()) + 1);
         }
     }
@@ -73,7 +73,7 @@ export abstract class PoopCam {
 
     static async getCammerByName(userName: string): Promise<Readonly<PoopCammer> | undefined> {
         try {
-            return await this.#db.find<PoopCammer>(this.#cammers_key, function(entry, idx) {
+            return await this.#db.find<PoopCammer>(this.#cammers_key, function (entry, idx) {
                 let c = <PoopCammer>entry;
                 if (c.userName === userName) {
                     return true;
@@ -81,16 +81,15 @@ export abstract class PoopCam {
 
                 return false;
             });
-        } catch(err) {
+        } catch (err) {
             return undefined;
         }
     }
 
     static async getRankByName(userName: string): Promise<number> {
-
         let cammer_list = await this.load_sorted_cammer_list();
         if (cammer_list === undefined) {
-            return -1
+            return -1;
         }
 
         return cammer_list.findIndex((c) => c.userName === userName);
@@ -99,14 +98,25 @@ export abstract class PoopCam {
     static async getTotalParticipants(): Promise<number> {
         try {
             return await this.#db.count(this.#cammers_key);
-        } catch(err) {
+        } catch (err) {
             return 0;
         }
     }
 
+    static setRateLimit(limitSeconds: number): boolean {
+        if (limitSeconds < 0) {
+            return false;
+        }
+
+        this.#rate_limit_seconds = limitSeconds;
+        return true;
+    }
+
     private static async load_sorted_cammer_list(): Promise<PoopCammer[] | undefined> {
-        return (await this.#db.getObjectDefault<PoopCammer[]>(this.#cammers_key, undefined))?.sort(function(a,b) {
-            return b.requestCount - a.requestCount;
-        });
+        return (await this.#db.getObjectDefault<PoopCammer[]>(this.#cammers_key, undefined))?.sort(
+            function (a, b) {
+                return b.requestCount - a.requestCount;
+            }
+        );
     }
 }
