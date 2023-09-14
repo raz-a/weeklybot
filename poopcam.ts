@@ -12,7 +12,7 @@ export abstract class PoopCam {
     static readonly #total_key = "/total_requests";
     static #rate_limit_seconds = 60;
 
-    static async request(userName: string): Promise<void> {
+    static async request(userName: string): Promise<boolean> {
         let index = "";
         let cammer: PoopCammer | undefined;
         try {
@@ -33,21 +33,23 @@ export abstract class PoopCam {
             cammer = { userName: userName, requestCount: 0, date: new Date(0) };
         }
         let date: Date = new Date();
-        let rate_limited = true;
+        let blocked = true;
         if (cammer.date === undefined) {
-            rate_limited = false;
+            blocked = false;
         } else {
-            rate_limited = cammer.date.getTime() + this.#rate_limit_seconds > date.getTime();
+            blocked = cammer.date.getTime() + this.#rate_limit_seconds * 1000 > date.getTime();
         }
-        if (!rate_limited) {
+        if (!blocked) {
             cammer.requestCount++;
         }
         cammer.date = date;
         let key = this.#cammers_key.concat("[", index.toString(), "]");
         await this.#db.push(key, cammer);
-        if (!rate_limited) {
+        if (!blocked) {
             await this.#db.push(this.#total_key, (await this.getTotalRequests()) + 1);
         }
+
+        return blocked;
     }
 
     static async getTotalRequests(): Promise<number> {

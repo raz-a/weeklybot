@@ -84,16 +84,17 @@ async function poopCam(args: string[], state: UserCommandState) {
     usercommands.log(`Telling ${userName} about PoopCam (TM)`);
 
     const topCammer = await PoopCam.getTopCammer();
-    await PoopCam.request(userName);
+    let blocked = await PoopCam.request(userName);
+
+    if (blocked) {
+        return;
+    }
 
     const totalRequests = await PoopCam.getTotalRequests();
     if (totalRequests == 1) {
         broadcast(null, `PoopCam (TM) has been requested 1 time. Keep it up!`);
     } else {
-        broadcast(
-            null,
-            `PoopCam (TM) has been requested ${totalRequests} times. Keep it up!`
-        );
+        broadcast(null, `PoopCam (TM) has been requested ${totalRequests} times. Keep it up!`);
     }
 
     const newTopCammer = await PoopCam.getTopCammer();
@@ -114,7 +115,7 @@ async function stats(args: string[], state: UserCommandState) {
     var msg = "PoopCam (TM) Stats";
     msg += `...Total Requests ${await PoopCam.getTotalRequests()}`;
     msg += "...Rankings:";
-    for (let i = 0; i < await PoopCam.getTotalParticipants() && i < 3; i++) {
+    for (let i = 0; i < (await PoopCam.getTotalParticipants()) && i < 3; i++) {
         const cammer = await PoopCam.getCammerByRank(i);
         if (cammer !== undefined) {
             msg += `...${i + 1}: ${cammer.userName} - ${cammer.requestCount} request(s)`;
@@ -223,18 +224,24 @@ function love(args: string[], state: UserCommandState) {
 function hate(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     let messages = [
-        'You need to get your act together ' + userName + ' not everyone will tolerate your tomfoolery forever.',
+        "You need to get your act together " +
+            userName +
+            " not everyone will tolerate your tomfoolery forever.",
         "What is wrong with you " + userName + " can't you just act normal in chat for once?",
         "I am so tired of your bullshit " + userName + ", why don't you go bother someone else.",
-        "You're never going to amount to anything if you keep behaving like this " + userName + '.',
-        "I bet your parents are disappointed by you " + userName + '.',
-        "I'm surprised you even managed to become literate " + userName + '.',
-        "You're such a loser you even manage to make Twee look cool " + userName + '.',
-        "You're such a loser you even manage to make Raz look cool " + userName + '.',
-        "You're such a loser you even manage to make Nair look cool " + userName + '.',
-        "You know, being funny isn't exactly rocket science " + userName + ", maybe you should give it a try some time.",
-        "Are you really so pathetic " + userName + " that you're willingly asking a robot put you in your place?",
-        "Yeah I bet you want me to tell you off. Idiot."
+        "You're never going to amount to anything if you keep behaving like this " + userName + ".",
+        "I bet your parents are disappointed by you " + userName + ".",
+        "I'm surprised you even managed to become literate " + userName + ".",
+        "You're such a loser you even manage to make Twee look cool " + userName + ".",
+        "You're such a loser you even manage to make Raz look cool " + userName + ".",
+        "You're such a loser you even manage to make Nair look cool " + userName + ".",
+        "You know, being funny isn't exactly rocket science " +
+            userName +
+            ", maybe you should give it a try some time.",
+        "Are you really so pathetic " +
+            userName +
+            " that you're willingly asking a robot put you in your place?",
+        "Yeah I bet you want me to tell you off. Idiot.",
     ];
     let msg = messages[Math.floor(Math.random() * messages.length)];
     LoveStats[userName] = 0;
