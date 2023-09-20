@@ -10,7 +10,7 @@ export abstract class PoopCam {
     static #db = new JsonDB(new Config("./save/poopcam.json", true, true));
     static readonly #cammers_key = "/poopcammers";
     static readonly #total_key = "/total_requests";
-    static #rate_limit_seconds = 60;
+    static #rate_limit_seconds = 1;
 
     static async request(userName: string): Promise<boolean> {
         let index = "";
