@@ -21,7 +21,7 @@ chatClient.onRegister(async () => {
     console.clear();
     prompt();
 
-    broadcast(null, "Weekly Bot Connected!");
+    broadcast(null, "Weekly Bot has been updated!");
 
     for (const channel of clientChannels) {
         let user = await getBroadcasterId(channel);

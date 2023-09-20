@@ -24,6 +24,7 @@ export const usercommands = new CommandSet(
     new Command(love, "Find out if WeeklyBot loves you!"),
     new Command(hate, "Learn WeeklyBot's true feelings."),
     new Command(leaderboard, "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard.")
+    new Command(bummer, "bummer")
 );
 
 function help(args: string[], state: UserCommandState) {
@@ -253,4 +254,9 @@ function leaderboard(args: string[], state: UserCommandState) {
         null,
         "SM64 Co-Op Speedrun Leaderboard: https://www.speedrun.com/sm64coop?h=120_Star-Vanilla-2P&x=9d8l4x32-onvv5y7n.4qy2gr21-ylp6yk6n.810nk82q"
     );
+}
+
+function bummer(args: string[], state: UserCommandState)  {
+    broadcast(null, "bummer");
+    usercommands.log("bummer");
 }
