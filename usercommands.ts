@@ -23,7 +23,7 @@ export const usercommands = new CommandSet(
     new Command(request, "Request a feature for WeeklyBot."),
     new Command(love, "Find out if WeeklyBot loves you!"),
     new Command(hate, "Learn WeeklyBot's true feelings."),
-    new Command(leaderboard, "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard.")
+    new Command(leaderboard, "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard."),
     new Command(bummer, "bummer")
 );
 
@@ -256,7 +256,7 @@ function leaderboard(args: string[], state: UserCommandState) {
     );
 }
 
-function bummer(args: string[], state: UserCommandState)  {
+function bummer(args: string[], state: UserCommandState) {
     broadcast(null, "bummer");
     usercommands.log("bummer");
 }
