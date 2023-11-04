@@ -62,7 +62,9 @@ export class CommandSet<CallingState> {
     getCommands(): string[] {
         let commandNames: string[] = [];
         for (const key in this.#commands) {
-            commandNames.push(key);
+            if (this.#commands[key].desc.length != 0) {
+                commandNames.push(key);
+            }
         }
 
         return commandNames;
