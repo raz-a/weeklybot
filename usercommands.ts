@@ -110,6 +110,8 @@ async function poopCam(args: string[], state: UserCommandState) {
     }
 }
 
+var RedPoopTimeoutId: NodeJS.Timeout | undefined = undefined;
+
 async function redPoopCam(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     usercommands.log(`${userName} found Red PoopCam (TM)`);
@@ -117,7 +119,11 @@ async function redPoopCam(args: string[], state: UserCommandState) {
     await apiClient.chat.setColorForUser(me.id, "red");
     poopCam(args, state);
 
-    setTimeout(() => {
+    if (RedPoopTimeoutId !== undefined) {
+        clearTimeout(RedPoopTimeoutId);
+    }
+
+    RedPoopTimeoutId = setTimeout(() => {
         apiClient.chat.setColorForUser(me.id, "spring_green");
     }, 15000);
 }
