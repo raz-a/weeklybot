@@ -9,9 +9,9 @@
     put in as a joke, but I could probably add it no problem
 [1/4/2023, 11:37:23 PM] prismaweaver - add argument after clip to name clip
     actually impossible. There used to be a trick to do this, but Twitch removed it in 2022
-[1/4/2023, 11:39:50 PM] Shadowcat2525 - an in-depth user specific pregnancy command that will impregnate your 
-                        user name and simulate (in real time) a full 9 month pregnancy with random birth defects, 
-                        variables, and shiny baby features.  along with a baby leader board for the most babies 
+[1/4/2023, 11:39:50 PM] Shadowcat2525 - an in-depth user specific pregnancy command that will impregnate your
+                        user name and simulate (in real time) a full 9 month pregnancy with random birth defects,
+                        variables, and shiny baby features.  along with a baby leader board for the most babies
                         carried and baby names
     This is the whole reason I started this fork. There are a couple of ways of going about this.
     method A: baby name is generated from the half of each user name (will look like shit)
@@ -19,7 +19,7 @@
     method C: commands are added to let carrier or impregnator name the child
     all defects/shiny-whatever is randomly generated at time of command as part of the baby ID
     pregnancy is tracked through the database: (ID, baby names & associations, the time-tracking, leaderboards)
-    requires the following commands: 
+    requires the following commands:
         !impregnante [user] - checks if [user] is already pregnant, if not, generates baby ID from both parties
         !checkpreg [user] - checks how far along the user is, maybe some random rp fluff too about kicks or something
         !babyleaderboard [user] - checks the user's baby leaderboard stats
@@ -30,41 +30,46 @@
 [1/27/2023, 5:42:03 PM] prismaweaver - meow feature
     same problem as the TTS feature, it wouldnt be hard to have a soundboard of nair meows extracted from clips
     but to play the sounds on stream would require softward being run on the streamer's end
-[2/5/2023, 7:45:45 PM] hankuspankus574 - discord command 
+[2/5/2023, 7:45:45 PM] hankuspankus574 - discord command
     a command to generate the discord invite could be easily added, otherwise idk what this means
 [2/5/2023, 7:47:03 PM] hankuspankus574 - bi-weekly community speedrun
-[2/5/2023, 9:03:57 PM] chimierss - poop gif 
-[2/5/2023, 10:23:50 PM] hankuspankus574 - raz' discord name "The Harem Globetrotters" 
-[2/8/2023, 7:52:46 PM] chimierss - luigi goatse 
-[2/8/2023, 10:03:28 PM] chimierss - headpats 
-[2/8/2023, 10:19:43 PM] chimierss - bombclip 
-[2/12/2023, 8:32:52 PM] shadowcat2525 - intentional poopcam desync that adds a random variation of 10seconds to two minutes of when weeklybot responds 
-[2/12/2023, 9:46:46 PM] chimierss - !nairfans 
-[3/1/2023, 7:51:36 PM] prismaweaver - ban everyone 
-[3/18/2023, 12:21:06 AM] Weekly_Bot - huzzah 
-[3/26/2023, 5:12:10 PM] DynamicProgrammer - flirtwithraz 
-[7/18/2023, 8:41:47 PM] naircat - prioritize impregnante 
-[7/18/2023, 8:42:27 PM] Shadowcat2525 - the ability to evade bans by pinning your crime on someone else, only works for racism 
-[7/18/2023, 8:45:25 PM] littlerollingfox - do an tarot reading but use Yu-Gi-Oh cards instead of tarots 
-[7/18/2023, 8:47:22 PM] Shadowcat2525 - a dream journal that anyone can add to by typing !dreamjournal "dream text", and anyone can pull a random users dream by typing !dream 
-[7/18/2023, 9:04:54 PM] Shadowcat2525 - triple jump 
-[7/18/2023, 10:39:32 PM] Shadowcat2525 - omoriboy add it pls 
-[7/18/2023, 10:40:09 PM] Shadowcat2525 - 1K naircat point redeem that plays omoriboy on stream 
-[8/15/2023, 5:34:48 PM] Shadowcat2525 - So he can start the game with his controller but preferably something im not gonna press 
-[8/15/2023, 6:28:02 PM] hankuspankus574 -  
-[8/15/2023, 6:28:11 PM] Shadowcat2525 - more o's for more poops 
-[8/15/2023, 6:28:42 PM] hankuspankus574 - more "o" = bigger poops 
-[8/15/2023, 6:29:11 PM] littlerollingfox - nair does a karaoke stream night but only says meows 
-[8/15/2023, 6:29:44 PM] Shadowcat2525 - NSFW art drawing stream 
-[8/15/2023, 6:40:25 PM] ksyk3r - hav nair decorate cute kitty cookies during Christmas season, possibly stream it too :3 
-[8/15/2023, 6:40:47 PM] Shadowcat2525 - a nsfw special "cookie decoration" stream 
-[8/15/2023, 6:41:16 PM] bnuuydude - gato sexo 
-[8/23/2023, 7:53:31 PM] tweeweaver - can I poop? & poopcam rate limiting at least 5min 
-[8/23/2023, 8:04:51 PM] tweeweaver - sexo request 
-[8/26/2023, 2:36:44 PM] tweeweaver - gpt command interpretation 
-[8/26/2023, 2:37:08 PM] bnuuydude - virtual wife duties 
-[8/26/2023, 2:37:42 PM] Shadowcat2525 - make weekly bot a 36 sexy anthro mom who loves wednesday and talking about "hump day" 
-[8/26/2023, 2:39:04 PM] Shadowcat2525 - spanish speaking stream, my spanish essay is coming up soon and i need some help 
-[8/26/2023, 2:39:56 PM] Urbanchat - rhythm doctor i beg you 
-[8/26/2023, 2:42:44 PM] bnuuydude - automatic poutine dispenser 
-[9/13/2023, 5:58:44 PM] naircat - long poops !pooooopcam 
+[2/5/2023, 9:03:57 PM] chimierss - poop gif
+[2/5/2023, 10:23:50 PM] hankuspankus574 - raz' discord name "The Harem Globetrotters"
+[2/8/2023, 7:52:46 PM] chimierss - luigi goatse
+[2/8/2023, 10:03:28 PM] chimierss - headpats
+[2/8/2023, 10:19:43 PM] chimierss - bombclip
+[2/12/2023, 8:32:52 PM] shadowcat2525 - intentional poopcam desync that adds a random variation of 10seconds to two minutes of when weeklybot responds
+[2/12/2023, 9:46:46 PM] chimierss - !nairfans
+[3/1/2023, 7:51:36 PM] prismaweaver - ban everyone
+[3/18/2023, 12:21:06 AM] Weekly_Bot - huzzah
+[3/26/2023, 5:12:10 PM] DynamicProgrammer - flirtwithraz
+[7/18/2023, 8:41:47 PM] naircat - prioritize impregnante
+[7/18/2023, 8:42:27 PM] Shadowcat2525 - the ability to evade bans by pinning your crime on someone else, only works for racism
+[7/18/2023, 8:45:25 PM] littlerollingfox - do an tarot reading but use Yu-Gi-Oh cards instead of tarots
+[7/18/2023, 8:47:22 PM] Shadowcat2525 - a dream journal that anyone can add to by typing !dreamjournal "dream text", and anyone can pull a random users dream by typing !dream
+[7/18/2023, 9:04:54 PM] Shadowcat2525 - triple jump
+[7/18/2023, 10:39:32 PM] Shadowcat2525 - omoriboy add it pls
+[7/18/2023, 10:40:09 PM] Shadowcat2525 - 1K naircat point redeem that plays omoriboy on stream
+[8/15/2023, 5:34:48 PM] Shadowcat2525 - So he can start the game with his controller but preferably something im not gonna press
+[8/15/2023, 6:28:02 PM] hankuspankus574 -
+[8/15/2023, 6:28:11 PM] Shadowcat2525 - more o's for more poops
+[8/15/2023, 6:28:42 PM] hankuspankus574 - more "o" = bigger poops
+[8/15/2023, 6:29:11 PM] littlerollingfox - nair does a karaoke stream night but only says meows
+[8/15/2023, 6:29:44 PM] Shadowcat2525 - NSFW art drawing stream
+[8/15/2023, 6:40:25 PM] ksyk3r - hav nair decorate cute kitty cookies during Christmas season, possibly stream it too :3
+[8/15/2023, 6:40:47 PM] Shadowcat2525 - a nsfw special "cookie decoration" stream
+[8/15/2023, 6:41:16 PM] bnuuydude - gato sexo
+[8/23/2023, 7:53:31 PM] tweeweaver - can I poop? & poopcam rate limiting at least 5min
+[8/23/2023, 8:04:51 PM] tweeweaver - sexo request
+[8/26/2023, 2:36:44 PM] tweeweaver - gpt command interpretation
+[8/26/2023, 2:37:08 PM] bnuuydude - virtual wife duties
+[8/26/2023, 2:37:42 PM] Shadowcat2525 - make weekly bot a 36 sexy anthro mom who loves wednesday and talking about "hump day"
+[8/26/2023, 2:39:04 PM] Shadowcat2525 - spanish speaking stream, my spanish essay is coming up soon and i need some help
+[8/26/2023, 2:39:56 PM] Urbanchat - rhythm doctor i beg you
+[8/26/2023, 2:42:44 PM] bnuuydude - automatic poutine dispenser
+[9/13/2023, 5:58:44 PM] naircat - long poops !pooooopcam
+[10/4/2023, 6:21:09 PM] Shadowcat2525 - death
+[10/4/2023, 6:29:45 PM] RazStrats - more poopcam
+[10/15/2023, 9:30:45 PM] ksyk3r - random command
+[10/23/2023, 6:03:32 PM] Shadowcat2525 - mspaint draw reward!@!!$!#!@$
+[10/24/2023, 7:12:52 PM] naircat - anyone banning anyone anarchy mode

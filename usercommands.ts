@@ -1,10 +1,11 @@
 // Contains commands usable by users in the stream.
 
-import { send, broadcast, clipIt, timeout } from "./util.js";
+import { send, broadcast, clipIt, timeout, me } from "./util.js";
 import * as fs from "fs";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
 import { PoopCam } from "./poopcam.js";
+import { apiClient } from "./client.js";
 
 export type UserCommandState = { channel: string; user: ChatUser };
 
@@ -24,7 +25,8 @@ export const usercommands = new CommandSet(
     new Command(love, "Find out if WeeklyBot loves you!"),
     new Command(hate, "Learn WeeklyBot's true feelings."),
     new Command(leaderboard, "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard."),
-    new Command(bummer, "bummer")
+    new Command(bummer, "bummer"),
+    new Command(redPoopCam, "")
 );
 
 function help(args: string[], state: UserCommandState) {
@@ -35,7 +37,7 @@ function help(args: string[], state: UserCommandState) {
     if (args.length == 1) {
         let command = args[0].toLowerCase();
         let desc = usercommands.getDescription(command);
-        if (desc) {
+        if (desc && desc.length != 0) {
             send(state.channel, `${command}: ${desc}`);
         }
     }
@@ -106,6 +108,18 @@ async function poopCam(args: string[], state: UserCommandState) {
             `${newTopCammer.userName} is now the #1 poopcammer with ${newTopCammer.requestCount} requests!`
         );
     }
+}
+
+async function redPoopCam(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+    usercommands.log(`${userName} found Red PoopCam (TM)`);
+
+    await apiClient.chat.setColorForUser(me.id, "red");
+    poopCam(args, state);
+
+    setTimeout(() => {
+        apiClient.chat.setColorForUser(me.id, "spring_green");
+    }, 15000);
 }
 
 async function stats(args: string[], state: UserCommandState) {
