@@ -63,7 +63,7 @@ function getCommandsString() {
 function bingo(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     usercommands.log(`Printing Bingo Board for ${userName}`);
-    broadcast(null, `Super Mario 64 Co-Op 120 star Bingo Board: https://mfbc.us/m/ed53p9x`);
+    broadcast(null, `Mario Kart 64 Bingo Board: https://tinyurl.com/rcsw7et`);
 }
 
 function selectALevel(args: string[], state: UserCommandState) {
