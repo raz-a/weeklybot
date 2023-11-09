@@ -14,8 +14,19 @@ export function weeklyBotPrint(message: string) {
     prompt();
 }
 
+let wb_color = "#FFFFFF";
+set_wb_color(await apiClient.chat.getColorForUser(me.id));
+
+export function set_wb_color(colorHex: string | null | undefined) {
+    if (colorHex) {
+        wb_color = colorHex;
+    } else {
+        wb_color = "#FFFFFF";
+    }
+}
+
 export function prompt() {
-    process.stdout.write(chalk.green(chatClient.currentNick + `:`));
+    process.stdout.write(chalk.hex(wb_color)(chatClient.currentNick + `:`));
 }
 
 export async function timeout(
@@ -79,14 +90,14 @@ export async function clipIt(delay: boolean) {
                         createAfterDelay: delay,
                     });
                     if (id !== null && id !== undefined && id.length > 0) {
-                        let clip = 'https://clips.twitch.tv/' + id.toString()
+                        let clip = "https://clips.twitch.tv/" + id.toString();
                         send(channel, `${channel} clip: ${clip}`);
                         //let user = ChatUser.userId
                         //await HelixUser.whispers.sendWhisper( /*weeklybot id, */ user, clip)
                         //note: there are many ways this command could fail
                         //weeklybot needs to have a phonenumber associated with it to be allowed to send whispers
                         //additionally so does the user receiving the whisper
-                        //the user making the command also needs to have whispers turned on 
+                        //the user making the command also needs to have whispers turned on
                         //weeklybot needs the whisper permission included as part of its token
                         //both weeklybot and the receiving user have a limit of 40 unique user whispers per day
                         //full documentation: https://dev.twitch.tv/docs/api/reference/#send-whisper

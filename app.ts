@@ -19,7 +19,7 @@ chatClient.onRegister(async () => {
 
     // Set the command line prompt.
     console.clear();
-    prompt();
+    await prompt();
 
     broadcast(null, "Weekly Bot has been updated!");
 
@@ -53,7 +53,7 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
         return;
     }
 
-    if (userInfo.color || userInfo.color === "#000000") {
+    if (userInfo.color) {
         weeklyBotPrint(`${chalk.hex(userInfo.color)(user + `:`)} ${text}`);
     } else {
         weeklyBotPrint(`${chalk.hex("#FFFFFF")(user + `:`)} ${text}`);
@@ -73,7 +73,7 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
 async function onTextInput(line: Buffer) {
     if (!(await termcommands.processInput(line.toString().trim(), undefined))) {
         broadcast(null, line.toString());
-        prompt();
+        await prompt();
     }
 }
 

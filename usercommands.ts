@@ -1,6 +1,6 @@
 // Contains commands usable by users in the stream.
 
-import { send, broadcast, clipIt, timeout, me } from "./util.js";
+import { send, broadcast, clipIt, timeout, me, set_wb_color } from "./util.js";
 import * as fs from "fs";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
@@ -117,14 +117,16 @@ async function redPoopCam(args: string[], state: UserCommandState) {
     usercommands.log(`${userName} found Red PoopCam (TM)`);
 
     await apiClient.chat.setColorForUser(me.id, "red");
+    set_wb_color(await apiClient.chat.getColorForUser(me.id));
     poopCam(args, state);
 
     if (RedPoopTimeoutId !== undefined) {
         clearTimeout(RedPoopTimeoutId);
     }
 
-    RedPoopTimeoutId = setTimeout(() => {
+    RedPoopTimeoutId = setTimeout(async () => {
         apiClient.chat.setColorForUser(me.id, "spring_green");
+        set_wb_color(await apiClient.chat.getColorForUser(me.id));
     }, 15000);
 }
 
