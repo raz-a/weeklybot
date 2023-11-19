@@ -1,7 +1,15 @@
 import chalk from "chalk";
 
 import { chatClient, apiClient, PrivateMessage, clientChannels } from "./client.js";
-import { weeklyBotPrint, prompt, broadcast, timeout, addNewBroadcaster, me } from "./util.js";
+import {
+    weeklyBotPrint,
+    prompt,
+    broadcast,
+    timeout,
+    addNewBroadcaster,
+    me,
+    getBroadcasterId,
+} from "./util.js";
 import { usercommands } from "./usercommands.js";
 import { termcommands } from "./termcommands.js";
 import { modcommands } from "./modcommands.js";
@@ -82,8 +90,4 @@ const filteredUsers = ["streamelements", "soundalerts"];
 function isFilteredUser(user: string) {
     let lc = user.toLowerCase();
     return filteredUsers.includes(lc);
-}
-
-async function getBroadcasterId(channel: string) {
-    return await apiClient.users.getUserByName(channel);
 }

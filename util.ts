@@ -76,6 +76,10 @@ export function addNewBroadcaster(user: string, id: HelixUser) {
     broadcaster_id_map[user] = id;
 }
 
+export function removeBroadcaster(user: string) {
+    delete broadcaster_id_map[user];
+}
+
 export async function clipIt(delay: boolean) {
     for (let channel of clientChannels) {
         let broadcaster_id = broadcaster_id_map[channel];
@@ -115,4 +119,8 @@ export async function clipIt(delay: boolean) {
 
 export function getBroadcasterList(): Readonly<HelixUser>[] {
     return Object.values(broadcaster_id_map);
+}
+
+export async function getBroadcasterId(channel: string) {
+    return await apiClient.users.getUserByName(channel);
 }
