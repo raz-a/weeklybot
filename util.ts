@@ -1,5 +1,5 @@
 // Common utiliy functions.
-import { HelixUser } from "@twurple/api";
+import { HelixChatUserColor, HelixUser } from "@twurple/api";
 import { chatClient, apiClient, clientChannels } from "./client.js";
 import { ChatUser } from "@twurple/chat";
 import chalk from "chalk";
@@ -123,4 +123,45 @@ export function getBroadcasterList(): Readonly<HelixUser>[] {
 
 export async function getBroadcasterId(channel: string) {
     return await apiClient.users.getUserByName(channel);
+}
+
+export function getRandomColor(): HelixChatUserColor {
+    const colors: HelixChatUserColor[] = [
+        "blue",
+        "blue_violet",
+        "cadet_blue",
+        "chocolate",
+        "coral",
+        "dodger_blue",
+        "firebrick",
+        "golden_rod",
+        "green",
+        "hot_pink",
+        "orange_red",
+        "red",
+        "sea_green",
+        "spring_green",
+        "yellow_green",
+    ];
+
+    let color = colors[Math.floor(Math.random() * colors.length)];
+
+    return color;
+}
+
+var WbColorTimeoutId: NodeJS.Timeout | undefined = undefined;
+
+export async function changeWbColor(color: HelixChatUserColor, timeout: number) {
+    await apiClient.chat.setColorForUser(me.id, color);
+
+    set_wb_color(await apiClient.chat.getColorForUser(me.id));
+
+    if (WbColorTimeoutId !== undefined) {
+        clearTimeout(WbColorTimeoutId);
+    }
+
+    WbColorTimeoutId = setTimeout(async () => {
+        apiClient.chat.setColorForUser(me.id, "spring_green");
+        set_wb_color(await apiClient.chat.getColorForUser(me.id));
+    }, timeout);
 }

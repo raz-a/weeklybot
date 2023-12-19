@@ -1,11 +1,21 @@
 // Contains commands usable by users in the stream.
 
-import { send, broadcast, clipIt, timeout, me, set_wb_color } from "./util.js";
+import {
+    send,
+    broadcast,
+    clipIt,
+    timeout,
+    me,
+    set_wb_color,
+    changeWbColor,
+    getRandomColor,
+} from "./util.js";
 import * as fs from "fs";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
 import { PoopCam } from "./poopcam.js";
 import { apiClient } from "./client.js";
+import { HelixChatUserColor } from "@twurple/api";
 
 export type UserCommandState = { channel: string; user: ChatUser };
 
@@ -81,7 +91,7 @@ function selectALevel(args: string[], state: UserCommandState) {
     broadcast(null, msg);
 }
 
-async function poopCam(args: string[], state: UserCommandState) {
+async function poopCamInternal(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
 
     usercommands.log(`Telling ${userName} about PoopCam (TM)`);
@@ -110,24 +120,17 @@ async function poopCam(args: string[], state: UserCommandState) {
     }
 }
 
-var RedPoopTimeoutId: NodeJS.Timeout | undefined = undefined;
+async function poopCam(args: string[], state: UserCommandState) {
+    await changeWbColor(getRandomColor(), 1000 + Math.random() * 29000);
+    await poopCamInternal(args, state);
+}
 
 async function redPoopCam(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     usercommands.log(`${userName} found Red PoopCam (TM)`);
 
-    await apiClient.chat.setColorForUser(me.id, "red");
-    set_wb_color(await apiClient.chat.getColorForUser(me.id));
-    poopCam(args, state);
-
-    if (RedPoopTimeoutId !== undefined) {
-        clearTimeout(RedPoopTimeoutId);
-    }
-
-    RedPoopTimeoutId = setTimeout(async () => {
-        apiClient.chat.setColorForUser(me.id, "spring_green");
-        set_wb_color(await apiClient.chat.getColorForUser(me.id));
-    }, 15000);
+    await changeWbColor("red", 15000);
+    await poopCamInternal(args, state);
 }
 
 async function stats(args: string[], state: UserCommandState) {
