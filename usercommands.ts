@@ -1,21 +1,10 @@
 // Contains commands usable by users in the stream.
 
-import {
-    send,
-    broadcast,
-    clipIt,
-    timeout,
-    me,
-    set_wb_color,
-    changeWbColor,
-    getRandomColor,
-} from "./util.js";
+import { send, broadcast, clipIt, timeout, changeWbColor, getRandomColor } from "./util.js";
 import * as fs from "fs";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
 import { PoopCam } from "./poopcam.js";
-import { apiClient } from "./client.js";
-import { HelixChatUserColor } from "@twurple/api";
 
 export type UserCommandState = { channel: string; user: ChatUser };
 
@@ -36,7 +25,8 @@ export const usercommands = new CommandSet(
     new Command(hate, "Learn WeeklyBot's true feelings."),
     new Command(leaderboard, "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard."),
     new Command(bummer, "bummer"),
-    new Command(redPoopCam, "")
+    new Command(redPoopCam, ""),
+    new Command(popcam, ""),
 );
 
 function help(args: string[], state: UserCommandState) {
@@ -284,4 +274,14 @@ function leaderboard(args: string[], state: UserCommandState) {
 function bummer(args: string[], state: UserCommandState) {
     broadcast(null, "bummer");
     usercommands.log("bummer");
+}
+
+function popcam(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+
+    const msg = `popcam? POPCAM?!?!?!? You think this is funny, ${userName}? YOU BETTER WATCH YOURSELF YOU LITTLE SHIT!`;
+
+    broadcast(null, msg);
+    timeout(null, userName, 60, "WHAT THE HECK IS POPCAM???");
+    usercommands.log(`${userName} POPCAM?!?!?!?!?`);
 }
