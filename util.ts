@@ -149,21 +149,8 @@ export function getRandomColor(): HelixChatUserColor {
     return color;
 }
 
-var WbColorTimeoutId: NodeJS.Timeout | undefined = undefined;
-
-const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
-
-export async function changeWbColor(color: HelixChatUserColor, timeout: number) {
+export async function changeWbColor(color: HelixChatUserColor) {
     await apiClient.chat.setColorForUser(me.id, color);
 
     set_wb_color(await apiClient.chat.getColorForUser(me.id));
-
-    if (WbColorTimeoutId !== undefined) {
-        clearTimeout(WbColorTimeoutId);
-    }
-
-    WbColorTimeoutId = setTimeout(async () => {
-        apiClient.chat.setColorForUser(me.id, "spring_green");
-        set_wb_color(await apiClient.chat.getColorForUser(me.id));
-    }, timeout);
 }

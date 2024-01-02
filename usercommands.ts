@@ -111,7 +111,7 @@ async function poopCamInternal(args: string[], state: UserCommandState) {
 }
 
 async function poopCam(args: string[], state: UserCommandState) {
-    await changeWbColor(getRandomColor(), 1000 + Math.random() * 29000);
+    await changeWbColor(getRandomColor());
     await poopCamInternal(args, state);
 }
 
@@ -119,7 +119,7 @@ async function redPoopCam(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     usercommands.log(`${userName} found Red PoopCam (TM)`);
 
-    await changeWbColor("red", 15000);
+    await changeWbColor("red");
     await poopCamInternal(args, state);
 }
 
