@@ -155,7 +155,6 @@ const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export async function changeWbColor(color: HelixChatUserColor, timeout: number) {
     await apiClient.chat.setColorForUser(me.id, color);
-    await delay(1000);
 
     set_wb_color(await apiClient.chat.getColorForUser(me.id));
 

@@ -282,6 +282,6 @@ function popcam(args: string[], state: UserCommandState) {
     const msg = `popcam? POPCAM?!?!?!? You think this is funny, ${userName}? YOU BETTER WATCH YOURSELF YOU LITTLE SHIT!`;
 
     broadcast(null, msg);
-    timeout(null, userName, 60, "WHAT THE HECK IS POPCAM???");
+    timeout(null, userName, 6, "WHAT THE HECK IS POPCAM???");
     usercommands.log(`${userName} POPCAM?!?!?!?!?`);
 }
