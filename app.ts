@@ -26,10 +26,9 @@ chatClient.onRegister(async () => {
     await apiClient.chat.setColorForUser(me.id, "spring_green");
 
     // Set the command line prompt.
-    console.clear();
     await prompt();
 
-    broadcast(null, "Weekly Bot has been updated!");
+    weeklyBotPrint("Weekly Bot has (re)started.");
 
     for (const channel of clientChannels) {
         let user = await getBroadcasterId(channel);
@@ -85,7 +84,7 @@ async function onTextInput(line: Buffer) {
     }
 }
 
-const filteredUsers = ["streamelements", "soundalerts"];
+const filteredUsers = ["streamelements", "soundalerts", "nightbot"];
 
 function isFilteredUser(user: string) {
     let lc = user.toLowerCase();
