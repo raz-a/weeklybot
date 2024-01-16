@@ -3,15 +3,13 @@ import { HelixChatUserColor, HelixUser } from "@twurple/api";
 import { chatClient, apiClient, clientChannels } from "./client.js";
 import { ChatUser } from "@twurple/chat";
 import chalk from "chalk";
+import { UI } from "./ui.js";
 
 let broadcaster_id_map: { [key: string]: HelixUser } = {};
 export const me = await apiClient.users.getMe();
 
 export function weeklyBotPrint(message: string) {
-    process.stdout.cursorTo(0);
-    process.stdout.clearLine(0);
-    process.stdout.write(message + `\n`);
-    prompt();
+    UI.print(message);
 }
 
 let wb_color = "#FFFFFF";
@@ -26,7 +24,7 @@ export function set_wb_color(colorHex: string | null | undefined) {
 }
 
 export function prompt() {
-    process.stdout.write(chalk.hex(wb_color)(chatClient.currentNick + `:`));
+    //process.stdout.write(chalk.hex(wb_color)(chatClient.currentNick + `:`));
 }
 
 export async function timeout(

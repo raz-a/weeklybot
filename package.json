@@ -15,11 +15,13 @@
     "@twurple/auth": "^5.3.3",
     "@twurple/chat": "^5.3.3",
     "@twurple/eventsub": "^5.3.3",
+    "blessed": "^0.1.81",
     "chalk": "^5.0.0",
     "node-json-db": "^2.2.0"
   },
   "devDependencies": {
+    "@types/blessed": "^0.1.25",
     "@types/node": "^18.15.0",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.5"
   }
 }

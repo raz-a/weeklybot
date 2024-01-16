@@ -13,6 +13,9 @@ import {
 import { usercommands } from "./usercommands.js";
 import { termcommands } from "./termcommands.js";
 import { modcommands } from "./modcommands.js";
+import { UI } from "./ui.js";
+
+UI.init();
 
 // Define the readline interface
 process.stdin.on("data", onTextInput);
