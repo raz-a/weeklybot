@@ -23,8 +23,8 @@ export function set_wb_color(colorHex: string | null | undefined) {
     }
 }
 
-export function prompt() {
-    //process.stdout.write(chalk.hex(wb_color)(chatClient.currentNick + `:`));
+export function get_wb_color(): string {
+    return wb_color;
 }
 
 export async function timeout(

@@ -12,6 +12,7 @@ import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
 import { PoopCam } from "./poopcam.js";
 import { chatClient, clientChannels } from "./client.js";
+import { UI } from "./ui.js";
 
 export const termcommands = new CommandSet(
     "Terminal Command",
@@ -54,8 +55,7 @@ function clip(args: string[], state: undefined) {
 }
 
 function clear(args: string[], state: undefined) {
-    console.clear();
-    weeklyBotPrint("");
+    UI.clear();
 }
 
 async function stats(args: string[], state: undefined) {

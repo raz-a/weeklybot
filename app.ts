@@ -3,12 +3,12 @@ import chalk from "chalk";
 import { chatClient, apiClient, PrivateMessage, clientChannels } from "./client.js";
 import {
     weeklyBotPrint,
-    prompt,
     broadcast,
     timeout,
     addNewBroadcaster,
     me,
     getBroadcasterId,
+    get_wb_color,
 } from "./util.js";
 import { usercommands } from "./usercommands.js";
 import { termcommands } from "./termcommands.js";
@@ -17,8 +17,7 @@ import { UI } from "./ui.js";
 
 UI.init();
 
-// Define the readline interface
-process.stdin.on("data", onTextInput);
+UI.onPromptAvailable(onTextInput);
 
 // Register the message handler.
 chatClient.onMessage(onMessageHandler);
@@ -27,9 +26,6 @@ chatClient.onMessage(onMessageHandler);
 chatClient.onRegister(async () => {
     // Set the color.
     await apiClient.chat.setColorForUser(me.id, "spring_green");
-
-    // Set the command line prompt.
-    await prompt();
 
     weeklyBotPrint("Weekly Bot has (re)started.");
 
@@ -80,10 +76,10 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
 }
 
 // Allow for commandline text input.
-async function onTextInput(line: Buffer) {
-    if (!(await termcommands.processInput(line.toString().trim(), undefined))) {
-        broadcast(null, line.toString());
-        await prompt();
+async function onTextInput(cmd: string) {
+    if (!(await termcommands.processInput(cmd.toString().trim(), undefined))) {
+        await broadcast(null, cmd);
+        weeklyBotPrint(`${chalk.hex(get_wb_color())("WeeklyBot:")} ${cmd}`);
     }
 }
 
