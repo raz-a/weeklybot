@@ -31,7 +31,7 @@ chatClient.onRegister(async () => {
     }
 
     if (!(await addBroadcaster("naircat"))) {
-        weeklyBotPrint("Could not connect to razstrats");
+        weeklyBotPrint("Could not connect to naircat");
     }
 });
 
