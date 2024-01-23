@@ -26,7 +26,7 @@ export const usercommands = new CommandSet(
     new Command(leaderboard, "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard."),
     new Command(bummer, "bummer"),
     new Command(redPoopCam, ""),
-    new Command(popcam, ""),
+    new Command(popcam, "")
 );
 
 function help(args: string[], state: UserCommandState) {
