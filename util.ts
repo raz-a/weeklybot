@@ -1,11 +1,9 @@
 // Common utiliy functions.
 import { HelixChatUserColor, HelixUser } from "@twurple/api";
-import { chatClient, apiClient, clientChannels } from "./client.js";
-import { ChatUser } from "@twurple/chat";
-import chalk from "chalk";
+import { chatClient, apiClient } from "./client.js";
 import { UI } from "./ui.js";
+import { getBroadcasterChannels, getBroadcasterIdFromChannel } from "./broadcaster.js";
 
-let broadcaster_id_map: { [key: string]: HelixUser } = {};
 export const me = await apiClient.users.getMe();
 
 export function weeklyBotPrint(message: string) {
@@ -33,16 +31,19 @@ export async function timeout(
     duration: number,
     reason: string
 ) {
-    for (const channel of clientChannels) {
+    for (const channel of getBroadcasterChannels()) {
         if (channel != excludeChannel) {
             try {
                 const user = await apiClient.users.getUserByName(username);
                 if (user) {
-                    await apiClient.moderation.banUser(broadcaster_id_map[channel], me, {
-                        duration: duration,
-                        reason: reason,
-                        userId: user.id,
-                    });
+                    const broadcasterId = getBroadcasterIdFromChannel(channel);
+                    if (broadcasterId) {
+                        await apiClient.moderation.banUser(broadcasterId, me, {
+                            duration: duration,
+                            reason: reason,
+                            userId: user.id,
+                        });
+                    }
                 }
             } catch (err) {
                 weeklyBotPrint(`ERROR: ${err}`);
@@ -53,7 +54,7 @@ export async function timeout(
 
 export async function broadcast(excludeChannel: string | null, msg: string) {
     var promises: Promise<void>[] = [];
-    for (const channel of clientChannels) {
+    for (const channel of getBroadcasterChannels()) {
         if (channel != excludeChannel) {
             promises.push(send(channel, msg));
         }
@@ -70,18 +71,10 @@ export async function send(channel: string, msg: string): Promise<void> {
     }
 }
 
-export function addNewBroadcaster(user: string, id: HelixUser) {
-    broadcaster_id_map[user] = id;
-}
-
-export function removeBroadcaster(user: string) {
-    delete broadcaster_id_map[user];
-}
-
 export async function clipIt(delay: boolean) {
-    for (let channel of clientChannels) {
-        let broadcaster_id = broadcaster_id_map[channel];
-        if (broadcaster_id !== undefined) {
+    for (let channel of getBroadcasterChannels()) {
+        let broadcaster_id = getBroadcasterIdFromChannel(channel);
+        if (broadcaster_id) {
             let stream = await apiClient.streams.getStreamByUserId(broadcaster_id);
             if (stream === null) {
                 weeklyBotPrint(`${channel} is not live.`);
@@ -113,14 +106,6 @@ export async function clipIt(delay: boolean) {
             weeklyBotPrint(`Could not find matching id for ${channel}`);
         }
     }
-}
-
-export function getBroadcasterList(): Readonly<HelixUser>[] {
-    return Object.values(broadcaster_id_map);
-}
-
-export async function getBroadcasterId(channel: string) {
-    return await apiClient.users.getUserByName(channel);
 }
 
 export function getRandomColor(): HelixChatUserColor {

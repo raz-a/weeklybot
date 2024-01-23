@@ -1,18 +1,10 @@
 // Contains commands usable from the terminal.
 
-import {
-    addNewBroadcaster,
-    broadcast,
-    clipIt,
-    getBroadcasterId,
-    removeBroadcaster,
-    weeklyBotPrint,
-} from "./util.js";
+import { broadcast, clipIt, weeklyBotPrint } from "./util.js";
 import { Command, CommandSet } from "./commands.js";
-import { ChatUser } from "@twurple/chat";
 import { PoopCam } from "./poopcam.js";
-import { chatClient, clientChannels } from "./client.js";
 import { UI } from "./ui.js";
+import { addBroadcaster, isBroadcasterAdded, removeBroadcaster } from "./broadcaster.js";
 
 export const termcommands = new CommandSet(
     "Terminal Command",
@@ -85,33 +77,25 @@ function rate(args: string[], state: undefined) {
 async function add(args: string[], state: undefined) {
     let channel = args[0];
 
-    let user = await getBroadcasterId(channel);
-
-    if (user === null) {
-        weeklyBotPrint(`Could not find broadcaster ID for ${channel}`);
-        return;
+    var msg;
+    if (isBroadcasterAdded(channel)) {
+        msg = `${channel} is already in WeeklyBot chat.`;
+    } else if (await addBroadcaster(channel)) {
+        msg = `Added ${channel} to WeeklyBot chat!`;
+        broadcast(null, msg);
+    } else {
+        msg = `Could not add ${channel} to WeeklyBot chat.`;
     }
-
-    addNewBroadcaster(channel, user);
-    clientChannels.push(channel);
-
-    let msg = `Added ${channel} to WeeklyBot chat!`;
 
     weeklyBotPrint(msg);
-    broadcast(null, msg);
 }
 
-async function remove(args: string[], state: undefined) {
+function remove(args: string[], state: undefined) {
     let channel = args[0];
 
-    let index = clientChannels.findIndex((user) => user === channel);
-
-    if (index === -1) {
-        weeklyBotPrint(`Channel ${channel} is not in the WeeklyBot chat`);
-        return;
+    if (removeBroadcaster(channel)) {
+        weeklyBotPrint(`Removed ${channel} from the WeeklyBot chat`);
+    } else {
+        weeklyBotPrint(`Could not remove ${channel} from the WeeklyBot chat`);
     }
-
-    clientChannels.splice(index);
-    removeBroadcaster(channel);
-    weeklyBotPrint(`Removed ${channel} from the WeeklyBot chat`);
 }

@@ -1,19 +1,12 @@
 import chalk from "chalk";
 
-import { chatClient, apiClient, PrivateMessage, clientChannels } from "./client.js";
-import {
-    weeklyBotPrint,
-    broadcast,
-    timeout,
-    addNewBroadcaster,
-    me,
-    getBroadcasterId,
-    get_wb_color,
-} from "./util.js";
+import { chatClient, apiClient, PrivateMessage } from "./client.js";
+import { weeklyBotPrint, broadcast, timeout, me, get_wb_color } from "./util.js";
 import { usercommands } from "./usercommands.js";
 import { termcommands } from "./termcommands.js";
 import { modcommands } from "./modcommands.js";
 import { UI } from "./ui.js";
+import { addBroadcaster } from "./broadcaster.js";
 
 UI.init();
 
@@ -29,12 +22,16 @@ chatClient.onRegister(async () => {
 
     weeklyBotPrint("Weekly Bot has (re)started.");
 
-    for (const channel of clientChannels) {
-        let user = await getBroadcasterId(channel);
+    //
+    // Default channels
+    //
 
-        if (user) {
-            addNewBroadcaster(channel, user);
-        }
+    if (!(await addBroadcaster("razstrats"))) {
+        weeklyBotPrint("Could not connect to razstrats");
+    }
+
+    if (!(await addBroadcaster("naircat"))) {
+        weeklyBotPrint("Could not connect to razstrats");
     }
 });
 

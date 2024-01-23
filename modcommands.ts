@@ -3,7 +3,8 @@
 import { ChatUser } from "@twurple/chat";
 import { apiClient } from "./client.js";
 import { Command, CommandSet } from "./commands.js";
-import { broadcast, getBroadcasterList, me, send, weeklyBotPrint } from "./util.js";
+import { broadcast, me, send, weeklyBotPrint } from "./util.js";
+import { getBroadcasterIds } from "./broadcaster.js";
 
 export const modcommands = new CommandSet(
     "Mod Command",
@@ -24,14 +25,14 @@ async function ban(args: string[], mod: ChatUser) {
         try {
             const user = await apiClient.users.getUserByName(userToBeBanned);
             if (user !== null) {
-                for (const broadcaster of getBroadcasterList()) {
+                for (const broadcaster of getBroadcasterIds()) {
                     if (user.id === broadcaster.id) {
                         broadcast(null, "Broadcasters cannot be banned.");
                         return;
                     }
                 }
 
-                for (const broadcaster of getBroadcasterList()) {
+                for (const broadcaster of getBroadcasterIds()) {
                     const result = await apiClient.moderation.banUser(broadcaster, me, {
                         reason: `${mod.displayName} has banned you via WeeklyBot.`,
                         userId: user,
@@ -66,7 +67,7 @@ async function unban(args: string[], mod: ChatUser) {
         try {
             const user = await apiClient.users.getUserByName(userToBeUnbanned);
             if (user !== null) {
-                for (const broadcaster of getBroadcasterList()) {
+                for (const broadcaster of getBroadcasterIds()) {
                     await apiClient.moderation.unbanUser(broadcaster, me, user);
                     send(
                         broadcaster.name,
