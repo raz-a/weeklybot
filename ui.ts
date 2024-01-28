@@ -4,18 +4,15 @@ export abstract class UI {
     static #screen = blessed.screen({ smartCSR: true, dockBorders: true });
     static #messages = blessed.log({
         border: "line",
-        height: "100%",
         width: "100%",
-        scrollbar: {},
-        scrollable: true,
+        height: "100%-3",
     });
     static #prompt = blessed.textbox({
         border: "line",
-        top: "93%",
+        top: "100%-3",
         width: "100%",
-        content: "test",
-        label: "WeeklyBot",
         inputOnFocus: true,
+        label: "WeeklyBot",
     });
 
     static #promptCallback: ((cmd: string) => void) | undefined = undefined;
