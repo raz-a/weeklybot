@@ -79,3 +79,5 @@
 [12/23/2023, 7:23:04 PM] RazStrats - WeeklyBot gets furious at !popcam
 [12/23/2023, 7:23:29 PM] spookycock - !requeest command
 [12/23/2023, 7:28:28 PM] GlassOddity - nairscat
+[1/24/2024, 11:11:04 PM] Shadowcat2525 - somalia civil war feature 
+[1/24/2024, 11:12:07 PM] Shadowcat2525 - when you use the command a civil war starts and it tells you what caused it.. When you use the command again it ends the war and tells you the total death count that varies based off of time the civil war went on for 

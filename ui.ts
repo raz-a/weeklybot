@@ -6,6 +6,8 @@ export abstract class UI {
         border: "line",
         height: "100%",
         width: "100%",
+        scrollbar: {},
+        scrollable: true,
     });
     static #prompt = blessed.textbox({
         border: "line",
