@@ -4,7 +4,12 @@ import { broadcast, clipIt, weeklyBotPrint } from "./util.js";
 import { Command, CommandSet } from "./commands.js";
 import { PoopCam } from "./poopcam.js";
 import { UI } from "./ui.js";
-import { addBroadcaster, isBroadcasterAdded, removeBroadcaster } from "./broadcaster.js";
+import {
+    addBroadcaster,
+    getBroadcasterChannels,
+    isBroadcasterAdded,
+    removeBroadcaster,
+} from "./broadcaster.js";
 
 export const termcommands = new CommandSet(
     "Terminal Command",
@@ -17,7 +22,8 @@ export const termcommands = new CommandSet(
     new Command(stats, "Gets the current poopcam stats."),
     new Command(rate, "Sets the poopcam rate limit in seconds"),
     new Command(add, "Adds a channel to the WeeklyBot chat."),
-    new Command(remove, "Removes a channel from the WeeklyBot chat.")
+    new Command(remove, "Removes a channel from the WeeklyBot chat."),
+    new Command(list, "Gets the list of broadcasters currently connected.")
 );
 
 function help(args: string[], state: undefined) {
@@ -97,5 +103,12 @@ function remove(args: string[], state: undefined) {
         weeklyBotPrint(`Removed ${channel} from the WeeklyBot chat`);
     } else {
         weeklyBotPrint(`Could not remove ${channel} from the WeeklyBot chat`);
+    }
+}
+
+function list(args: string[], state: undefined) {
+    weeklyBotPrint("Currently connected broadcasters:");
+    for (const channel of getBroadcasterChannels()) {
+        weeklyBotPrint(channel);
     }
 }
