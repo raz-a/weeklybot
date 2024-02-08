@@ -1,7 +1,11 @@
 import blessed from "blessed";
 
 export abstract class UI {
-    static #screen = blessed.screen({ smartCSR: true, dockBorders: true });
+    static #screen = blessed.screen({
+        smartCSR: true,
+        dockBorders: true,
+        terminal: "xterm-256color",
+    });
     static #messages = blessed.log({
         border: "line",
         width: "100%",
