@@ -313,7 +313,7 @@ async function define(args: string[], state: UserCommandState) {
     }
 
     // Pick a defitinition at random.
-    const definition = definitions[Math.floor((Math.random(), definitions.length))];
+    const definition = definitions[Math.floor(Math.random() * definitions.length)];
     const otherDefinitionsCount = definitions.length - 1;
 
     msg = `${word}: ${definition}`;
