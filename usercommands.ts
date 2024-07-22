@@ -5,6 +5,7 @@ import * as fs from "fs";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
 import { PoopCam } from "./poopcam.js";
+import { define_word } from "./dictionary.js";
 
 export type UserCommandState = { channel: string; user: ChatUser };
 
@@ -26,7 +27,8 @@ export const usercommands = new CommandSet(
     new Command(leaderboard, "Get the link to the Super Mario 64 Co-Op Speedrun Leaderboard."),
     new Command(bummer, "bummer"),
     new Command(redPoopCam, ""),
-    new Command(popcam, "")
+    new Command(popcam, ""),
+    new Command(define, "Have WeeklyBot define an english word for you!")
 );
 
 function help(args: string[], state: UserCommandState) {
@@ -265,10 +267,7 @@ function hate(args: string[], state: UserCommandState) {
 }
 
 function leaderboard(args: string[], state: UserCommandState) {
-    broadcast(
-        null,
-        "SM64 Co-Op Speedrun Leaderboard: https://www.speedrun.com/sm64coop?h=120_Star-Vanilla-2P&x=9d8l4x32-onvv5y7n.4qy2gr21-ylp6yk6n.810nk82q"
-    );
+    broadcast(null, "SM64 Co-Op Speedrun Leaderboard: https://www.speedrun.com/sm64coop");
 }
 
 function bummer(args: string[], state: UserCommandState) {
@@ -284,4 +283,43 @@ function popcam(args: string[], state: UserCommandState) {
     broadcast(null, msg);
     timeout(null, userName, 6, "WHAT THE HECK IS POPCAM???");
     usercommands.log(`${userName} POPCAM?!?!?!?!?`);
+}
+
+async function define(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+    let msg = null;
+
+    if (args.length > 1) {
+        msg = `woah woah woah ${userName}, one word at a time!`;
+    } else if (args.length == 0) {
+        msg = `uhhh ${userName}... define WHAT?`;
+    }
+
+    if (msg != null) {
+        broadcast(null, msg);
+        usercommands.log(`Invalid definition request from ${userName}`);
+        return;
+    }
+
+    const word = args[0];
+
+    usercommands.log(`Defining ${word} for ${userName}`);
+
+    const definitions = await define_word(word);
+
+    if (definitions.length == 0) {
+        broadcast(null, `I have no clue what ${word} means.`);
+        return;
+    }
+
+    // Pick a defitinition at random.
+    const definition = definitions[Math.floor((Math.random(), definitions.length))];
+    const otherDefinitionsCount = definitions.length - 1;
+
+    msg = `${word}: ${definition}`;
+    if (otherDefinitionsCount != 0) {
+        msg += ` (${otherDefinitionsCount} additional definitions)`;
+    }
+
+    broadcast(null, msg);
 }
