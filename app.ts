@@ -7,6 +7,7 @@ import { termcommands } from "./termcommands.js";
 import { modcommands } from "./modcommands.js";
 import { UI } from "./ui.js";
 import { addBroadcaster } from "./broadcaster.js";
+import { PissStreak } from "./piss.js";
 
 UI.init();
 
@@ -69,7 +70,12 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
         return;
     }
 
-    usercommands.processInput(text, { channel: target, user: userInfo });
+    if (await usercommands.processInput(text, { channel: target, user: userInfo })) {
+        return;
+    }
+
+    // Special non-command checks.
+    await nonCommandProcessInput(text);
 }
 
 // Allow for commandline text input.
@@ -85,4 +91,17 @@ const filteredUsers = ["streamelements", "soundalerts", "nightbot"];
 function isFilteredUser(user: string) {
     let lc = user.toLowerCase();
     return filteredUsers.includes(lc);
+}
+
+async function nonCommandProcessInput(text: string) {
+    const result = await PissStreak.inspectMessageForPisser(text);
+    if (result.pissOccurred) {
+        await handlePissMessage(result.lastDaysSince);
+    }
+}
+
+async function handlePissMessage(daysSince: number) {
+    const msg = `DAYS WITHOUT CHAT PISSING THEMSELVES: [̶ ̶${daysSince}\u{0336} ̶]̶ [0]`;
+    weeklyBotPrint("PISSER DETECTED");
+    broadcast(null, msg);
 }

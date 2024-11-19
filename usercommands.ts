@@ -5,6 +5,7 @@ import * as fs from "fs";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
 import { PoopCam } from "./poopcam.js";
+import { PissStreak } from "./piss.js";
 import { define_word } from "./dictionary.js";
 
 export type UserCommandState = { channel: string; user: ChatUser };
@@ -28,8 +29,34 @@ export const usercommands = new CommandSet(
     new Command(bummer, "bummer"),
     new Command(redPoopCam, ""),
     new Command(popcam, ""),
-    new Command(define, "Have WeeklyBot define an english word for you!")
+    new Command(define, "Have WeeklyBot define an english word for you!"),
+    new Command(donate, "Get donation information!"),
+    new Command(pissStreak, "Find out how well chat is holding their bladder."),
+    new Command(pissCheck, "[Alias] Find out how well chat is holding their bladder.")
 );
+
+async function pissStreak(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+    const daysSince = await PissStreak.getDaysSince();
+
+    usercommands.log(`Letting ${userName} know its been ${daysSince} days since the last piss.`);
+
+    const msg = `DAYS WITHOUT CHAT PISSING THEMSELVES: [${daysSince}]`;
+    broadcast(null, msg);
+}
+
+async function pissCheck(args: string[], state: UserCommandState) {
+    await pissStreak(args, state);
+}
+
+function donate(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+
+    usercommands.log(`Giving donation info to ${userName}.`);
+
+    let msg = `Donate to contribute to the outfit of your choice! (Candidate with highest total determines outfit) https://streamlabs.com/naircat/tip`;
+    send(state.channel, msg);
+}
 
 function help(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
