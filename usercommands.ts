@@ -38,8 +38,8 @@ export const usercommands = new CommandSet(
 
 async function discord(args: string[], state: UserCommandState) {
     let msg;
-    switch (state.channel) {
-        case "#naircat":
+    switch (state.channel.substring(1).toLowerCase()) {
+        case "naircat":
             msg = `Naircat Community Discord: https://discord.gg/MCedstXWgH`;
 
         default:
