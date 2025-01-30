@@ -32,8 +32,32 @@ export const usercommands = new CommandSet(
     new Command(define, "Have WeeklyBot define an english word for you!"),
     new Command(donate, "Get donation information!"),
     new Command(pissStreak, "Find out how well chat is holding their bladder."),
-    new Command(pissCheck, "[Alias] Find out how well chat is holding their bladder.")
+    new Command(pissCheck, "[Alias] Find out how well chat is holding their bladder."),
+    new Command(destro450, "The Holy Gospel of Chained Together"),
+    new Command(discord, "Get access to the Discord!")
 );
+
+async function discord(args: string[], state: UserCommandState) {
+    let msg;
+    switch (state.channel) {
+        case "naircat":
+            msg = `Naircat Community Discord: https://discord.gg/MCedstXWgH`;
+
+        default:
+            msg = `${state.channel} does not have a registered discord community.`;
+    }
+
+    send(state.channel, msg);
+}
+
+async function destro450(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+
+    usercommands.log(`Preaching the Gospel of Destro to ${userName} (4:50).`);
+
+    const msg = `My sons, we have gotten better. (Destro 4:50)`;
+    broadcast(null, msg);
+}
 
 async function pissStreak(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
