@@ -30,7 +30,6 @@ export const usercommands = new CommandSet(
     new Command(redPoopCam, ""),
     new Command(popcam, ""),
     new Command(define, "Have WeeklyBot define an english word for you!"),
-    new Command(donate, "Get donation information!"),
     new Command(pissStreak, "Find out how well chat is holding their bladder."),
     new Command(pissCheck, "[Alias] Find out how well chat is holding their bladder."),
     new Command(destro450, "The Holy Gospel of Chained Together"),
@@ -40,7 +39,7 @@ export const usercommands = new CommandSet(
 async function discord(args: string[], state: UserCommandState) {
     let msg;
     switch (state.channel) {
-        case "naircat":
+        case "#naircat":
             msg = `Naircat Community Discord: https://discord.gg/MCedstXWgH`;
 
         default:
@@ -71,15 +70,6 @@ async function pissStreak(args: string[], state: UserCommandState) {
 
 async function pissCheck(args: string[], state: UserCommandState) {
     await pissStreak(args, state);
-}
-
-function donate(args: string[], state: UserCommandState) {
-    const userName = state.user.displayName;
-
-    usercommands.log(`Giving donation info to ${userName}.`);
-
-    let msg = `Donate to contribute to the outfit of your choice! (Candidate with highest total determines outfit) https://streamlabs.com/naircat/tip`;
-    send(state.channel, msg);
 }
 
 function help(args: string[], state: UserCommandState) {
