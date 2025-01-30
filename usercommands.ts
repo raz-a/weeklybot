@@ -41,6 +41,7 @@ async function discord(args: string[], state: UserCommandState) {
     switch (state.channel.substring(1).toLowerCase()) {
         case "naircat":
             msg = `Naircat Community Discord: https://discord.gg/MCedstXWgH`;
+            break;
 
         default:
             msg = `${state.channel} does not have a registered discord community.`;
