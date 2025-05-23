@@ -292,7 +292,7 @@ function hate(args: string[], state: UserCommandState) {
         "You're never going to amount to anything if you keep behaving like this " + userName + ".",
         "I bet your parents are disappointed by you " + userName + ".",
         "I'm surprised you even managed to become literate " + userName + ".",
-        "You're such a loser you even manage to make Twee look cool " + userName + ".",
+        "You're such a loser you even manage to make SpookyCock look cool " + userName + ".",
         "You're such a loser you even manage to make Raz look cool " + userName + ".",
         "You're such a loser you even manage to make Nair look cool " + userName + ".",
         "You know, being funny isn't exactly rocket science " +
@@ -324,15 +324,22 @@ function popcam(args: string[], state: UserCommandState) {
 
     broadcast(null, msg);
     timeout(null, userName, 6, "WHAT THE HECK IS POPCAM???");
-    usercommands.log(`${userName} POPCAM?!?!?!?!?`);
 
     const ONE_MINUTE_MS = 60 * 1000;
     const NINE_MINUTES_MS = 9 * ONE_MINUTE_MS;
 
+    let waitTime = Math.floor(Math.random() * NINE_MINUTES_MS) + ONE_MINUTE_MS;
+
     setTimeout(() => {
         const msg = `${userName}, dont think I forgot about that "popcam" bullshit. WeeklyBot NEVER forgets`;
         broadcast(null, msg);
-    }, Math.floor(Math.random() * NINE_MINUTES_MS) + ONE_MINUTE_MS);
+    }, waitTime);
+
+    usercommands.log(
+        `${userName} POPCAM!?!?!?!? Will remind about this situation in ${
+            waitTime / 1000.0
+        } seconds`
+    );
 }
 
 async function define(args: string[], state: UserCommandState) {
