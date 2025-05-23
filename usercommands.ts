@@ -330,7 +330,7 @@ function popcam(args: string[], state: UserCommandState) {
     const NINE_MINUTES_MS = 9 * ONE_MINUTE_MS;
 
     setTimeout(() => {
-        const msg = `${userName}, dont think I forgot out that "popcam" bullshit. WeeklyBot NEVER forgets`;
+        const msg = `${userName}, dont think I forgot about that "popcam" bullshit. WeeklyBot NEVER forgets`;
         broadcast(null, msg);
     }, Math.floor(Math.random() * NINE_MINUTES_MS) + ONE_MINUTE_MS);
 }
