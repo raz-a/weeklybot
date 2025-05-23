@@ -65,6 +65,13 @@ export async function broadcast(excludeChannel: string | null, msg: string) {
     await Promise.all(promises);
 }
 
+export async function broadcastLater(excludeChannel: string | null, msg: string, delayMs: number) {
+    setTimeout(() => {
+        broadcast(excludeChannel, msg);
+        weeklyBotPrint(`[Delayed Print Message]: ${msg}`);
+    }, delayMs);
+}
+
 export async function send(channel: string, msg: string): Promise<void> {
     try {
         await chatClient.say(channel, msg, undefined, { limitReachedBehavior: "throw" });

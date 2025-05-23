@@ -1,6 +1,14 @@
 // Contains commands usable by users in the stream.
 
-import { send, broadcast, clipIt, timeout, changeWbColor, getRandomColor } from "./util.js";
+import {
+    send,
+    broadcast,
+    clipIt,
+    timeout,
+    changeWbColor,
+    getRandomColor,
+    broadcastLater,
+} from "./util.js";
 import * as fs from "fs";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
@@ -320,7 +328,7 @@ function bummer(args: string[], state: UserCommandState) {
 function popcam(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
 
-    const msg = `popcam? POPCAM?!?!?!? You think this is funny, ${userName}? YOU BETTER WATCH YOURSELF YOU LITTLE SHIT!`;
+    let msg = `popcam? POPCAM?!?!?!? You think this is funny, ${userName}? YOU BETTER WATCH YOURSELF YOU LITTLE SHIT!`;
 
     broadcast(null, msg);
     timeout(null, state.user, 6, "WHAT THE HECK IS POPCAM???");
@@ -329,12 +337,8 @@ function popcam(args: string[], state: UserCommandState) {
     const NINE_MINUTES_MS = 9 * ONE_MINUTE_MS;
 
     let waitTime = Math.floor(Math.random() * NINE_MINUTES_MS) + ONE_MINUTE_MS;
-
-    setTimeout(() => {
-        const msg = `${userName}, dont think I forgot about that "popcam" bullshit. WeeklyBot NEVER forgets`;
-        broadcast(null, msg);
-        usercommands.log(`Reminded ${userName} that they did a Popcam`);
-    }, waitTime);
+    msg = `${userName}, dont think I forgot about that "popcam" bullshit. WeeklyBot NEVER forgets`;
+    broadcastLater(null, msg, waitTime);
 
     usercommands.log(
         `${userName} POPCAM!?!?!?!? Will remind about this situation in ${
