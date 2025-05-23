@@ -50,9 +50,7 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
     if (text.toLowerCase().includes("benis")) {
         weeklyBotPrint("b*nis detected");
         chatClient.say(target, `Yo ${user}. What the fuck is wrong with you?`);
-        if (userInfo.isMod === false && user !== target.slice(1)) {
-            timeout(null, user, 10, "Bro you can't say that shit here");
-        }
+        timeout(null, userInfo, 10, "Bro you can't say that shit here");
 
         return;
     }

@@ -274,7 +274,7 @@ function love(args: string[], state: UserCommandState) {
 
         case 10:
             broadcast(null, `${userName} you messed up by asking for too much love.`);
-            timeout(null, userName, 10, "You are too desperate for love.");
+            timeout(null, state.user, 10, "You are too desperate for love.");
             break;
     }
 
@@ -323,7 +323,7 @@ function popcam(args: string[], state: UserCommandState) {
     const msg = `popcam? POPCAM?!?!?!? You think this is funny, ${userName}? YOU BETTER WATCH YOURSELF YOU LITTLE SHIT!`;
 
     broadcast(null, msg);
-    timeout(null, userName, 6, "WHAT THE HECK IS POPCAM???");
+    timeout(null, state.user, 6, "WHAT THE HECK IS POPCAM???");
 
     const ONE_MINUTE_MS = 60 * 1000;
     const NINE_MINUTES_MS = 9 * ONE_MINUTE_MS;
@@ -333,6 +333,7 @@ function popcam(args: string[], state: UserCommandState) {
     setTimeout(() => {
         const msg = `${userName}, dont think I forgot about that "popcam" bullshit. WeeklyBot NEVER forgets`;
         broadcast(null, msg);
+        usercommands.log(`Reminded ${userName} that they did a Popcam`);
     }, waitTime);
 
     usercommands.log(

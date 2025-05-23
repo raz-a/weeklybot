@@ -1,8 +1,9 @@
 // Common utiliy functions.
-import { HelixChatUserColor, HelixUser } from "@twurple/api";
+import { HelixChatUserColor } from "@twurple/api";
 import { chatClient, apiClient } from "./client.js";
 import { UI } from "./ui.js";
 import { getBroadcasterChannels, getBroadcasterIdFromChannel } from "./broadcaster.js";
+import { ChatUser } from "@twurple/chat";
 
 export const me = await apiClient.users.getMe();
 
@@ -27,23 +28,24 @@ export function get_wb_color(): string {
 
 export async function timeout(
     excludeChannel: string | null,
-    username: string,
+    user: ChatUser,
     duration: number,
     reason: string
 ) {
+    if (user.isBroadcaster || user.isMod) {
+        return;
+    }
+
     for (const channel of getBroadcasterChannels()) {
         if (channel != excludeChannel) {
             try {
-                const user = await apiClient.users.getUserByName(username);
-                if (user) {
-                    const broadcasterId = getBroadcasterIdFromChannel(channel);
-                    if (broadcasterId) {
-                        await apiClient.moderation.banUser(broadcasterId, me, {
-                            duration: duration,
-                            reason: reason,
-                            userId: user.id,
-                        });
-                    }
+                const broadcasterId = getBroadcasterIdFromChannel(channel);
+                if (broadcasterId) {
+                    await apiClient.moderation.banUser(broadcasterId, me, {
+                        duration: duration,
+                        reason: reason,
+                        userId: user.userId,
+                    });
                 }
             } catch (err) {
                 weeklyBotPrint(`ERROR: ${err}`);
