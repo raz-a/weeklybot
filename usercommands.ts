@@ -325,6 +325,14 @@ function popcam(args: string[], state: UserCommandState) {
     broadcast(null, msg);
     timeout(null, userName, 6, "WHAT THE HECK IS POPCAM???");
     usercommands.log(`${userName} POPCAM?!?!?!?!?`);
+
+    const ONE_MINUTE_MS = 60 * 1000;
+    const NINE_MINUTES_MS = 9 * ONE_MINUTE_MS;
+
+    setTimeout(() => {
+        const msg = `${userName}, dont think I forgot out that "popcam" bullshit. WeeklyBot NEVER forgets`;
+        broadcast(null, msg);
+    }, Math.floor(Math.random() * NINE_MINUTES_MS) + ONE_MINUTE_MS);
 }
 
 async function define(args: string[], state: UserCommandState) {
