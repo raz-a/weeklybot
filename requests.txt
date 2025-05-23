@@ -90,16 +90,14 @@
 [7/17/2024, 7:40:28 PM] Shadowcat2525 - slur command that says a random slur
 [7/17/2024, 7:42:49 PM] Naircat - the slur command should make a new slur and then ban anyone who says that slur so we have an ever increasing list of banned words
 [7/17/2024, 7:42:57 PM] Naircat - slur command that makes up new slurs by combining randmon rods
-[8/14/2024, 6:04:31 PM] Naircat - !ssn 
-[8/28/2024, 6:55:45 PM] Naircat - Hear my out: Chained together, but its mario kart 
-[9/25/2024, 6:19:04 PM] Naircat - !cumcam 
-[11/18/2024, 2:53:29 PM] Naircat - weeklybot monitors for any message with "peed my pants" or "pissed my pants" or "peed myself" or "pissed myself". when someone says it, weeklybot says 
-[11/23/2024, 7:52:10 PM] Naircat - !discord command 
-[12/7/2024, 7:11:25 PM] Naircat - weeklycoin 
-[12/17/2024, 6:22:57 PM] spookycock - RazStrats Weekly Wednesday kill counter 
-[12/17/2024, 7:20:21 PM] spookycock - wewe coin 
-[2/5/2025, 8:06:34 PM] spookycock - already banned feature 
-[3/5/2025, 5:52:41 PM] spookycock - !define poopcam provides an accurate definition of poopcam 
-[3/10/2025, 6:35:40 PM] Naircat - McAmercia Great Again 
-[3/25/2025, 6:45:08 PM] Naircat - bake a pie in a donut shaped pie tin 
-[4/16/2025, 6:06:22 PM] spookycock - !define weeklybot does something stupid 
+[8/14/2024, 6:04:31 PM] Naircat - !ssn
+[8/28/2024, 6:55:45 PM] Naircat - Hear my out: Chained together, but its mario kart
+[9/25/2024, 6:19:04 PM] Naircat - !cumcam
+[11/18/2024, 2:53:29 PM] Naircat - weeklybot monitors for any message with "peed my pants" or "pissed my pants" or "peed myself" or "pissed myself". when someone says it, weeklybot says
+[12/7/2024, 7:11:25 PM] Naircat - weeklycoin
+[12/17/2024, 6:22:57 PM] spookycock - RazStrats Weekly Wednesday kill counter
+[12/17/2024, 7:20:21 PM] spookycock - wewe coin
+[2/5/2025, 8:06:34 PM] spookycock - already banned feature
+[3/10/2025, 6:35:40 PM] Naircat - McAmercia Great Again
+[3/25/2025, 6:45:08 PM] Naircat - bake a pie in a donut shaped pie tin
+[4/16/2025, 6:06:22 PM] spookycock - !define weeklybot does something stupid
