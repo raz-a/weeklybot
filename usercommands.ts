@@ -341,9 +341,9 @@ function popcam(args: string[], state: UserCommandState) {
     broadcastLater(null, msg, waitTime);
 
     usercommands.log(
-        `${userName} POPCAM!?!?!?!? Will remind about this situation in ${
-            waitTime / 1000.0
-        } seconds`
+        `${userName} POPCAM!?!?!?!? Will remind about this situation in ${Math.round(
+            waitTime / 1000
+        )} seconds`
     );
 }
 

@@ -46,11 +46,21 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
         return;
     }
 
+    let lowercase = text.toLowerCase();
+
     // Check for benis....
-    if (text.toLowerCase().includes("benis")) {
+    if (lowercase.includes("benis")) {
         weeklyBotPrint("b*nis detected");
         chatClient.say(target, `Yo ${user}. What the fuck is wrong with you?`);
         timeout(null, userInfo, 10, "Bro you can't say that shit here");
+
+        return;
+    }
+
+    if (lowercase.includes("taco bell") || lowercase.includes("tacobell")) {
+        weeklyBotPrint("taco bell detected");
+        chatClient.say(target, `Yo ${user}. We don't support any discussion of Taco Bell here.`);
+        timeout(null, userInfo, 5, "No Taco Bell discussion allowed");
 
         return;
     }
