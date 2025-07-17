@@ -41,6 +41,7 @@ export const usercommands = new CommandSet(
     new Command(pissStreak, "Find out how well chat is holding their bladder."),
     new Command(pissCheck, "[Alias] Find out how well chat is holding their bladder."),
     new Command(destro450, "The Holy Gospel of Chained Together"),
+    new Command(destro1259, "The Holy Gospel of Destro"),
     new Command(discord, "Get access to the Discord!")
 );
 
@@ -64,6 +65,15 @@ async function destro450(args: string[], state: UserCommandState) {
     usercommands.log(`Preaching the Gospel of Destro to ${userName} (4:50).`);
 
     const msg = `My sons, we have gotten better. (Destro 4:50)`;
+    broadcast(null, msg);
+}
+
+async function destro1259(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+
+    usercommands.log(`Preaching the Gospel of Destro to ${userName} (12:59).`);
+
+    const msg = `I demand the succulent meat of your finest mare! (Destro 12:59)`;
     broadcast(null, msg);
 }
 
