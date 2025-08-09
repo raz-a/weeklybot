@@ -42,8 +42,16 @@ export const usercommands = new CommandSet(
     new Command(pissCheck, "[Alias] Find out how well chat is holding their bladder."),
     new Command(destro450, "The Holy Gospel of Chained Together"),
     new Command(destro1259, "The Holy Gospel of Destro"),
-    new Command(discord, "Get access to the Discord!")
+    new Command(discord, "Get access to the Discord!"),
+    new Command(zoop, "Testing out the zoop")
 );
+
+async function zoop(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+    usercommands.log(`${userName} asked for a zoop.`);
+
+    broadcast(null, `ZOOP! -Love ${userName}`);
+}
 
 async function discord(args: string[], state: UserCommandState) {
     let msg;
