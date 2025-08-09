@@ -42,14 +42,8 @@ export const usercommands = new CommandSet(
     new Command(pissCheck, "[Alias] Find out how well chat is holding their bladder."),
     new Command(destro450, "The Holy Gospel of Chained Together"),
     new Command(destro1259, "The Holy Gospel of Destro"),
-    new Command(discord, "Get access to the Discord!"),
-    new Command(zooweemama, "zooweemama")
+    new Command(discord, "Get access to the Discord!")
 );
-
-async function zooweemama(args: string[], state: UserCommandState) {
-    usercommands.log("Zooweemama");
-    broadcast(null, "Zooweemama");
-}
 
 async function discord(args: string[], state: UserCommandState) {
     let msg;
