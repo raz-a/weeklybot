@@ -1,9 +1,6 @@
 module.exports = {
   apps: [{
-    script: 'weeklybot/app.js',
-    env: {
-      NODE_ENV: 'production'
-    }
+    script: 'weeklybot/app.js'
   }],
   deploy: {
     production: {
