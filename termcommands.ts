@@ -55,6 +55,9 @@ function clip(args: string[], state: undefined) {
 function clear(args: string[], state: undefined) {
     if (UseUI) {
         UI.clear();
+    } else {
+        console.clear();
+        weeklyBotPrint("");
     }
 }
 

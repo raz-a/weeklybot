@@ -5,13 +5,16 @@ import { weeklyBotPrint, broadcast, timeout, me, get_wb_color } from "./util.js"
 import { usercommands } from "./usercommands.js";
 import { termcommands } from "./termcommands.js";
 import { modcommands } from "./modcommands.js";
-import { UI } from "./ui.js";
+import { UI, UseUI } from "./ui.js";
 import { addBroadcaster } from "./broadcaster.js";
 import { PissStreak } from "./piss.js";
 
-UI.init();
-
-UI.onPromptAvailable(onTextInput);
+if (UseUI) {
+    UI.init();
+    UI.onPromptAvailable(onTextInput);
+} else {
+    process.stdin.on("data", onTextInput);
+}
 
 // Register the message handler.
 chatClient.onMessage(onMessageHandler);
