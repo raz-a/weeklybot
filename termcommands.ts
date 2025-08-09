@@ -3,7 +3,7 @@
 import { broadcast, clipIt, weeklyBotPrint } from "./util.js";
 import { Command, CommandSet } from "./commands.js";
 import { PoopCam } from "./poopcam.js";
-import { UI } from "./ui.js";
+import { UI, UseUI } from "./ui.js";
 import {
     addBroadcaster,
     getBroadcasterChannels,
@@ -53,7 +53,9 @@ function clip(args: string[], state: undefined) {
 }
 
 function clear(args: string[], state: undefined) {
-    UI.clear();
+    if (UseUI) {
+        UI.clear();
+    }
 }
 
 async function stats(args: string[], state: undefined) {

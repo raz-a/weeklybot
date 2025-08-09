@@ -57,3 +57,5 @@ export abstract class UI {
         this.#screen.render();
     }
 }
+
+export var UseUI = false;
