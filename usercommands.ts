@@ -43,8 +43,17 @@ export const usercommands = new CommandSet(
     new Command(destro450, "The Holy Gospel of Chained Together"),
     new Command(destro1259, "The Holy Gospel of Destro"),
     new Command(discord, "Get access to the Discord!"),
-    new Command(zoop, "Testing out the zoop")
+    new Command(zoop, "Testing out the zoop"),
+    new Command(extension, "Get the WeeklyBot Chrome Extension!")
 );
+
+async function extension(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+    usercommands.log(`${userName} asked for the extension`);
+
+    let msg = `Get the WeeklyBot Enhanced Experience Extension (WEEE) at https://chromewebstore.google.com/detail/weeklybot-enhanced-experi/nfpaddhfkphlpokknlhbjhinadpkgihn`;
+    broadcast(null, msg);
+}
 
 async function zoop(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
