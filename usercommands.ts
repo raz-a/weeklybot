@@ -44,8 +44,18 @@ export const usercommands = new CommandSet(
     new Command(destro1259, "The Holy Gospel of Destro"),
     new Command(discord, "Get access to the Discord!"),
     new Command(zoop, "Testing out the zoop"),
-    new Command(extension, "Get the WeeklyBot Chrome Extension!")
+    new Command(extension, "Get the WeeklyBot Chrome Extension!"),
+    new Command(rules, "Get the 2025 BeerioKart rules")
 );
+
+async function rules(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+
+    usercommands.log(`${userName} asked for the rules.`);
+    let msg = `BeerioKart rules: https://raz-a.github.io/nwbeeriokart2025/`;
+
+    broadcast(null, msg);
+}
 
 async function extension(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
