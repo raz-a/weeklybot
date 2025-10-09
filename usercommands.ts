@@ -52,7 +52,7 @@ async function rules(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
 
     usercommands.log(`${userName} asked for the rules.`);
-    let msg = `BeerioKart rules: https://raz-a.github.io/nwbeeriokart2025/`;
+    let msg = `Soullocke rules: Faint = Release. Can only catch first encounter of each area (must release it if anyone fails). Pokemon are linked by name across our 3 games, if one dies other players are forced to release it too (boxing also synced). Level cap of 15 + badges x5, must release if go over. Forced set, no research, no reloading.`;
 
     broadcast(null, msg);
 }
