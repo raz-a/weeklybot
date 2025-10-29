@@ -402,6 +402,7 @@ async function define(args: string[], state: UserCommandState) {
 
     const word = args[0];
 
+    // TODO: Make a table for meme words.
     if (word.toLowerCase() == "poopcam") {
         if (Math.floor(Math.random() * 10) == 0) {
             broadcast(
@@ -411,6 +412,22 @@ async function define(args: string[], state: UserCommandState) {
             usercommands.log(`Defining ${word} for ${userName}`);
             return;
         }
+    }
+
+    if (word.toLowerCase() == "uppies" || word.toLowerCase() == "uppy") {
+        broadcast(null, `{userName}, we DON'T do that here.`);
+        usercommands.log(`Defining ${word} for ${userName}`);
+        return;
+    }
+
+    if (word.toLowerCase() == "jaalm") {
+        broadcast(
+            null,
+            `Jaalm: A reactionary emotion that comes after extreme levels of panic, anger, or excitement. Usually asked for by an observer, i.e. "Yo! You need to JAALM DOWN!!`
+        );
+
+        usercommands.log(`Defining ${word} for ${userName}`);
+        return;
     }
 
     usercommands.log(`Defining ${word} for ${userName}`);
