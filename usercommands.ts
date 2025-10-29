@@ -421,10 +421,14 @@ async function define(args: string[], state: UserCommandState) {
     }
 
     if (word.toLowerCase() == "jaalm") {
-        broadcast(
-            null,
-            `Jaalm: A reactionary emotion that comes after extreme levels of panic, anger, or excitement. Usually asked for by an observer, i.e. "Yo! You need to JAALM DOWN!!`
-        );
+        if (Math.floor(Math.random() * 2) == 0) {
+            broadcast(
+                null,
+                `Jaalm: A reactionary emotion that comes after extreme levels of panic, anger, or excitement. Usually asked for by an observer, i.e. "Yo! You need to JAALM DOWN!!"`
+            );
+        } else {
+            broadcast(null, `${userName}! You need to JAALM DOWN!.`);
+        }
 
         usercommands.log(`Defining ${word} for ${userName}`);
         return;
