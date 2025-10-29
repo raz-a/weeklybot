@@ -415,7 +415,7 @@ async function define(args: string[], state: UserCommandState) {
     }
 
     if (word.toLowerCase() == "uppies" || word.toLowerCase() == "uppy") {
-        broadcast(null, `{userName}, we DON'T do that here.`);
+        broadcast(null, `${userName}, we DON'T do that here.`);
         usercommands.log(`Defining ${word} for ${userName}`);
         return;
     }
