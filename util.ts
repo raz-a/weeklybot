@@ -2,7 +2,11 @@
 import { HelixChatUserColor } from "@twurple/api";
 import { chatClient, apiClient } from "./client.js";
 import { UI, UseUI } from "./ui.js";
-import { getBroadcasterChannels, getBroadcasterIdFromChannel } from "./broadcaster.js";
+import {
+    getBroadcasterChannels,
+    getBroadcasterIdFromChannel,
+    getFirstBroadcasterChannel,
+} from "./broadcaster.js";
 import { ChatUser } from "@twurple/chat";
 import { Console } from "console";
 
@@ -59,12 +63,27 @@ export async function timeout(
     }
 }
 
+let relayEnabled = true;
+
+export function setRelayMode(enabled: boolean) {
+    relayEnabled = enabled;
+}
+
+export function getRelayMode(): boolean {
+    return relayEnabled;
+}
+
 export async function broadcast(excludeChannel: string | null, msg: string) {
     var promises: Promise<void>[] = [];
-    for (const channel of getBroadcasterChannels()) {
-        if (channel != excludeChannel) {
-            promises.push(send(channel, msg));
+
+    if (getRelayMode()) {
+        for (const channel of getBroadcasterChannels()) {
+            if (channel != excludeChannel) {
+                promises.push(send(channel, msg));
+            }
         }
+    } else if (excludeChannel === null) {
+        promises.push(send(getFirstBroadcasterChannel()!, msg));
     }
 
     await Promise.all(promises);

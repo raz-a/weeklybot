@@ -1,6 +1,6 @@
 // Contains commands usable from the terminal.
 
-import { broadcast, clipIt, weeklyBotPrint } from "./util.js";
+import { broadcast, clipIt, getRelayMode, setRelayMode, weeklyBotPrint } from "./util.js";
 import { Command, CommandSet } from "./commands.js";
 import { PoopCam } from "./poopcam.js";
 import { UI, UseUI } from "./ui.js";
@@ -23,8 +23,31 @@ export const termcommands = new CommandSet(
     new Command(rate, "Sets the poopcam rate limit in seconds"),
     new Command(add, "Adds a channel to the WeeklyBot chat."),
     new Command(remove, "Removes a channel from the WeeklyBot chat."),
-    new Command(list, "Gets the list of broadcasters currently connected.")
+    new Command(list, "Gets the list of broadcasters currently connected."),
+    new Command(
+        relay,
+        "[on|off] Enables or disables message relaying to all connected broadcasters."
+    )
 );
+
+function relay(args: string[], state: undefined) {
+    if (args.length < 1) {
+        weeklyBotPrint(`Relay mode is currently ${getRelayMode() ? "ON" : "OFF"}`);
+        return;
+    }
+
+    const option = args[0].toLowerCase();
+
+    if (option === "on") {
+        setRelayMode(true);
+        weeklyBotPrint("Relay mode enabled.");
+    } else if (option === "off") {
+        setRelayMode(false);
+        weeklyBotPrint("Relay mode disabled.");
+    } else {
+        weeklyBotPrint("Invalid option. Use 'on' or 'off'.");
+    }
+}
 
 function help(args: string[], state: undefined) {
     weeklyBotPrint("Available commands: ");

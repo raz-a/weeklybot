@@ -54,7 +54,7 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
     // Check for benis....
     if (lowercase.includes("benis")) {
         weeklyBotPrint("b*nis detected");
-        chatClient.say(target, `Yo ${user}. What the fuck is wrong with you?`);
+        broadcast(null, `Yo ${user}. What the fuck is wrong with you?`);
         timeout(null, userInfo, 10, "Bro you can't say that shit here");
 
         return;
@@ -62,7 +62,7 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
 
     if (lowercase.includes("taco bell") || lowercase.includes("tacobell")) {
         weeklyBotPrint("taco bell detected");
-        chatClient.say(target, `Yo ${user}. We don't support any discussion of Taco Bell here.`);
+        broadcast(null, `Yo ${user}. We don't support any discussion of Taco Bell here.`);
         timeout(null, userInfo, 5, "No Taco Bell discussion allowed");
 
         return;

@@ -31,6 +31,15 @@ export function getBroadcasterChannels(): IterableIterator<string> {
     return broadcasterSet.keys();
 }
 
+export function getFirstBroadcasterChannel(): string | null {
+    const first = getBroadcasterChannels().next();
+    if (!first.done) {
+        return first.value;
+    }
+
+    return null;
+}
+
 export function getBroadcasterIds(): IterableIterator<HelixUser> {
     return broadcasterSet.values();
 }
