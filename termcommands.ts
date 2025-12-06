@@ -10,6 +10,7 @@ import {
     isBroadcasterAdded,
     removeBroadcaster,
 } from "./broadcaster.js";
+import { FeatureRequestDB } from "./feature_requests.js";
 
 export const termcommands = new CommandSet(
     "Terminal Command",
@@ -27,8 +28,20 @@ export const termcommands = new CommandSet(
     new Command(
         relay,
         "[on|off] Enables or disables message relaying to all connected broadcasters."
-    )
+    ),
+    new Command(requests, "Gets the list of requested features.")
 );
+
+async function requests(args: string[], state: undefined) {
+    if (args.length == 2 && args[0].toLocaleLowerCase() === "delete" && !isNaN(+args[1])) {
+        await FeatureRequestDB.RemoveRequestByIndex(+args[1]);
+        weeklyBotPrint(`Deleted feature request #${+args[1]}`);
+        return;
+    }
+
+    let requests = await FeatureRequestDB.GetRequests();
+    weeklyBotPrint(`${requests}`);
+}
 
 function relay(args: string[], state: undefined) {
     if (args.length < 1) {

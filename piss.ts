@@ -43,6 +43,8 @@ export abstract class PissStreak {
             "wet myself",
             "wet my pants",
             "i did a pissigi",
+            "am pissing myself",
+            "am pissing my pants",
         ];
 
         // Check if any of the phrases match directly

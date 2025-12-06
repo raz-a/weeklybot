@@ -9,12 +9,12 @@ import {
     getRandomColor,
     broadcastLater,
 } from "./util.js";
-import * as fs from "fs";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
 import { PoopCam } from "./poopcam.js";
 import { PissStreak } from "./piss.js";
 import { define_word } from "./dictionary.js";
+import { FeatureRequestDB } from "./feature_requests.js";
 
 export type UserCommandState = { channel: string; user: ChatUser };
 
@@ -45,7 +45,7 @@ export const usercommands = new CommandSet(
     new Command(discord, "Get access to the Discord!"),
     new Command(zoop, "Testing out the zoop"),
     new Command(extension, "Get the WeeklyBot Chrome Extension!"),
-    new Command(rules, "Get the 2025 BeerioKart rules")
+    new Command(rules, "Get Pokemon Soullocke rules")
 );
 
 async function rules(args: string[], state: UserCommandState) {
@@ -270,15 +270,12 @@ function plates(args: string[], state: UserCommandState) {
     );
 }
 
-function request(args: string[], state: UserCommandState) {
+async function request(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     let request = args.join(" ");
     usercommands.log(`${userName} is requesting a feature: ${request}`);
 
-    fs.appendFileSync(
-        "./requests.txt",
-        `[${new Date().toLocaleString()}] ${userName} - ${request} \n`
-    );
+    await FeatureRequestDB.AddNewRequest(userName, request);
     broadcast("Feature requested!");
 }
 
