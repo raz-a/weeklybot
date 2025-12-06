@@ -27,7 +27,7 @@ async function ban(args: string[], mod: ChatUser) {
             if (user !== null) {
                 for (const broadcaster of getBroadcasterIds()) {
                     if (user.id === broadcaster.id) {
-                        broadcast(null, "Broadcasters cannot be banned.");
+                        broadcast("Broadcasters cannot be banned.");
                         return;
                     }
                 }
@@ -48,15 +48,15 @@ async function ban(args: string[], mod: ChatUser) {
                     }
                 }
             } else {
-                broadcast(null, `${userToBeBanned} could not be found`);
+                broadcast(`${userToBeBanned} could not be found`);
             }
         } catch (err) {
             weeklyBotPrint(`Error: ${err}`);
-            broadcast(null, `Cannot ban ${userToBeBanned}`);
+            broadcast(`Cannot ban ${userToBeBanned}`);
         }
     } else {
         modcommands.log(`${mod.displayName} is attempting to ban nobody?`);
-        broadcast(null, `${mod.displayName}, you forgot to mention who you wanted to ban...`);
+        broadcast(`${mod.displayName}, you forgot to mention who you wanted to ban...`);
     }
 }
 
@@ -75,14 +75,14 @@ async function unban(args: string[], mod: ChatUser) {
                     );
                 }
             } else {
-                broadcast(null, `${userToBeUnbanned} could not be found`);
+                broadcast(`${userToBeUnbanned} could not be found`);
             }
         } catch (err) {
             weeklyBotPrint(`Error: ${err}`);
-            broadcast(null, `Cannot unban ${userToBeUnbanned}`);
+            broadcast(`Cannot unban ${userToBeUnbanned}`);
         }
     } else {
         modcommands.log(`${mod.displayName} is attempting to unban nobody?`);
-        broadcast(null, `${mod.displayName}, you forgot to mention who you wanted to unban...`);
+        broadcast(`${mod.displayName}, you forgot to mention who you wanted to unban...`);
     }
 }

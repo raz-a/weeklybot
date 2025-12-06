@@ -73,25 +73,37 @@ export function getRelayMode(): boolean {
     return relayEnabled;
 }
 
-export async function broadcast(excludeChannel: string | null, msg: string) {
+export async function relay(sourceChannel: string, msg: string) {
     var promises: Promise<void>[] = [];
 
     if (getRelayMode()) {
         for (const channel of getBroadcasterChannels()) {
-            if (channel != excludeChannel) {
+            if (channel != sourceChannel) {
                 promises.push(send(channel, msg));
             }
         }
-    } else if (excludeChannel === null) {
+    }
+
+    await Promise.all(promises);
+}
+
+export async function broadcast(msg: string) {
+    var promises: Promise<void>[] = [];
+
+    if (getRelayMode()) {
+        for (const channel of getBroadcasterChannels()) {
+            promises.push(send(channel, msg));
+        }
+    } else {
         promises.push(send(getFirstBroadcasterChannel()!, msg));
     }
 
     await Promise.all(promises);
 }
 
-export async function broadcastLater(excludeChannel: string | null, msg: string, delayMs: number) {
+export async function broadcastLater(msg: string, delayMs: number) {
     setTimeout(() => {
-        broadcast(excludeChannel, msg);
+        broadcast(msg);
         weeklyBotPrint(`[Delayed Print Message]: ${msg}`);
     }, delayMs);
 }

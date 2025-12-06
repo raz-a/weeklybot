@@ -54,7 +54,7 @@ async function rules(args: string[], state: UserCommandState) {
     usercommands.log(`${userName} asked for the rules.`);
     let msg = `Soullocke rules: Faint = Release. Can only catch first encounter of each area (must release it if anyone fails). Pokemon are linked by name across our 3 games, if one dies other players are forced to release it too (boxing also synced). Level cap of 15 + badges x5, must release if go over. Forced set, no research, no reloading.`;
 
-    broadcast(null, msg);
+    broadcast(msg);
 }
 
 async function extension(args: string[], state: UserCommandState) {
@@ -62,14 +62,14 @@ async function extension(args: string[], state: UserCommandState) {
     usercommands.log(`${userName} asked for the extension`);
 
     let msg = `Get the WeeklyBot Enhanced Experience Extension (WEEE) at https://chromewebstore.google.com/detail/weeklybot-enhanced-experi/nfpaddhfkphlpokknlhbjhinadpkgihn`;
-    broadcast(null, msg);
+    broadcast(msg);
 }
 
 async function zoop(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     usercommands.log(`${userName} asked for a zoop.`);
 
-    broadcast(null, `ZOOP! -Love ${userName}`);
+    broadcast(`ZOOP! -Love ${userName}`);
 }
 
 async function discord(args: string[], state: UserCommandState) {
@@ -92,7 +92,7 @@ async function destro450(args: string[], state: UserCommandState) {
     usercommands.log(`Preaching the Gospel of Destro to ${userName} (4:50).`);
 
     const msg = `My sons, we have gotten better. (Destro 4:50)`;
-    broadcast(null, msg);
+    broadcast(msg);
 }
 
 async function destro1259(args: string[], state: UserCommandState) {
@@ -101,7 +101,7 @@ async function destro1259(args: string[], state: UserCommandState) {
     usercommands.log(`Preaching the Gospel of Destro to ${userName} (12:59).`);
 
     const msg = `I demand the succulent meat of your finest mare! (Destro 12:59)`;
-    broadcast(null, msg);
+    broadcast(msg);
 }
 
 async function pissStreak(args: string[], state: UserCommandState) {
@@ -111,7 +111,7 @@ async function pissStreak(args: string[], state: UserCommandState) {
     usercommands.log(`Letting ${userName} know its been ${daysSince} days since the last piss.`);
 
     const msg = `DAYS WITHOUT CHAT PISSING THEMSELVES: [${daysSince}]`;
-    broadcast(null, msg);
+    broadcast(msg);
 }
 
 async function pissCheck(args: string[], state: UserCommandState) {
@@ -152,7 +152,7 @@ function getCommandsString() {
 function bingo(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     usercommands.log(`Printing Bingo Board for ${userName}`);
-    broadcast(null, `Mario Kart 64 Bingo Board: https://mfbc.us/m/wjqhjrq`);
+    broadcast(`Mario Kart 64 Bingo Board: https://mfbc.us/m/wjqhjrq`);
 }
 
 function selectALevel(args: string[], state: UserCommandState) {
@@ -167,7 +167,7 @@ function selectALevel(args: string[], state: UserCommandState) {
     ];
 
     let msg = messages[Math.floor(Math.random() * messages.length)];
-    broadcast(null, msg);
+    broadcast(msg);
 }
 
 async function poopCamInternal(args: string[], state: UserCommandState) {
@@ -184,16 +184,15 @@ async function poopCamInternal(args: string[], state: UserCommandState) {
 
     const totalRequests = await PoopCam.getTotalRequests();
     if (totalRequests == 1) {
-        broadcast(null, `PoopCam (TM) has been requested 1 time. Keep it up!`);
+        broadcast(`PoopCam (TM) has been requested 1 time. Keep it up!`);
     } else {
-        broadcast(null, `PoopCam (TM) has been requested ${totalRequests} times. Keep it up!`);
+        broadcast(`PoopCam (TM) has been requested ${totalRequests} times. Keep it up!`);
     }
 
     const newTopCammer = await PoopCam.getTopCammer();
 
     if (newTopCammer !== topCammer && newTopCammer !== undefined) {
         broadcast(
-            null,
             `${newTopCammer.userName} is now the #1 poopcammer with ${newTopCammer.requestCount} requests!`
         );
     }
@@ -238,7 +237,7 @@ async function stats(args: string[], state: UserCommandState) {
         }
     }
 
-    broadcast(null, msg);
+    broadcast(msg);
 }
 
 function isItWednesday(args: string[], state: UserCommandState) {
@@ -247,9 +246,9 @@ function isItWednesday(args: string[], state: UserCommandState) {
 
     let d = new Date();
     if (d.getDay() === 3) {
-        broadcast(null, "IT IS WEDNESDAY!!!! WOOHOO!!!!");
+        broadcast("IT IS WEDNESDAY!!!! WOOHOO!!!!");
     } else {
-        broadcast(null, "It's not Wednesday yet :(");
+        broadcast("It's not Wednesday yet :(");
     }
 }
 
@@ -267,7 +266,6 @@ function plates(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     usercommands.log(`${userName} is commenting on plates`);
     broadcast(
-        null,
         "Plates are an archaic invention. A bowl can do the exact same thing, but with protective walls. Did you buy the ice cream I asked for? My 20% down payment for it is on the counter. I spent the rest of my money on this small ax."
     );
 }
@@ -281,7 +279,7 @@ function request(args: string[], state: UserCommandState) {
         "./requests.txt",
         `[${new Date().toLocaleString()}] ${userName} - ${request} \n`
     );
-    broadcast(null, "Feature requested!");
+    broadcast("Feature requested!");
 }
 
 export var LoveStats: { [key: string]: number } = {};
@@ -294,32 +292,33 @@ function love(args: string[], state: UserCommandState) {
 
     switch (++LoveStats[userName]) {
         default:
-            broadcast(null, `I love you ${userName}!`);
+            broadcast(`I love you ${userName}!`);
             break;
 
         case 5:
-            broadcast(null, `I love you ${userName}.`);
+            broadcast(`I love you ${userName}.`);
             break;
 
         case 6:
-            broadcast(null, `I love you ${userName}...`);
+            broadcast(`I love you ${userName}...`);
             break;
 
         case 7:
-            broadcast(null, `I love you ${userName}, but this is getting a bit much...`);
+            broadcast(`I love you ${userName}, but this is getting a bit much...`);
             break;
 
         case 8:
-            broadcast(null, `${userName} you gotta learn to love yourself.`);
+            broadcast(`${userName} you gotta learn to love yourself.`);
             break;
 
         case 9:
-            broadcast(null, `Yo ${userName}, you gotta stop with this. I'm warning you.`);
+            broadcast(`Yo ${userName}, you gotta stop with this. I'm warning you.`);
             break;
 
         case 10:
-            broadcast(null, `${userName} you messed up by asking for too much love.`);
+            broadcast(`${userName} you messed up by asking for too much love.`);
             timeout(null, state.user, 10, "You are too desperate for love.");
+            delete LoveStats[userName];
             break;
     }
 
@@ -350,15 +349,15 @@ function hate(args: string[], state: UserCommandState) {
     ];
     let msg = messages[Math.floor(Math.random() * messages.length)];
     LoveStats[userName] = 0;
-    broadcast(null, msg);
+    broadcast(msg);
 }
 
 function leaderboard(args: string[], state: UserCommandState) {
-    broadcast(null, "SM64 Co-Op Speedrun Leaderboard: https://www.speedrun.com/sm64coop");
+    broadcast("SM64 Co-Op Speedrun Leaderboard: https://www.speedrun.com/sm64coop");
 }
 
 function bummer(args: string[], state: UserCommandState) {
-    broadcast(null, "bummer");
+    broadcast("bummer");
     usercommands.log("bummer");
 }
 
@@ -367,7 +366,7 @@ function popcam(args: string[], state: UserCommandState) {
 
     let msg = `popcam? POPCAM?!?!?!? You think this is funny, ${userName}? YOU BETTER WATCH YOURSELF YOU LITTLE SHIT!`;
 
-    broadcast(null, msg);
+    broadcast(msg);
     timeout(null, state.user, 6, "WHAT THE HECK IS POPCAM???");
 
     const ONE_MINUTE_MS = 60 * 1000;
@@ -375,7 +374,7 @@ function popcam(args: string[], state: UserCommandState) {
 
     let waitTime = Math.floor(Math.random() * NINE_MINUTES_MS) + ONE_MINUTE_MS;
     msg = `${userName}, dont think I forgot about that "popcam" bullshit. WeeklyBot NEVER forgets`;
-    broadcastLater(null, msg, waitTime);
+    broadcastLater(msg, waitTime);
 
     usercommands.log(
         `${userName} POPCAM!?!?!?!? Will remind about this situation in ${Math.round(
@@ -395,7 +394,7 @@ async function define(args: string[], state: UserCommandState) {
     }
 
     if (msg != null) {
-        broadcast(null, msg);
+        broadcast(msg);
         usercommands.log(`Invalid definition request from ${userName}`);
         return;
     }
@@ -406,7 +405,6 @@ async function define(args: string[], state: UserCommandState) {
     if (word.toLowerCase() == "poopcam") {
         if (Math.floor(Math.random() * 10) == 0) {
             broadcast(
-                null,
                 `PoopCam: "A staple of the Naircat Twitch Stream. A camera is placed precariously by his bathroom sink with a mostly blocked view of the toilet. It has not been disclosed what happens once the camera begins recording.`
             );
             usercommands.log(`Defining ${word} for ${userName}`);
@@ -415,7 +413,7 @@ async function define(args: string[], state: UserCommandState) {
     }
 
     if (word.toLowerCase() == "uppies" || word.toLowerCase() == "uppy") {
-        broadcast(null, `${userName}, we DON'T do that here.`);
+        broadcast(`${userName}, we DON'T do that here.`);
         usercommands.log(`Defining ${word} for ${userName}`);
         return;
     }
@@ -423,11 +421,10 @@ async function define(args: string[], state: UserCommandState) {
     if (word.toLowerCase() == "jaalm") {
         if (Math.floor(Math.random() * 2) == 0) {
             broadcast(
-                null,
                 `Jaalm: A reactionary emotion that comes after extreme levels of panic, anger, or excitement. Usually asked for by an observer, i.e. "Yo! You need to JAALM DOWN!!"`
             );
         } else {
-            broadcast(null, `${userName}! You need to JAALM DOWN!.`);
+            broadcast(`${userName}! You need to JAALM DOWN!.`);
         }
 
         usercommands.log(`Defining ${word} for ${userName}`);
@@ -439,7 +436,7 @@ async function define(args: string[], state: UserCommandState) {
     const definitions = await define_word(word);
 
     if (definitions.length == 0) {
-        broadcast(null, `I have no clue what ${word} means.`);
+        broadcast(`I have no clue what ${word} means.`);
         return;
     }
 
@@ -452,5 +449,5 @@ async function define(args: string[], state: UserCommandState) {
         msg += ` (${otherDefinitionsCount} additional definitions)`;
     }
 
-    broadcast(null, msg);
+    broadcast(msg);
 }

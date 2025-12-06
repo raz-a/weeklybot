@@ -66,7 +66,7 @@ async function exit(args: string[], state: undefined) {
         msg = "Thanks for watching! Weeklybot out!";
     }
 
-    await broadcast(null, msg);
+    await broadcast(msg);
     process.exit(0);
 }
 
@@ -105,7 +105,7 @@ function rate(args: string[], state: undefined) {
     }
 
     weeklyBotPrint(`Set rate limit to ${seconds} seconds`);
-    broadcast(null, `Poopcam (TM) Rate limit is now ${seconds} seconds`);
+    broadcast(`Poopcam (TM) Rate limit is now ${seconds} seconds`);
 }
 
 async function add(args: string[], state: undefined) {
@@ -116,7 +116,7 @@ async function add(args: string[], state: undefined) {
         msg = `${channel} is already in WeeklyBot chat.`;
     } else if (await addBroadcaster(channel)) {
         msg = `Added ${channel} to WeeklyBot chat!`;
-        broadcast(null, msg);
+        broadcast(msg);
     } else {
         msg = `Could not add ${channel} to WeeklyBot chat.`;
     }

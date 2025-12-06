@@ -1,7 +1,7 @@
 import chalk from "chalk";
 
 import { chatClient, apiClient, PrivateMessage } from "./client.js";
-import { weeklyBotPrint, broadcast, timeout, me, get_wb_color } from "./util.js";
+import { weeklyBotPrint, broadcast, timeout, me, get_wb_color, relay } from "./util.js";
 import { usercommands } from "./usercommands.js";
 import { termcommands } from "./termcommands.js";
 import { modcommands } from "./modcommands.js";
@@ -54,7 +54,7 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
     // Check for benis....
     if (lowercase.includes("benis")) {
         weeklyBotPrint("b*nis detected");
-        broadcast(null, `Yo ${user}. What the fuck is wrong with you?`);
+        broadcast(`Yo ${user}. What the fuck is wrong with you?`);
         timeout(null, userInfo, 10, "Bro you can't say that shit here");
 
         return;
@@ -62,7 +62,7 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
 
     if (lowercase.includes("taco bell") || lowercase.includes("tacobell")) {
         weeklyBotPrint("taco bell detected");
-        broadcast(null, `Yo ${user}. We don't support any discussion of Taco Bell here.`);
+        broadcast(`Yo ${user}. We don't support any discussion of Taco Bell here.`);
         timeout(null, userInfo, 5, "No Taco Bell discussion allowed");
 
         return;
@@ -74,8 +74,8 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
         weeklyBotPrint(`${chalk.hex("#FFFFFF")(user + `:`)} ${text}`);
     }
 
-    // Broadcast to all other channels.
-    broadcast(target.slice(1), `【${user}】 ${text}`);
+    // Relay  to all other channels.
+    relay(target.slice(1), `【${user}】 ${text}`);
 
     if (await modcommands.processInput(text, userInfo)) {
         return;
@@ -92,7 +92,7 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
 // Allow for commandline text input.
 async function onTextInput(cmd: string) {
     if (!(await termcommands.processInput(cmd.toString().trim(), undefined))) {
-        await broadcast(null, cmd);
+        await broadcast(cmd);
         weeklyBotPrint(`${chalk.hex(get_wb_color())("WeeklyBot:")} ${cmd}`);
     }
 }
@@ -114,5 +114,5 @@ async function nonCommandProcessInput(text: string) {
 async function handlePissMessage(daysSince: number) {
     const msg = `DAYS WITHOUT CHAT PISSING THEMSELVES: [̶ ̶${daysSince}\u{0336} ̶]̶ [0]`;
     weeklyBotPrint("PISSER DETECTED");
-    broadcast(null, msg);
+    broadcast(msg);
 }
