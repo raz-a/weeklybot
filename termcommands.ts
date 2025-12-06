@@ -40,7 +40,9 @@ async function requests(args: string[], state: undefined) {
     }
 
     let requests = await FeatureRequestDB.GetRequests();
-    weeklyBotPrint(`${requests}`);
+    requests.forEach((request, index) => {
+        weeklyBotPrint(`[${index}]: {${request}}`);
+    });
 }
 
 function relay(args: string[], state: undefined) {
