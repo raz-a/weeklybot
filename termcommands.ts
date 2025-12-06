@@ -41,7 +41,7 @@ async function requests(args: string[], state: undefined) {
 
     let requests = await FeatureRequestDB.GetRequests();
     requests.forEach((request, index) => {
-        weeklyBotPrint(`[${index}]: {${request}}`);
+        weeklyBotPrint(`[${index}]: ${JSON.stringify(request)}`);
     });
 }
 
