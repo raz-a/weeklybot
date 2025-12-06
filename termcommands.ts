@@ -40,6 +40,13 @@ async function requests(args: string[], state: undefined) {
     }
 
     let requests = await FeatureRequestDB.GetRequests();
+
+    if (requests.length == 0) {
+        weeklyBotPrint("No requests.");
+        return;
+    }
+
+    weeklyBotPrint("Requested Features:");
     requests.forEach((request, index) => {
         weeklyBotPrint(`[${index}]: ${JSON.stringify(request)}`);
     });
