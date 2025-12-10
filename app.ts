@@ -1,12 +1,20 @@
 import chalk from "chalk";
 
 import { chatClient, apiClient, PrivateMessage } from "./client.js";
-import { weeklyBotPrint, broadcast, timeout, me, get_wb_color, relay } from "./util.js";
+import {
+    weeklyBotPrint,
+    broadcast,
+    timeout,
+    me,
+    get_wb_color,
+    relay,
+    getRelayMode,
+} from "./util.js";
 import { usercommands } from "./usercommands.js";
 import { termcommands } from "./termcommands.js";
 import { modcommands } from "./modcommands.js";
 import { UI, UseUI } from "./ui.js";
-import { addBroadcaster } from "./broadcaster.js";
+import { addBroadcaster, getFirstBroadcasterChannel } from "./broadcaster.js";
 import { PissStreak } from "./piss.js";
 
 if (UseUI) {
@@ -43,6 +51,12 @@ chatClient.onRegister(async () => {
 chatClient.connect();
 
 async function onMessageHandler(target: string, user: string, text: string, msg: PrivateMessage) {
+    if (!getRelayMode()) {
+        if (target.slice(1).toLowerCase() != getFirstBroadcasterChannel()) {
+            return;
+        }
+    }
+
     var userInfo = msg.userInfo;
 
     if (isFilteredUser(user)) {
