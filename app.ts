@@ -14,7 +14,7 @@ import { usercommands } from "./usercommands.js";
 import { termcommands } from "./termcommands.js";
 import { modcommands } from "./modcommands.js";
 import { UI, UseUI } from "./ui.js";
-import { addBroadcaster, getFirstBroadcasterChannel } from "./broadcaster.js";
+import { addBroadcaster, broadcastercommands, getFirstBroadcasterChannel } from "./broadcaster.js";
 import { PissStreak } from "./piss.js";
 
 if (UseUI) {
@@ -90,6 +90,10 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
 
     // Relay  to all other channels.
     relay(target.slice(1), `【${user}】 ${text}`);
+
+    if (await broadcastercommands.processInput(text, userInfo)) {
+        return;
+    }
 
     if (await modcommands.processInput(text, userInfo)) {
         return;
