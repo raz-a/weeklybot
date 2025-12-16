@@ -70,7 +70,7 @@ async function reboot(args: string[], broadcaster: ChatUser) {
 
     broadcastercommands.log(`${channel} ~reboot`);
 
-    broadcast("WeeklyBot is rebooting...");
+    await broadcast("WeeklyBot is rebooting...");
 
     process.exit(0);
 }
