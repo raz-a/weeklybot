@@ -1,5 +1,8 @@
 import { HelixUser } from "@twurple/api";
 import { apiClient, chatClient } from "./client.js";
+import { Command, CommandSet } from "./commands.js";
+import { ChatUser } from "@twurple/chat";
+import { broadcast, getRelayMode, send, setRelayMode, weeklyBotPrint } from "./util.js";
 
 let broadcasterSet = new Map<string, HelixUser>();
 
@@ -23,6 +26,10 @@ export async function addBroadcaster(channel: string): Promise<boolean> {
 }
 
 export function removeBroadcaster(channel: string): boolean {
+    if (channel == "razstrats") {
+        return false;
+    }
+
     chatClient.part(channel);
     return broadcasterSet.delete(channel);
 }
@@ -42,4 +49,84 @@ export function getFirstBroadcasterChannel(): string | null {
 
 export function getBroadcasterIds(): IterableIterator<HelixUser> {
     return broadcasterSet.values();
+}
+
+export const broadcastercommands = new CommandSet(
+    "Broadcaster Command",
+    "~",
+    isBroadcaster,
+    new Command(add, "Adds a channel to the WeeklyBot chat."),
+    new Command(remove, "Removes a channel from the WeeklyBot chat."),
+    new Command(list, "Gets the list of broadcasters currently connected."),
+    new Command(
+        relay,
+        "[on|off] Enables or disables message relaying to all connected broadcasters."
+    )
+    // Add broadcaster command is in termcommands.ts
+);
+
+async function isBroadcaster(broadcaster: ChatUser) {
+    return broadcaster.isBroadcaster;
+}
+
+function relay(args: string[], broadcaster: ChatUser) {
+    let channel = broadcaster.userName;
+
+    broadcastercommands.log(`${channel} !relay`);
+
+    if (args.length < 1) {
+        send(channel, `Relay mode is currently ${getRelayMode() ? "ON" : "OFF"}`);
+        return;
+    }
+
+    const option = args[0].toLowerCase();
+
+    if (option === "on") {
+        setRelayMode(true);
+        send(channel, "Relay mode enabled.");
+    } else if (option === "off") {
+        setRelayMode(false);
+        send(channel, "Relay mode disabled.");
+    } else {
+        send(channel, "Invalid option. Use 'on' or 'off'.");
+    }
+}
+async function add(args: string[], broadcaster: ChatUser) {
+    let channel = args[0];
+
+    broadcastercommands.log(`${broadcaster.userName} !add ${channel}`);
+
+    var msg;
+    if (isBroadcasterAdded(channel)) {
+        msg = `${channel} is already in WeeklyBot chat.`;
+    } else if (await addBroadcaster(channel)) {
+        msg = `Added ${channel} to WeeklyBot chat!`;
+    } else {
+        msg = `Could not add ${channel} to WeeklyBot chat.`;
+    }
+
+    broadcast(msg);
+}
+
+function remove(args: string[], broadcaster: ChatUser) {
+    let channel = args[0];
+
+    broadcastercommands.log(`${broadcaster.userName} !remove ${channel}`);
+
+    if (removeBroadcaster(channel)) {
+        broadcast(`Removed ${channel} from the WeeklyBot chat`);
+    } else {
+        broadcast(`Could not remove ${channel} from the WeeklyBot chat`);
+    }
+}
+
+function list(args: string[], broadcaster: ChatUser) {
+    broadcastercommands.log(`${broadcaster.userName} !list`);
+
+    let msg = "Broadcasters in WeeklyBot chat: ";
+    for (const channel of getBroadcasterChannels()) {
+        msg += `${channel} `;
+    }
+
+    broadcast(msg);
 }
