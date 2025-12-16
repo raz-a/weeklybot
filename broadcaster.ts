@@ -61,9 +61,19 @@ export const broadcastercommands = new CommandSet(
     new Command(
         relay,
         "[on|off] Enables or disables message relaying to all connected broadcasters."
-    )
-    // Add broadcaster command is in termcommands.ts
+    ),
+    new Command(reboot, "Reboots WeeklyBot")
 );
+
+async function reboot(args: string[], broadcaster: ChatUser) {
+    let channel = broadcaster.userName;
+
+    broadcastercommands.log(`${channel} ~reboot`);
+
+    broadcast("WeeklyBot is rebooting...");
+
+    process.exit(0);
+}
 
 async function isBroadcaster(broadcaster: ChatUser) {
     return broadcaster.isBroadcaster;
@@ -72,7 +82,7 @@ async function isBroadcaster(broadcaster: ChatUser) {
 function relay(args: string[], broadcaster: ChatUser) {
     let channel = broadcaster.userName;
 
-    broadcastercommands.log(`${channel} !relay`);
+    broadcastercommands.log(`${channel} ~relay`);
 
     if (args.length < 1) {
         send(channel, `Relay mode is currently ${getRelayMode() ? "ON" : "OFF"}`);
@@ -94,7 +104,7 @@ function relay(args: string[], broadcaster: ChatUser) {
 async function add(args: string[], broadcaster: ChatUser) {
     let channel = args[0];
 
-    broadcastercommands.log(`${broadcaster.userName} !add ${channel}`);
+    broadcastercommands.log(`${broadcaster.userName} ~add ${channel}`);
 
     var msg;
     if (isBroadcasterAdded(channel)) {
@@ -111,7 +121,7 @@ async function add(args: string[], broadcaster: ChatUser) {
 function remove(args: string[], broadcaster: ChatUser) {
     let channel = args[0];
 
-    broadcastercommands.log(`${broadcaster.userName} !remove ${channel}`);
+    broadcastercommands.log(`${broadcaster.userName} ~remove ${channel}`);
 
     if (removeBroadcaster(channel)) {
         broadcast(`Removed ${channel} from the WeeklyBot chat`);
@@ -121,7 +131,7 @@ function remove(args: string[], broadcaster: ChatUser) {
 }
 
 function list(args: string[], broadcaster: ChatUser) {
-    broadcastercommands.log(`${broadcaster.userName} !list`);
+    broadcastercommands.log(`${broadcaster.userName} ~list`);
 
     let msg = "Broadcasters in WeeklyBot chat: ";
     for (const channel of getBroadcasterChannels()) {
