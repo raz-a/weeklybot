@@ -3,7 +3,6 @@
 import { broadcast, clipIt, getRelayMode, setRelayMode, weeklyBotPrint } from "./util.js";
 import { Command, CommandSet } from "./commands.js";
 import { PoopCam } from "./poopcam.js";
-import { UI, UseUI } from "./ui.js";
 import {
     addBroadcaster,
     getBroadcasterChannels,
@@ -98,12 +97,8 @@ function clip(args: string[], state: undefined) {
 }
 
 function clear(args: string[], state: undefined) {
-    if (UseUI) {
-        UI.clear();
-    } else {
-        console.clear();
-        weeklyBotPrint("");
-    }
+    console.clear();
+    weeklyBotPrint("");
 }
 
 async function stats(args: string[], state: undefined) {

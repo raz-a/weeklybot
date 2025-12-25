@@ -13,16 +13,11 @@ import {
 import { usercommands } from "./usercommands.js";
 import { termcommands } from "./termcommands.js";
 import { modcommands } from "./modcommands.js";
-import { UI, UseUI } from "./ui.js";
 import { addBroadcaster, broadcastercommands, getFirstBroadcasterChannel } from "./broadcaster.js";
 import { PissStreak } from "./piss.js";
 
-if (UseUI) {
-    UI.init();
-    UI.onPromptAvailable(onTextInput);
-} else {
-    process.stdin.on("data", onTextInput);
-}
+// Register the text input handler.
+process.stdin.on("data", onTextInput);
 
 // Register the message handler.
 chatClient.onMessage(onMessageHandler);

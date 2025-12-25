@@ -1,7 +1,6 @@
 // Common utiliy functions.
 import { HelixChatUserColor } from "@twurple/api";
 import { chatClient, apiClient } from "./client.js";
-import { UI, UseUI } from "./ui.js";
 import {
     getBroadcasterChannels,
     getBroadcasterIdFromChannel,
@@ -13,11 +12,7 @@ import { Console } from "console";
 export const me = await apiClient.users.getMe();
 
 export function weeklyBotPrint(message: string) {
-    if (UseUI) {
-        UI.print(message);
-    } else {
-        console.log(message);
-    }
+    console.log(message);
 }
 
 let wb_color = "#FFFFFF";
