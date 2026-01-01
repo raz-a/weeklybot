@@ -5,7 +5,7 @@ module.exports = {
   deploy: {
     production: {
       'user' : 'raz',
-      'host' : '192.168.68.77',
+      'host' : 'weeklybot.lan',
       'ref'  : 'origin/main',
       'repo' : 'git@github.com:raz-a/weeklybot.git',
       'path' : '/home/raz/weeklybot',
