@@ -81,13 +81,13 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
     }
 
     if (userInfo.color) {
-        weeklyBotPrint(`${chalk.hex(userInfo.color)(user + `:`)} ${text}`);
+        weeklyBotPrint(`${chalk.hex(userInfo.color)(userInfo.displayName + `:`)} ${text}`);
     } else {
-        weeklyBotPrint(`${chalk.hex("#FFFFFF")(user + `:`)} ${text}`);
+        weeklyBotPrint(`${chalk.hex("#FFFFFF")(userInfo.displayName + `:`)} ${text}`);
     }
 
     // Relay  to all other channels.
-    relay(target.slice(1), `【${user}】 ${text}`);
+    relay(target.slice(1), `【${userInfo.displayName}】 ${text}`);
 
     if (await broadcastercommands.processInput(text, userInfo)) {
         return;
