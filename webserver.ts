@@ -7,7 +7,7 @@ class WebServer {
     #port: number;
     #handler?: CommandHandler;
 
-    constructor(port: number = 80) {
+    constructor(port: number = 3000) {
         this.#port = port;
 
         this.#expressApp = express();
@@ -23,4 +23,4 @@ class WebServer {
     async printMessage(msg: String) {}
 }
 
-export const webServer = new WebServer(3000);
+export const webServer = new WebServer();
