@@ -45,10 +45,13 @@ async function requests(args: string[], state: undefined) {
         return;
     }
 
-    weeklyBotPrint("Requested Features:");
+    let msg = "Requested Features:";
+
     requests.forEach((request, index) => {
-        weeklyBotPrint(`[${index}]: ${JSON.stringify(request)}`);
+        msg += `\n\t[${index}]: ${JSON.stringify(request)}`;
     });
+
+    weeklyBotPrint(msg);
 }
 
 function relay(args: string[], state: undefined) {
@@ -71,12 +74,13 @@ function relay(args: string[], state: undefined) {
 }
 
 function help(args: string[], state: undefined) {
-    weeklyBotPrint("Available commands: ");
+    var msg = "Available commands: ";
+
     for (const command of termcommands.getCommands()) {
-        weeklyBotPrint(
-            `\t${termcommands.prefix}${command} - ${termcommands.getDescription(command)}`
-        );
+        msg += `\n\t${termcommands.prefix}${command} - ${termcommands.getDescription(command)}`;
     }
+
+    weeklyBotPrint(msg);
 }
 
 async function exit(args: string[], state: undefined) {
@@ -98,6 +102,8 @@ function clip(args: string[], state: undefined) {
 
 function clear(args: string[], state: undefined) {
     console.clear();
+
+    // TODO: Send clear command to webserver.
     weeklyBotPrint("");
 }
 
@@ -107,7 +113,7 @@ async function stats(args: string[], state: undefined) {
         const cammer = await PoopCam.getCammerByRank(rank);
         if (cammer !== undefined) {
             msg = msg.concat(
-                `\n[${rank + 1}]: ${cammer.userName} - ${cammer.requestCount} request(s)`
+                `\n\t[${rank + 1}]: ${cammer.userName} - ${cammer.requestCount} request(s)`
             );
         }
     }
@@ -119,6 +125,7 @@ function rate(args: string[], state: undefined) {
     let seconds = Number(args[0]);
     if (isNaN(seconds) || !PoopCam.setRateLimit(seconds)) {
         weeklyBotPrint("Invalid limit provided");
+        return;
     }
 
     weeklyBotPrint(`Set rate limit to ${seconds} seconds`);
@@ -152,8 +159,10 @@ function remove(args: string[], state: undefined) {
 }
 
 function list(args: string[], state: undefined) {
-    weeklyBotPrint("Currently connected broadcasters:");
+    let msg = "Currently connected broadcasters:";
     for (const channel of getBroadcasterChannels()) {
-        weeklyBotPrint(channel);
+        msg += "\n\t" + channel;
     }
+
+    weeklyBotPrint(msg);
 }
