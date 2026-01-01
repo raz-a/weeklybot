@@ -26,10 +26,11 @@
   }
 
   function appendToMainBox(text) {
-    const line = String(text ?? '');
+    const line = Array.isArray(text) ? text.join('\n') : String(text ?? '');
+    const normalized = line.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
     const row = document.createElement('div');
     row.className = 'chatLine';
-    row.innerHTML = escapeHtml(line).replaceAll('\n', '<br>');
+    row.innerHTML = escapeHtml(normalized).replaceAll('\n', '<br>');
     mainBox.appendChild(row);
     mainBox.scrollTop = mainBox.scrollHeight;
   }
