@@ -73,6 +73,8 @@ body {
     border: 1px solid rgba(247, 230, 0, 0.22);
     background: linear-gradient(180deg, rgba(247, 230, 0, 0.14), rgba(247, 230, 0, 0.06));
     color: var(--text);
+    white-space: pre-wrap;
+    tab-size: 4;
 }
 
 .chatLine:nth-child(even) {
