@@ -2,7 +2,7 @@
   /** @type {import('socket.io-client').Socket | any} */
   const socket = io();
 
-  const mainBox = /** @type {HTMLTextAreaElement | null} */ (
+  const mainBox = /** @type {HTMLDivElement | null} */ (
     document.getElementById('mainBox')
   );
   const commandBox = /** @type {HTMLInputElement | null} */ (
@@ -16,9 +16,21 @@
     return;
   }
 
+  function escapeHtml(s) {
+    return String(s)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#39;');
+  }
+
   function appendToMainBox(text) {
     const line = String(text ?? '');
-    mainBox.value += (mainBox.value.length ? '\n' : '') + line;
+    const row = document.createElement('div');
+    row.className = 'chatLine';
+    row.innerHTML = escapeHtml(line).replaceAll('\n', '<br>');
+    mainBox.appendChild(row);
     mainBox.scrollTop = mainBox.scrollHeight;
   }
 
