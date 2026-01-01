@@ -6,12 +6,17 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <div>
-        <textarea id="mainBox" readonly></textarea>
-    </div>
-    <div>
-        <input id="commandBox" type="text" placeholder="Type your message here...">
-        <button id="sendBtn" type="button">Send</button>
+    <div class="chatShell">
+        <div class="chatHeader">WeeklyBot Chat</div>
+
+        <div class="chatBody">
+            <textarea id="mainBox" readonly></textarea>
+        </div>
+
+        <div class="chatInputRow">
+            <input id="commandBox" type="text" placeholder="Send a message" autocomplete="off">
+            <button id="sendBtn" type="button">Send</button>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
