@@ -23,4 +23,4 @@ class WebServer {
     async printMessage(msg: String) {}
 }
 
-export const webServer = new WebServer();
+export const webServer = new WebServer(3000);
