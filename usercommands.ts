@@ -18,6 +18,8 @@ import { FeatureRequestDB } from "./feature_requests.js";
 
 export type UserCommandState = { channel: string; user: ChatUser };
 
+// TODO: Search for log commands and Print weeklybot output instead of just log command
+
 export const usercommands = new CommandSet(
     "User Command",
     "!",
