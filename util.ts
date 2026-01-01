@@ -11,7 +11,10 @@ import { webServer } from "./webserver.js";
 
 export const me = await apiClient.users.getMe();
 
+// TODO: Make weeklyBotPrint have better customizable colors.
+
 export function weeklyBotPrint(message: string) {
+    // TODO: Remove console log.
     console.log(message);
     webServer.printMessage(message);
 }

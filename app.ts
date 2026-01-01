@@ -18,6 +18,7 @@ import { PissStreak } from "./piss.js";
 import { webServer } from "./webserver.js";
 
 // Register the text input handler.
+// TODO: Remove stdin.
 process.stdin.on("data", onTextInput);
 webServer.onCommand(onTextInput);
 
