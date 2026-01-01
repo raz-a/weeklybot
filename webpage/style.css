@@ -1,0 +1,14 @@
+#mainBox {
+    width: 100%;
+    max-width: 900px;
+    height: 420px;
+    overflow-y: auto;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+#commandBox {
+    width: 100%;
+    max-width: 900px;
+    box-sizing: border-box;
+}

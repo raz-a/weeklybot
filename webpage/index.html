@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>WeeklyBot Portal</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <div>
-        <textarea rows="20" cols="60" readonly></textarea>
+        <textarea id="mainBox" readonly></textarea>
     </div>
     <div>
-        <input type="text" size="60" placeholder="Type your message here...">
+        <input id="commandBox" type="text" placeholder="Type your message here...">
+        <button id="sendBtn" type="button">Send</button>
     </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/script.js"></script>
 </body>
 </html>

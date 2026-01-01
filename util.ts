@@ -7,12 +7,13 @@ import {
     getFirstBroadcasterChannel,
 } from "./broadcaster.js";
 import { ChatUser } from "@twurple/chat";
-import { Console } from "console";
+import { webServer } from "./webserver.js";
 
 export const me = await apiClient.users.getMe();
 
 export function weeklyBotPrint(message: string) {
     console.log(message);
+    webServer.printMessage(message);
 }
 
 let wb_color = "#FFFFFF";
