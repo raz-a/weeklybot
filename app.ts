@@ -15,9 +15,11 @@ import { termcommands } from "./termcommands.js";
 import { modcommands } from "./modcommands.js";
 import { addBroadcaster, broadcastercommands, getFirstBroadcasterChannel } from "./broadcaster.js";
 import { PissStreak } from "./piss.js";
+import { webServer } from "./webserver.js";
 
 // Register the text input handler.
 process.stdin.on("data", onTextInput);
+webServer.onCommand(onTextInput);
 
 // Register the message handler.
 chatClient.onMessage(onMessageHandler);

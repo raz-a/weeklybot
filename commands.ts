@@ -1,4 +1,3 @@
-import { ChatUser } from "@twurple/chat";
 import { weeklyBotPrint } from "./util.js";
 
 type CommandFn<CallingState> = (args: string[], state: CallingState) => void;
