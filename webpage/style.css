@@ -23,7 +23,7 @@ body {
                 radial-gradient(900px 700px at 90% 30%, rgba(247, 230, 0, 0.08), transparent 60%),
                 var(--bg);
     color: var(--text);
-    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
 }
 
 .chatShell {
@@ -63,8 +63,9 @@ body {
     resize: none;
     background: transparent;
     color: var(--text);
-    font-size: 14px;
-    line-height: 1.4;
+    font-size: 16px;
+    line-height: 1.5;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
     overflow-y: auto;
 }
 
