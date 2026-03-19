@@ -30,7 +30,8 @@ export const termcommands = new CommandSet(
         "[on|off] Enables or disables message relaying to all connected broadcasters."
     ),
     new Command(requests, "Gets the list of requested features."),
-    new Command(newdefine, "Adds a new meme definition. Usage: !newdefine <word> <definition>")
+    new Command(newdefine, "Adds a new meme definition. Usage: !newdefine <word> <definition>"),
+    new Command(deldefine, "Deletes meme definitions. Usage: !deldefine <word> [index|all]")
 );
 
 async function requests(args: string[], state: undefined) {
@@ -180,4 +181,49 @@ async function newdefine(args: string[], state: undefined) {
 
     await MemeDictionary.addDefinition(word, definition);
     weeklyBotPrint(`Added meme definition for "${word}": ${definition}`);
+}
+
+async function deldefine(args: string[], state: undefined) {
+    if (args.length < 1) {
+        weeklyBotPrint("Usage: !deldefine <word> [index]");
+        return;
+    }
+
+    const word = args[0];
+    const definitions = await MemeDictionary.getDefinitions(word);
+
+    if (definitions.length === 0) {
+        weeklyBotPrint(`No meme definitions found for "${word}".`);
+        return;
+    }
+
+    if (args.length < 2) {
+        let msg = `Meme definitions for "${word}":`;
+        definitions.forEach((def, i) => {
+            msg += `\n\t[${i}]: ${def}`;
+        });
+        msg += `\nUse !deldefine ${word} <index> to remove one, or !deldefine ${word} all to remove all.`;
+        weeklyBotPrint(msg);
+        return;
+    }
+
+    if (args[1].toLowerCase() === "all") {
+        await MemeDictionary.removeDefinition(word);
+        weeklyBotPrint(`Removed all meme definitions for "${word}".`);
+        return;
+    }
+
+    const index = Number(args[1]);
+    if (isNaN(index)) {
+        weeklyBotPrint("Invalid index. Provide a number or 'all'.");
+        return;
+    }
+
+    const removed = await MemeDictionary.removeDefinition(word, index);
+
+    if (removed) {
+        weeklyBotPrint(`Removed definition [${index}] for "${word}".`);
+    } else {
+        weeklyBotPrint(`Invalid index. "${word}" has ${definitions.length} definition(s) (0-${definitions.length - 1}).`);
+    }
 }

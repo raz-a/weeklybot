@@ -21,6 +21,33 @@ export abstract class MemeDictionary {
         await this.#db.push(`${this.#rootkey}/${key}`, existing);
     }
 
+    static async removeDefinition(word: string, index?: number): Promise<boolean> {
+        const key = word.toLowerCase();
+        try {
+            if (index === undefined) {
+                await this.#db.delete(`${this.#rootkey}/${key}`);
+                return true;
+            }
+
+            const existing = await this.getDefinitions(key);
+            if (index < 0 || index >= existing.length) {
+                return false;
+            }
+
+            existing.splice(index, 1);
+
+            if (existing.length === 0) {
+                await this.#db.delete(`${this.#rootkey}/${key}`);
+            } else {
+                await this.#db.push(`${this.#rootkey}/${key}`, existing);
+            }
+
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     static async getAllWords(): Promise<string[]> {
         try {
             const data = await this.#db.getData(this.#rootkey);
