@@ -1,6 +1,37 @@
 import { weeklyBotPrint } from "./util.js";
+import { Config, JsonDB } from "node-json-db";
 
-export async function define_word(word: string): Promise<string[]> {
+export abstract class MemeDictionary {
+    static #db = new JsonDB(new Config("./save/memedictionary.json", true, true));
+    static readonly #rootkey = "/definitions";
+
+    static async getDefinitions(word: string): Promise<string[]> {
+        try {
+            const defs = await this.#db.getData(`${this.#rootkey}/${word.toLowerCase()}`);
+            return Array.isArray(defs) ? defs : [];
+        } catch {
+            return [];
+        }
+    }
+
+    static async addDefinition(word: string, definition: string): Promise<void> {
+        const key = word.toLowerCase();
+        const existing = await this.getDefinitions(key);
+        existing.push(definition);
+        await this.#db.push(`${this.#rootkey}/${key}`, existing);
+    }
+
+    static async getAllWords(): Promise<string[]> {
+        try {
+            const data = await this.#db.getData(this.#rootkey);
+            return Object.keys(data);
+        } catch {
+            return [];
+        }
+    }
+}
+
+async function define_word_api(word: string): Promise<string[]> {
     const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
     if (!response.ok) {
         return [];
@@ -23,4 +54,13 @@ export async function define_word(word: string): Promise<string[]> {
     });
 
     return definitions;
+}
+
+export async function define_word(word: string): Promise<string[]> {
+    const [memeDefinitions, apiDefinitions] = await Promise.all([
+        MemeDictionary.getDefinitions(word),
+        define_word_api(word),
+    ]);
+
+    return [...memeDefinitions, ...apiDefinitions];
 }

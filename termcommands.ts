@@ -10,6 +10,7 @@ import {
     removeBroadcaster,
 } from "./broadcaster.js";
 import { FeatureRequestDB } from "./feature_requests.js";
+import { MemeDictionary } from "./dictionary.js";
 
 export const termcommands = new CommandSet(
     "Terminal Command",
@@ -28,7 +29,8 @@ export const termcommands = new CommandSet(
         relay,
         "[on|off] Enables or disables message relaying to all connected broadcasters."
     ),
-    new Command(requests, "Gets the list of requested features.")
+    new Command(requests, "Gets the list of requested features."),
+    new Command(newdefine, "Adds a new meme definition. Usage: !newdefine <word> <definition>")
 );
 
 async function requests(args: string[], state: undefined) {
@@ -165,4 +167,17 @@ function list(args: string[], state: undefined) {
     }
 
     weeklyBotPrint(msg);
+}
+
+async function newdefine(args: string[], state: undefined) {
+    if (args.length < 2) {
+        weeklyBotPrint("Usage: !newdefine <word> <definition>");
+        return;
+    }
+
+    const word = args[0];
+    const definition = args.slice(1).join(" ");
+
+    await MemeDictionary.addDefinition(word, definition);
+    weeklyBotPrint(`Added meme definition for "${word}": ${definition}`);
 }

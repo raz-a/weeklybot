@@ -5,13 +5,15 @@ import { apiClient } from "./client.js";
 import { Command, CommandSet } from "./commands.js";
 import { broadcast, me, send, weeklyBotPrint } from "./util.js";
 import { getBroadcasterIds } from "./broadcaster.js";
+import { MemeDictionary } from "./dictionary.js";
 
 export const modcommands = new CommandSet(
     "Mod Command",
     "!",
     isMod,
     new Command(ban, "Bans a user on all streams"),
-    new Command(unban, "Unbans a user on all streams")
+    new Command(unban, "Unbans a user on all streams"),
+    new Command(newdefine, "Adds a new meme definition. Usage: !newdefine <word> <definition>")
 );
 
 async function isMod(mod: ChatUser) {
@@ -85,4 +87,18 @@ async function unban(args: string[], mod: ChatUser) {
         modcommands.log(`${mod.displayName} is attempting to unban nobody?`);
         broadcast(`${mod.displayName}, you forgot to mention who you wanted to unban...`);
     }
+}
+
+async function newdefine(args: string[], mod: ChatUser) {
+    if (args.length < 2) {
+        broadcast(`${mod.displayName}, usage: !newdefine <word> <definition>`);
+        return;
+    }
+
+    const word = args[0];
+    const definition = args.slice(1).join(" ");
+
+    await MemeDictionary.addDefinition(word, definition);
+    modcommands.log(`${mod.displayName} added meme definition for "${word}": ${definition}`);
+    broadcast(`New meme definition for "${word}" added!`);
 }
