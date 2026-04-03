@@ -93,7 +93,7 @@
       result += esc(text.slice(lastIdx, em.start));
       // Emote image
       const emoteName = esc(text.slice(em.start, em.end + 1));
-      result += `<img class="chat-emote" src="https://static-cdn.jtvnbs.net/emoticons/v2/${esc(em.id)}/default/dark/2.0" alt="${emoteName}" title="${emoteName}">`;
+      result += `<img class="chat-emote" src="https://static-cdn.jtvnw.net/emoticons/v2/${esc(em.id)}/default/dark/2.0" alt="${emoteName}" title="${emoteName}">`;
       lastIdx = em.end + 1;
     }
 
