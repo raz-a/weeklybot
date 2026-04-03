@@ -167,9 +167,9 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
     }
 
     if (userInfo.color) {
-        weeklyBotPrint(`${chalk.hex(userInfo.color)(userInfo.displayName + `:`)} ${text}`);
+        console.log(`${chalk.hex(userInfo.color)(userInfo.displayName + `:`)} ${text}`);
     } else {
-        weeklyBotPrint(`${chalk.hex("#FFFFFF")(userInfo.displayName + `:`)} ${text}`);
+        console.log(`${chalk.hex("#FFFFFF")(userInfo.displayName + `:`)} ${text}`);
     }
 
     webServer.printChatMessage(userInfo.displayName, userInfo.color ?? "#FFFFFF", text);
@@ -197,7 +197,7 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
 async function onTextInput(cmd: string) {
     if (!(await termcommands.processInput(cmd.toString().trim(), undefined))) {
         await broadcast(cmd);
-        weeklyBotPrint(`${chalk.hex(get_wb_color())("WeeklyBot:")} ${cmd}`);
+        console.log(`${chalk.hex(get_wb_color())("WeeklyBot:")} ${cmd}`);
         webServer.printChatMessage("WeeklyBot", get_wb_color(), cmd.toString().trim());
     }
 }
