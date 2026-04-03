@@ -38,6 +38,7 @@ type ToggleRelayCallback = (enabled: boolean) => void;
 type AddBroadcasterCallback = (channel: string) => Promise<boolean>;
 type RemoveBroadcasterCallback = (channel: string) => boolean;
 type RebootCallback = () => Promise<void>;
+type ClipCallback = () => Promise<void>;
 type GetPoopCamCallback = () => Promise<PoopCamData>;
 type SetRateLimitCallback = (seconds: number) => boolean;
 type GetPissStreakCallback = () => Promise<PissStreakData>;
@@ -54,6 +55,7 @@ export interface DashboardCallbacks {
     addBroadcaster: AddBroadcasterCallback;
     removeBroadcaster: RemoveBroadcasterCallback;
     reboot: RebootCallback;
+    clip: ClipCallback;
     getPoopCam: GetPoopCamCallback;
     setRateLimit: SetRateLimitCallback;
     getPissStreak: GetPissStreakCallback;
@@ -142,6 +144,11 @@ class WebServer {
         // Reboot
         socket.on("reboot", async () => {
             this.#callbacks?.reboot();
+        });
+
+        // Clip
+        socket.on("clip", async () => {
+            this.#callbacks?.clip();
         });
 
         // PoopCam

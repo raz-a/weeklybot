@@ -177,6 +177,14 @@
     socket.emit('reboot');
   });
 
+  // ── Clip ──
+  const clipBtn = $('clipBtn');
+  clipBtn.addEventListener('click', () => {
+    socket.emit('clip');
+    clipBtn.textContent = '✓ Clipping...';
+    setTimeout(() => { clipBtn.textContent = '📎 Take Clip'; }, 3000);
+  });
+
   // ── PoopCam Tab ──
   function loadPoopCam() {
     socket.emit('get_poopcam', (data) => {

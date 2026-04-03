@@ -10,6 +10,7 @@ import {
     relay,
     getRelayMode,
     setRelayMode,
+    clipIt,
 } from "./util.js";
 import { usercommands } from "./usercommands.js";
 import { termcommands } from "./termcommands.js";
@@ -49,6 +50,10 @@ const dashboardCallbacks: DashboardCallbacks = {
     reboot: async () => {
         await broadcast("WeeklyBot is rebooting (via dashboard)...");
         process.exit(0);
+    },
+    clip: async () => {
+        weeklyBotPrint("Taking a clip via dashboard.");
+        await clipIt(false);
     },
     getPoopCam: async () => {
         const totalRequests = await PoopCam.getTotalRequests();
