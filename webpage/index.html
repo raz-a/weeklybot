@@ -2,20 +2,182 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>WeeklyBot Chat</title>
+    <title>WeeklyBot Dashboard</title>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <div class="chatShell">
-        <div class="chatHeader">WeeklyBot Chat</div>
-
-        <div class="chatBody">
-            <div id="mainBox" aria-live="polite"></div>
+    <!-- Top Tab Bar -->
+    <nav class="tabBar">
+        <div class="tabBar-brand">⚡ WeeklyBot</div>
+        <div class="tabBar-tabs">
+            <button class="tab active" data-tab="dashboard">Dashboard</button>
+            <button class="tab" data-tab="poopcam">PoopCam™</button>
+            <button class="tab" data-tab="pissstreak">Piss Streak</button>
+            <button class="tab" data-tab="requests">Requests</button>
+            <button class="tab" data-tab="dictionary">Dictionary</button>
         </div>
+        <div class="tabBar-status" id="connectionStatus">● Connecting...</div>
+    </nav>
 
-        <div class="chatInputRow">
-            <input id="commandBox" type="text" placeholder="Send a message" autocomplete="off">
-            <button id="sendBtn" type="button">Send</button>
+    <!-- Dashboard Tab -->
+    <div class="tabContent active" id="tab-dashboard">
+        <div class="dashboard-grid">
+            <!-- Chat Panel -->
+            <div class="panel chat-panel">
+                <div class="panel-header">Chat</div>
+                <div class="panel-body">
+                    <div id="chatLog" class="chatLog" aria-live="polite"></div>
+                </div>
+                <div class="panel-footer">
+                    <input id="commandBox" type="text" placeholder="Send a message or command..." autocomplete="off">
+                    <button id="sendBtn" class="btn btn-accent" type="button">Send</button>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Broadcasters Panel -->
+                <div class="panel">
+                    <div class="panel-header">Broadcasters</div>
+                    <div class="panel-body">
+                        <ul id="broadcasterList" class="item-list"></ul>
+                        <div class="inline-form">
+                            <input id="addBroadcasterInput" type="text" placeholder="Channel name..." autocomplete="off">
+                            <button id="addBroadcasterBtn" class="btn btn-accent btn-sm">Add</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls Panel -->
+                <div class="panel">
+                    <div class="panel-header">Controls</div>
+                    <div class="panel-body controls-body">
+                        <div class="control-row">
+                            <span class="control-label">Relay Mode</span>
+                            <label class="toggle">
+                                <input type="checkbox" id="relayToggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="control-row">
+                            <button id="rebootBtn" class="btn btn-danger">Reboot WeeklyBot</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PoopCam Tab -->
+    <div class="tabContent" id="tab-poopcam">
+        <div class="tab-page">
+            <div class="page-header">
+                <h2>PoopCam™ Stats</h2>
+                <button id="refreshPoopCam" class="btn btn-accent btn-sm">Refresh</button>
+            </div>
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value" id="poopTotalRequests">—</div>
+                    <div class="stat-label">Total Requests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="poopRateLimit">—</div>
+                    <div class="stat-label">Rate Limit (s)</div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">
+                    Rate Limit
+                </div>
+                <div class="panel-body">
+                    <div class="inline-form">
+                        <input id="rateLimitInput" type="number" min="0" placeholder="Seconds..." autocomplete="off">
+                        <button id="setRateLimitBtn" class="btn btn-accent btn-sm">Set</button>
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">Leaderboard</div>
+                <div class="panel-body">
+                    <table class="data-table" id="poopLeaderboard">
+                        <thead>
+                            <tr><th>#</th><th>User</th><th>Requests</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Piss Streak Tab -->
+    <div class="tabContent" id="tab-pissstreak">
+        <div class="tab-page">
+            <div class="page-header">
+                <h2>Piss Streak</h2>
+                <button id="refreshPissStreak" class="btn btn-accent btn-sm">Refresh</button>
+            </div>
+            <div class="piss-display">
+                <div class="piss-counter" id="pissCounter">—</div>
+                <div class="piss-label">Days Without Chat Pissing Themselves</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Requests Tab -->
+    <div class="tabContent" id="tab-requests">
+        <div class="tab-page">
+            <div class="page-header">
+                <h2>Feature Requests</h2>
+                <button id="refreshRequests" class="btn btn-accent btn-sm">Refresh</button>
+            </div>
+            <div class="panel">
+                <div class="panel-body">
+                    <div id="requestsList" class="requests-list">
+                        <p class="empty-state">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Meme Dictionary Tab -->
+    <div class="tabContent" id="tab-dictionary">
+        <div class="tab-page">
+            <div class="page-header">
+                <h2>Meme Dictionary</h2>
+                <button id="refreshDictionary" class="btn btn-accent btn-sm">Refresh</button>
+            </div>
+            <div class="panel">
+                <div class="panel-header">Add Definition</div>
+                <div class="panel-body">
+                    <div class="inline-form">
+                        <input id="dictWordInput" type="text" placeholder="Word..." autocomplete="off">
+                        <input id="dictDefInput" type="text" placeholder="Definition..." autocomplete="off" style="flex:2">
+                        <button id="addDefBtn" class="btn btn-accent btn-sm">Add</button>
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">Words</div>
+                <div class="panel-body">
+                    <div id="dictionaryContent" class="dictionary-content">
+                        <p class="empty-state">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reboot confirmation modal -->
+    <div id="rebootModal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-title">Reboot WeeklyBot?</div>
+            <p>This will disconnect all chats and restart the bot.</p>
+            <div class="modal-actions">
+                <button id="rebootConfirm" class="btn btn-danger">Yes, Reboot</button>
+                <button id="rebootCancel" class="btn btn-muted">Cancel</button>
+            </div>
         </div>
     </div>
 
