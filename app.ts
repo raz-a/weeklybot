@@ -172,6 +172,8 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
         weeklyBotPrint(`${chalk.hex("#FFFFFF")(userInfo.displayName + `:`)} ${text}`);
     }
 
+    webServer.printChatMessage(userInfo.displayName, userInfo.color ?? "#FFFFFF", text);
+
     // Relay  to all other channels.
     relay(target.slice(1), `【${userInfo.displayName}】 ${text}`);
 
@@ -196,6 +198,7 @@ async function onTextInput(cmd: string) {
     if (!(await termcommands.processInput(cmd.toString().trim(), undefined))) {
         await broadcast(cmd);
         weeklyBotPrint(`${chalk.hex(get_wb_color())("WeeklyBot:")} ${cmd}`);
+        webServer.printChatMessage("WeeklyBot", get_wb_color(), cmd.toString().trim());
     }
 }
 

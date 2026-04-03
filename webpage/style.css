@@ -162,6 +162,8 @@ body {
     border-color: rgba(250, 204, 21, 0.06);
 }
 
+.chat-username { font-weight: 700; }
+
 /* ── Sidebar ── */
 
 .sidebar {

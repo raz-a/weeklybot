@@ -224,6 +224,10 @@ class WebServer {
     printMessage(msg: String) {
         this.#io.emit("message", msg);
     }
+
+    printChatMessage(displayName: string, color: string, text: string) {
+        this.#io.emit("chat_message", { displayName, color, text });
+    }
 }
 
 export const webServer = new WebServer();

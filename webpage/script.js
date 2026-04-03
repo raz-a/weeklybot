@@ -70,6 +70,16 @@
     chatLog.scrollTop = chatLog.scrollHeight;
   }
 
+  function appendChatMessage(displayName, color, text) {
+    const row = document.createElement('div');
+    row.className = 'chatLine';
+    row.innerHTML =
+      `<span class="chat-username" style="color:${esc(color)}">${esc(displayName)}:</span> ` +
+      esc(text).replaceAll('\n', '<br>');
+    chatLog.appendChild(row);
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+
   function sendCommand() {
     const text = commandBox.value.trim();
     if (!text) return;
@@ -79,6 +89,7 @@
   }
 
   socket.on('message', (msg) => appendChat(msg));
+  socket.on('chat_message', (data) => appendChatMessage(data.displayName, data.color, data.text));
   commandBox.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); sendCommand(); }
   });
