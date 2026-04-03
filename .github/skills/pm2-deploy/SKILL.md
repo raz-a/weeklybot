@@ -52,21 +52,19 @@ git --no-pager log origin/main..HEAD --oneline
 
 ### 4. Deploy via PM2
 
-Determine the platform you are running on.
-
-**On Linux/macOS**, run the PM2 deploy command:
+Run the PM2 deploy command:
 
 ```
 pm2 deploy ecosystem.config.cjs production
 ```
 
-**On Windows**, `pm2 deploy` does not work (requires `sh`). Instead, SSH directly:
+**On Windows**, `pm2 deploy` requires `sh` on the PATH. Prepend Git Bash's bin directory before running:
 
-```
-ssh raz@weeklybot.lan "cd /home/raz/weeklybot/current && git pull origin main && npm install && npm run build && pm2 reload ecosystem.config.cjs --env production"
+```powershell
+$env:PATH = "C:\Program Files\Git\bin;$env:PATH"; pm2 deploy ecosystem.config.cjs production
 ```
 
-Both approaches pull the latest code on the server, install dependencies, build, and reload the PM2 process.
+This SSHes into the production server, pulls the latest code from `origin/main`, installs dependencies, builds, and reloads the PM2 process.
 
 ### 5. Verify deployment
 
