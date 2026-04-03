@@ -225,8 +225,8 @@ class WebServer {
         this.#io.emit("message", msg);
     }
 
-    printChatMessage(displayName: string, color: string, text: string) {
-        this.#io.emit("chat_message", { displayName, color, text });
+    printChatMessage(displayName: string, color: string, text: string, emotes?: { id: string; start: number; end: number }[]) {
+        this.#io.emit("chat_message", { displayName, color, text, emotes: emotes ?? [] });
     }
 }
 

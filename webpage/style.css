@@ -164,6 +164,12 @@ body {
 
 .chat-username { font-weight: 700; }
 
+.chat-emote {
+    height: 1.8em;
+    vertical-align: middle;
+    margin: 0 2px;
+}
+
 /* ── Sidebar ── */
 
 .sidebar {

@@ -70,14 +70,36 @@
     chatLog.scrollTop = chatLog.scrollHeight;
   }
 
-  function appendChatMessage(displayName, color, text) {
+  function appendChatMessage(displayName, color, text, emotes) {
     const row = document.createElement('div');
     row.className = 'chatLine';
     row.innerHTML =
       `<span class="chat-username" style="color:${esc(color)}">${esc(displayName)}:</span> ` +
-      esc(text).replaceAll('\n', '<br>');
+      renderTextWithEmotes(text, emotes || []);
     chatLog.appendChild(row);
     chatLog.scrollTop = chatLog.scrollHeight;
+  }
+
+  function renderTextWithEmotes(text, emotes) {
+    if (!emotes.length) return esc(text);
+
+    // Sort emotes by start position descending so we can splice without shifting indices.
+    const sorted = [...emotes].sort((a, b) => a.start - b.start);
+    let result = '';
+    let lastIdx = 0;
+
+    for (const em of sorted) {
+      // Text before this emote
+      result += esc(text.slice(lastIdx, em.start));
+      // Emote image
+      const emoteName = esc(text.slice(em.start, em.end + 1));
+      result += `<img class="chat-emote" src="https://static-cdn.jtvnbs.net/emoticons/v2/${esc(em.id)}/default/dark/2.0" alt="${emoteName}" title="${emoteName}">`;
+      lastIdx = em.end + 1;
+    }
+
+    // Remaining text after last emote
+    result += esc(text.slice(lastIdx));
+    return result;
   }
 
   function sendCommand() {
@@ -89,7 +111,7 @@
   }
 
   socket.on('message', (msg) => appendChat(msg));
-  socket.on('chat_message', (data) => appendChatMessage(data.displayName, data.color, data.text));
+  socket.on('chat_message', (data) => appendChatMessage(data.displayName, data.color, data.text, data.emotes));
   commandBox.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); sendCommand(); }
   });

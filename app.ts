@@ -172,7 +172,16 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
         console.log(`${chalk.hex("#FFFFFF")(userInfo.displayName + `:`)} ${text}`);
     }
 
-    webServer.printChatMessage(userInfo.displayName, userInfo.color ?? "#FFFFFF", text);
+    // Extract emote positions for the web UI.
+    const emotes: { id: string; start: number; end: number }[] = [];
+    for (const [id, placements] of msg.emoteOffsets) {
+        for (const placement of placements) {
+            const [start, end] = placement.split("-").map(Number);
+            emotes.push({ id, start, end });
+        }
+    }
+
+    webServer.printChatMessage(userInfo.displayName, userInfo.color ?? "#FFFFFF", text, emotes);
 
     // Relay  to all other channels.
     relay(target.slice(1), `【${userInfo.displayName}】 ${text}`);
