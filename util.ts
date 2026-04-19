@@ -194,19 +194,6 @@ export async function changeWbColorTemporarily(color: HelixChatUserColor, durati
 }
 
 export async function changeWbColor(color: HelixChatUserColor) {
-    const previousColor = wb_color;
     await apiClient.chat.setColorForUser(me.id, color);
-
-    // Poll to confirm the color change propagated before sending messages
-    for (let attempt = 0; attempt < 5; attempt++) {
-        const newColor = await apiClient.chat.getColorForUser(me.id);
-        if (newColor && newColor !== previousColor) {
-            set_wb_color(newColor);
-            return;
-        }
-        await new Promise(resolve => setTimeout(resolve, 200));
-    }
-
-    // Fallback: update with whatever Twitch reports
     set_wb_color(await apiClient.chat.getColorForUser(me.id));
 }
