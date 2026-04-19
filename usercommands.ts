@@ -5,13 +5,13 @@ import {
     broadcast,
     clipIt,
     timeout,
-    changeWbColor,
-    getRandomColor,
+    changeWbColorTemporarily,
     broadcastLater,
 } from "./util.js";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
 import { PoopCam } from "./poopcam.js";
+import { PissCam } from "./pisscam.js";
 import { PissStreak } from "./piss.js";
 import { define_word, getUserDefinitionsEnabled, MemeDictionary } from "./dictionary.js";
 import { FeatureRequestDB } from "./feature_requests.js";
@@ -50,7 +50,8 @@ export const usercommands = new CommandSet(
     new Command(rules, "Get Pokemon Soullocke rules"),
     new Command(ssn, "Print Nair's ACTUAL social security number."),
     new Command(reggie, "The Holy Gospel of Reggie"),
-    new Command(newdefine, "Add a meme definition. Usage: !newdefine <word> <definition>")
+    new Command(newdefine, "Add a meme definition. Usage: !newdefine <word> <definition>"),
+    new Command(pissCam, "Keep up to date with the latest PissCam news!")
 );
 
 async function rules(args: string[], state: UserCommandState) {
@@ -203,8 +204,10 @@ async function poopCamInternal(args: string[], state: UserCommandState) {
     }
 }
 
+const ONE_MINUTE_MS = 60 * 1000;
+
 async function poopCam(args: string[], state: UserCommandState) {
-    await changeWbColor(getRandomColor());
+    await changeWbColorTemporarily("chocolate", ONE_MINUTE_MS);
     await poopCamInternal(args, state);
 }
 
@@ -212,7 +215,7 @@ async function redPoopCam(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     usercommands.log(`${userName} found Red PoopCam (TM)`);
 
-    await changeWbColor("red");
+    await changeWbColorTemporarily("red", ONE_MINUTE_MS);
     await poopCamInternal(args, state);
 }
 
@@ -455,4 +458,34 @@ async function newdefine(args: string[], state: UserCommandState) {
     await MemeDictionary.addDefinition(word, definition);
     usercommands.log(`${userName} added meme definition for "${word}": ${definition}`);
     broadcast(`${userName} added a meme definition for "${word}"!`);
+}
+
+async function pissCam(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+
+    usercommands.log(`Telling ${userName} about PissCam`);
+
+    await changeWbColorTemporarily("golden_rod", ONE_MINUTE_MS);
+
+    const topCammer = await PissCam.getTopCammer();
+    let blocked = await PissCam.request(userName);
+
+    if (blocked) {
+        return;
+    }
+
+    const totalRequests = await PissCam.getTotalRequests();
+    if (totalRequests == 1) {
+        broadcast(`PissCam has been requested 1 time. Keep it up!`);
+    } else {
+        broadcast(`PissCam has been requested ${totalRequests} times. Keep it up!`);
+    }
+
+    const newTopCammer = await PissCam.getTopCammer();
+
+    if (newTopCammer !== topCammer && newTopCammer !== undefined) {
+        broadcast(
+            `${newTopCammer.userName} is now the #1 pisscammer with ${newTopCammer.requestCount} requests!`
+        );
+    }
 }

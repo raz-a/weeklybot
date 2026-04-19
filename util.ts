@@ -176,6 +176,23 @@ export function getRandomColor(): HelixChatUserColor {
     return color;
 }
 
+const DEFAULT_COLOR: HelixChatUserColor = "spring_green";
+let colorRevertTimer: ReturnType<typeof setTimeout> | null = null;
+
+export async function changeWbColorTemporarily(color: HelixChatUserColor, durationMs: number) {
+    if (colorRevertTimer) {
+        clearTimeout(colorRevertTimer);
+        colorRevertTimer = null;
+    }
+
+    await changeWbColor(color);
+
+    colorRevertTimer = setTimeout(async () => {
+        colorRevertTimer = null;
+        await changeWbColor(DEFAULT_COLOR);
+    }, durationMs);
+}
+
 export async function changeWbColor(color: HelixChatUserColor) {
     await apiClient.chat.setColorForUser(me.id, color);
 
