@@ -460,6 +460,19 @@ async function newdefine(args: string[], state: UserCommandState) {
     broadcast(`${userName} added a meme definition for "${word}"!`);
 }
 
+const pissCamHints = [
+    "Not bad... but PoopCam (TM) is where the real action is.",
+    "Cool I guess. You know what's cooler? !poopcam.",
+    "Impressive... for a knockoff. Try !poopcam for the real deal.",
+    "That's cute. PoopCam (TM) sends its regards.",
+    "A valiant effort, but !poopcam remains the superior cam.",
+    "Sure, piss is fine. But have you considered... poop?",
+    "This is the off-brand cam experience. !poopcam is premium.",
+    "PissCam is like PoopCam (TM)'s weird cousin nobody talks about.",
+    "You know there's a better cam out there... starts with poop, ends with cam.",
+    "PissCam is temporary. PoopCam (TM) is forever.",
+];
+
 async function pissCam(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
 
@@ -475,17 +488,14 @@ async function pissCam(args: string[], state: UserCommandState) {
     }
 
     const totalRequests = await PissCam.getTotalRequests();
-    if (totalRequests == 1) {
-        broadcast(`PissCam (Patent Pending) has been requested 1 time. I guess that's cool... but have you tried !poopcam?`);
-    } else {
-        broadcast(`PissCam (Patent Pending) has been requested ${totalRequests} times. Not bad... but PoopCam (TM) is where the real action is.`);
-    }
+    const hint = pissCamHints[Math.floor(Math.random() * pissCamHints.length)];
+    broadcast(`PissCam has been requested ${totalRequests} time${totalRequests === 1 ? "" : "s"}. ${hint}`);
 
     const newTopCammer = await PissCam.getTopCammer();
 
     if (newTopCammer !== topCammer && newTopCammer !== undefined) {
         broadcast(
-            `${newTopCammer.userName} is now the #1 pisscammer with ${newTopCammer.requestCount} requests! (PoopCam (TM) leaderboard is more prestigious though)`
+            `${newTopCammer.userName} is now the #1 pisscammer with ${newTopCammer.requestCount} requests!`
         );
     }
 }
