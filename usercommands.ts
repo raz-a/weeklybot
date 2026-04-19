@@ -47,7 +47,8 @@ export const usercommands = new CommandSet(
     new Command(discord, "Get access to the Discord!"),
     new Command(zoop, "Testing out the zoop"),
     new Command(extension, "Get the WeeklyBot Chrome Extension!"),
-    new Command(rules, "Get Pokemon Soullocke rules")
+    new Command(rules, "Get Pokemon Soullocke rules"),
+    new Command(ssn, "Print Nair's ACTUAL social security number.")
 );
 
 async function rules(args: string[], state: UserCommandState) {
@@ -419,4 +420,10 @@ async function define(args: string[], state: UserCommandState) {
     }
 
     broadcast(msg);
+}
+
+function ssn(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+    usercommands.log(`${userName} is looking up Nair's SSN`);
+    broadcast("Nair's SSN: 452-07-1893");
 }
