@@ -1,6 +1,16 @@
 import { weeklyBotPrint } from "./util.js";
 import { Config, JsonDB } from "node-json-db";
 
+let userDefinitionsEnabled = true;
+
+export function getUserDefinitionsEnabled(): boolean {
+    return userDefinitionsEnabled;
+}
+
+export function setUserDefinitionsEnabled(enabled: boolean): void {
+    userDefinitionsEnabled = enabled;
+}
+
 export abstract class MemeDictionary {
     static #db = new JsonDB(new Config("./save/memedictionary.json", true, true));
     static readonly #rootkey = "/definitions";

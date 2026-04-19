@@ -48,6 +48,8 @@ type GetDictionaryCallback = () => Promise<DictionaryData>;
 type GetWordCallback = (word: string) => Promise<DictionaryWordData>;
 type AddDefinitionCallback = (word: string, definition: string) => Promise<void>;
 type DeleteDefinitionCallback = (word: string, index?: number) => Promise<boolean>;
+type GetUserDefinitionsEnabledCallback = () => boolean;
+type SetUserDefinitionsEnabledCallback = (enabled: boolean) => void;
 
 export interface DashboardCallbacks {
     getState: GetStateCallback;
@@ -65,6 +67,8 @@ export interface DashboardCallbacks {
     getWord: GetWordCallback;
     addDefinition: AddDefinitionCallback;
     deleteDefinition: DeleteDefinitionCallback;
+    getUserDefinitionsEnabled: GetUserDefinitionsEnabledCallback;
+    setUserDefinitionsEnabled: SetUserDefinitionsEnabledCallback;
 }
 
 class WebServer {
@@ -217,6 +221,17 @@ class WebServer {
             if (this.#callbacks?.deleteDefinition) {
                 callback(await this.#callbacks.deleteDefinition(data.word, data.index));
             }
+        });
+
+        socket.on("get_user_definitions_enabled", (callback: (enabled: boolean) => void) => {
+            if (this.#callbacks?.getUserDefinitionsEnabled) {
+                callback(this.#callbacks.getUserDefinitionsEnabled());
+            }
+        });
+
+        socket.on("set_user_definitions_enabled", (enabled: boolean) => {
+            this.#callbacks?.setUserDefinitionsEnabled(enabled);
+            this.#io.emit("user_definitions_enabled_updated", enabled);
         });
     }
 

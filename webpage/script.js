@@ -314,6 +314,19 @@
   }
 
   $('refreshDictionary').addEventListener('click', loadDictionary);
+
+  // ── User Definitions Toggle ──
+  const userDefsToggle = $('userDefsToggle');
+  socket.emit('get_user_definitions_enabled', (enabled) => {
+    userDefsToggle.checked = enabled;
+  });
+  userDefsToggle.addEventListener('change', () => {
+    socket.emit('set_user_definitions_enabled', userDefsToggle.checked);
+  });
+  socket.on('user_definitions_enabled_updated', (enabled) => {
+    userDefsToggle.checked = enabled;
+  });
+
   $('addDefBtn').addEventListener('click', () => {
     const word = $('dictWordInput').value.trim();
     const def = $('dictDefInput').value.trim();

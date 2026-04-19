@@ -19,7 +19,7 @@ import { addBroadcaster, broadcastercommands, getBroadcasterChannels, getFirstBr
 import { PissStreak } from "./piss.js";
 import { PoopCam } from "./poopcam.js";
 import { FeatureRequestDB } from "./feature_requests.js";
-import { MemeDictionary } from "./dictionary.js";
+import { MemeDictionary, getUserDefinitionsEnabled, setUserDefinitionsEnabled } from "./dictionary.js";
 import { webServer, DashboardCallbacks } from "./webserver.js";
 
 // Register the text input handler.
@@ -110,6 +110,11 @@ const dashboardCallbacks: DashboardCallbacks = {
         const result = await MemeDictionary.removeDefinition(word, index);
         if (result) weeklyBotPrint(`Removed meme definition for "${word}" via dashboard.`);
         return result;
+    },
+    getUserDefinitionsEnabled: () => getUserDefinitionsEnabled(),
+    setUserDefinitionsEnabled: (enabled: boolean) => {
+        setUserDefinitionsEnabled(enabled);
+        weeklyBotPrint(`User meme definitions ${enabled ? "enabled" : "disabled"} via dashboard.`);
     },
 };
 webServer.registerCallbacks(dashboardCallbacks);

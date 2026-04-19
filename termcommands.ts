@@ -10,7 +10,7 @@ import {
     removeBroadcaster,
 } from "./broadcaster.js";
 import { FeatureRequestDB } from "./feature_requests.js";
-import { MemeDictionary } from "./dictionary.js";
+import { MemeDictionary, getUserDefinitionsEnabled, setUserDefinitionsEnabled } from "./dictionary.js";
 
 export const termcommands = new CommandSet(
     "Terminal Command",
@@ -31,7 +31,8 @@ export const termcommands = new CommandSet(
     ),
     new Command(requests, "Gets the list of requested features. Use '!requests close <number>' to close one."),
     new Command(newdefine, "Adds a new meme definition. Usage: !newdefine <word> <definition>"),
-    new Command(deldefine, "Deletes meme definitions. Usage: !deldefine <word> [index|all]")
+    new Command(deldefine, "Deletes meme definitions. Usage: !deldefine <word> [index|all]"),
+    new Command(dictionary, "[on|off] Toggles whether chat users can add meme definitions.")
 );
 
 async function requests(args: string[], state: undefined) {
@@ -225,5 +226,24 @@ async function deldefine(args: string[], state: undefined) {
         weeklyBotPrint(`Removed definition [${index}] for "${word}".`);
     } else {
         weeklyBotPrint(`Invalid index. "${word}" has ${definitions.length} definition(s) (0-${definitions.length - 1}).`);
+    }
+}
+
+function dictionary(args: string[], state: undefined) {
+    if (args.length < 1) {
+        weeklyBotPrint(`User meme definitions are currently ${getUserDefinitionsEnabled() ? "ON" : "OFF"}`);
+        return;
+    }
+
+    const option = args[0].toLowerCase();
+
+    if (option === "on") {
+        setUserDefinitionsEnabled(true);
+        weeklyBotPrint("User meme definitions enabled.");
+    } else if (option === "off") {
+        setUserDefinitionsEnabled(false);
+        weeklyBotPrint("User meme definitions disabled.");
+    } else {
+        weeklyBotPrint("Invalid option. Use 'on' or 'off'.");
     }
 }

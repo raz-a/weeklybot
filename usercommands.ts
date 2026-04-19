@@ -13,7 +13,7 @@ import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
 import { PoopCam } from "./poopcam.js";
 import { PissStreak } from "./piss.js";
-import { define_word } from "./dictionary.js";
+import { define_word, getUserDefinitionsEnabled, MemeDictionary } from "./dictionary.js";
 import { FeatureRequestDB } from "./feature_requests.js";
 
 export type UserCommandState = { channel: string; user: ChatUser };
@@ -49,7 +49,8 @@ export const usercommands = new CommandSet(
     new Command(extension, "Get the WeeklyBot Chrome Extension!"),
     new Command(rules, "Get Pokemon Soullocke rules"),
     new Command(ssn, "Print Nair's ACTUAL social security number."),
-    new Command(reggie, "The Holy Gospel of Reggie")
+    new Command(reggie, "The Holy Gospel of Reggie"),
+    new Command(newdefine, "Add a meme definition. Usage: !newdefine <word> <definition>")
 );
 
 async function rules(args: string[], state: UserCommandState) {
@@ -433,4 +434,25 @@ function reggie(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     usercommands.log(`Preaching the Gospel of Reggie to ${userName}.`);
     broadcast("God rest ye merry flintlemen (Reggie 0:51)");
+}
+
+async function newdefine(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+
+    if (!getUserDefinitionsEnabled()) {
+        broadcast(`Sorry ${userName}, meme definitions are currently disabled.`);
+        return;
+    }
+
+    if (args.length < 2) {
+        broadcast(`Usage: !newdefine <word> <definition>`);
+        return;
+    }
+
+    const word = args[0];
+    const definition = args.slice(1).join(" ");
+
+    await MemeDictionary.addDefinition(word, definition);
+    usercommands.log(`${userName} added meme definition for "${word}": ${definition}`);
+    broadcast(`${userName} added a meme definition for "${word}"!`);
 }
