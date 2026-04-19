@@ -141,9 +141,6 @@ chatClient.onMessage(onMessageHandler);
 
 // Register the "on registration handler"
 chatClient.onRegister(async () => {
-    // Set the color.
-    await apiClient.chat.setColorForUser(me.id, "spring_green");
-
     weeklyBotPrint("Weekly Bot has (re)started.");
 
     //
