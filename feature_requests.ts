@@ -51,15 +51,16 @@ export abstract class FeatureRequestDB {
         this.#labelEnsured = true;
     }
 
-    static async AddNewRequest(requester: string, request: string): Promise<void> {
+    static async AddNewRequest(requester: string, request: string): Promise<string> {
         await this.#ensureLabel();
-        await octokit.rest.issues.create({
+        const { data: issue } = await octokit.rest.issues.create({
             owner: githubInfo.owner,
             repo: githubInfo.repo,
             title: request,
             body: `Requested by: ${requester}`,
             labels: [LABEL],
         });
+        return issue.html_url;
     }
 
     static async CloseRequest(issueNumber: number): Promise<void> {

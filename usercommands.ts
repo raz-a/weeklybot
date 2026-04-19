@@ -277,8 +277,8 @@ async function request(args: string[], state: UserCommandState) {
     let request = args.join(" ");
     usercommands.log(`${userName} is requesting a feature: ${request}`);
 
-    await FeatureRequestDB.AddNewRequest(userName, request);
-    broadcast("Feature requested!");
+    const issueUrl = await FeatureRequestDB.AddNewRequest(userName, request);
+    broadcast(`Feature requested! ${issueUrl}`);
 }
 
 export var LoveStats: { [key: string]: number } = {};
