@@ -37,7 +37,7 @@ information provided.
 WeeklyBot expects a folder named "private" to be located in the directory that node is being run
 from.
 
-The private folder needs to contain the following two files:
+The private folder needs to contain the following three files:
 
 1. `clientinfo.json` : Contains the client id and secret.
 
@@ -67,7 +67,16 @@ The private folder needs to contain the following two files:
 }
 ```
 
-For more information about creating the appropriate credentials and tokens, see [Twurple's documentation](https://twurple.js.org/docs/auth/) and [Twitch's Documentation](https://dev.twitch.tv/docs/authentication/).
+3. `githubinfo.json` : Contains a GitHub Personal Access Token used for creating feature request issues. The token needs **Issues (Read and write)** permission on the target repository.
+```json
+{
+    "token": "[GITHUB_PAT]",
+    "owner": "[REPO_OWNER]",
+    "repo": "[REPO_NAME]"
+}
+```
+
+For more information about creating the appropriate Twitch credentials and tokens, see [Twurple's documentation](https://twurple.js.org/docs/auth/) and [Twitch's Documentation](https://dev.twitch.tv/docs/authentication/). For GitHub tokens, see [GitHub's documentation on fine-grained personal access tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token).
 
 ## License
 
