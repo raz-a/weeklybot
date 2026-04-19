@@ -48,7 +48,8 @@ export const usercommands = new CommandSet(
     new Command(zoop, "Testing out the zoop"),
     new Command(extension, "Get the WeeklyBot Chrome Extension!"),
     new Command(rules, "Get Pokemon Soullocke rules"),
-    new Command(ssn, "Print Nair's ACTUAL social security number.")
+    new Command(ssn, "Print Nair's ACTUAL social security number."),
+    new Command(reggie, "The Holy Gospel of Reggie")
 );
 
 async function rules(args: string[], state: UserCommandState) {
@@ -426,4 +427,10 @@ function ssn(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
     usercommands.log(`${userName} is looking up Nair's SSN`);
     broadcast("Nair's SSN: 452-07-1893");
+}
+
+function reggie(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+    usercommands.log(`Preaching the Gospel of Reggie to ${userName}.`);
+    broadcast("God rest ye merry flintlemen (Reggie 0:51)");
 }
