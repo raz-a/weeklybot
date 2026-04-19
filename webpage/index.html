@@ -11,7 +11,7 @@
         <div class="tabBar-brand">⚡ WeeklyBot</div>
         <div class="tabBar-tabs">
             <button class="tab active" data-tab="dashboard">Dashboard</button>
-            <button class="tab" data-tab="poopcam">PoopCam™</button>
+            <button class="tab" data-tab="poopcam">Cam Stats</button>
             <button class="tab" data-tab="pissstreak">Piss Streak</button>
             <button class="tab" data-tab="requests">Requests</button>
             <button class="tab" data-tab="dictionary">Dictionary</button>
@@ -71,17 +71,21 @@
         </div>
     </div>
 
-    <!-- PoopCam Tab -->
+    <!-- Cam Stats Tab -->
     <div class="tabContent" id="tab-poopcam">
         <div class="tab-page">
             <div class="page-header">
-                <h2>PoopCam™ Stats</h2>
+                <h2>Cam Stats</h2>
                 <button id="refreshPoopCam" class="btn btn-accent btn-sm">Refresh</button>
             </div>
             <div class="stats-row">
                 <div class="stat-card">
                     <div class="stat-value" id="poopTotalRequests">—</div>
-                    <div class="stat-label">Total Requests</div>
+                    <div class="stat-label">PoopCam™ Requests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="pissTotalRequests">—</div>
+                    <div class="stat-label">PissCam (Patent Pending) Requests</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" id="poopRateLimit">—</div>
@@ -100,9 +104,20 @@
                 </div>
             </div>
             <div class="panel">
-                <div class="panel-header">Leaderboard</div>
+                <div class="panel-header">PoopCam™ Leaderboard</div>
                 <div class="panel-body">
                     <table class="data-table" id="poopLeaderboard">
+                        <thead>
+                            <tr><th>#</th><th>User</th><th>Requests</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">PissCam (Patent Pending) Leaderboard</div>
+                <div class="panel-body">
+                    <table class="data-table" id="pissLeaderboard">
                         <thead>
                             <tr><th>#</th><th>User</th><th>Requests</th></tr>
                         </thead>

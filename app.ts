@@ -18,6 +18,7 @@ import { modcommands } from "./modcommands.js";
 import { addBroadcaster, broadcastercommands, getBroadcasterChannels, getFirstBroadcasterChannel, removeBroadcaster } from "./broadcaster.js";
 import { PissStreak } from "./piss.js";
 import { PoopCam } from "./poopcam.js";
+import { PissCam } from "./pisscam.js";
 import { FeatureRequestDB } from "./feature_requests.js";
 import { MemeDictionary, getUserDefinitionsEnabled, setUserDefinitionsEnabled } from "./dictionary.js";
 import { webServer, DashboardCallbacks } from "./webserver.js";
@@ -56,21 +57,37 @@ const dashboardCallbacks: DashboardCallbacks = {
         await clipIt(false);
     },
     getPoopCam: async () => {
-        const totalRequests = await PoopCam.getTotalRequests();
-        const totalParticipants = await PoopCam.getTotalParticipants();
-        const leaderboard = [];
-        for (let i = 0; i < totalParticipants && i < 10; i++) {
+        const poopTotal = await PoopCam.getTotalRequests();
+        const poopParticipants = await PoopCam.getTotalParticipants();
+        const poopLeaderboard = [];
+        for (let i = 0; i < poopParticipants && i < 10; i++) {
             const cammer = await PoopCam.getCammerByRank(i);
             if (cammer) {
-                leaderboard.push({ userName: cammer.userName, requestCount: cammer.requestCount, rank: i + 1 });
+                poopLeaderboard.push({ userName: cammer.userName, requestCount: cammer.requestCount, rank: i + 1 });
             }
         }
-        return { totalRequests, rateLimit: 1, leaderboard };
+
+        const pissTotal = await PissCam.getTotalRequests();
+        const pissParticipants = await PissCam.getTotalParticipants();
+        const pissLeaderboard = [];
+        for (let i = 0; i < pissParticipants && i < 10; i++) {
+            const cammer = await PissCam.getCammerByRank(i);
+            if (cammer) {
+                pissLeaderboard.push({ userName: cammer.userName, requestCount: cammer.requestCount, rank: i + 1 });
+            }
+        }
+
+        return {
+            poopCam: { totalRequests: poopTotal, leaderboard: poopLeaderboard },
+            pissCam: { totalRequests: pissTotal, leaderboard: pissLeaderboard },
+            rateLimit: 1,
+        };
     },
     setRateLimit: (seconds: number) => {
-        const result = PoopCam.setRateLimit(seconds);
-        if (result) weeklyBotPrint(`Rate limit set to ${seconds}s via dashboard.`);
-        return result;
+        const poopResult = PoopCam.setRateLimit(seconds);
+        const pissResult = PissCam.setRateLimit(seconds);
+        if (poopResult && pissResult) weeklyBotPrint(`Cam rate limit set to ${seconds}s via dashboard.`);
+        return poopResult && pissResult;
     },
     getPissStreak: async () => ({
         daysSince: await PissStreak.getDaysSince(),

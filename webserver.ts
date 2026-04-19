@@ -9,10 +9,16 @@ export type DashboardState = {
     relayEnabled: boolean;
 };
 
-export type PoopCamData = {
-    totalRequests: number;
+export type CamData = {
+    poopCam: {
+        totalRequests: number;
+        leaderboard: { userName: string; requestCount: number; rank: number }[];
+    };
+    pissCam: {
+        totalRequests: number;
+        leaderboard: { userName: string; requestCount: number; rank: number }[];
+    };
     rateLimit: number;
-    leaderboard: { userName: string; requestCount: number; rank: number }[];
 };
 
 export type PissStreakData = {
@@ -39,7 +45,7 @@ type AddBroadcasterCallback = (channel: string) => Promise<boolean>;
 type RemoveBroadcasterCallback = (channel: string) => boolean;
 type RebootCallback = () => Promise<void>;
 type ClipCallback = () => Promise<void>;
-type GetPoopCamCallback = () => Promise<PoopCamData>;
+type GetPoopCamCallback = () => Promise<CamData>;
 type SetRateLimitCallback = (seconds: number) => boolean;
 type GetPissStreakCallback = () => Promise<PissStreakData>;
 type GetRequestsCallback = () => Promise<FeatureRequestData>;
@@ -156,7 +162,7 @@ class WebServer {
         });
 
         // PoopCam
-        socket.on("get_poopcam", async (callback: (data: PoopCamData) => void) => {
+        socket.on("get_poopcam", async (callback: (data: CamData) => void) => {
             if (this.#callbacks?.getPoopCam) {
                 callback(await this.#callbacks.getPoopCam());
             }

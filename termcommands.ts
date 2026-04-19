@@ -3,6 +3,7 @@
 import { broadcast, clipIt, getRelayMode, setRelayMode, weeklyBotPrint } from "./util.js";
 import { Command, CommandSet } from "./commands.js";
 import { PoopCam } from "./poopcam.js";
+import { PissCam } from "./pisscam.js";
 import {
     addBroadcaster,
     getBroadcasterChannels,
@@ -127,13 +128,13 @@ async function stats(args: string[], state: undefined) {
 
 function rate(args: string[], state: undefined) {
     let seconds = Number(args[0]);
-    if (isNaN(seconds) || !PoopCam.setRateLimit(seconds)) {
+    if (isNaN(seconds) || !PoopCam.setRateLimit(seconds) || !PissCam.setRateLimit(seconds)) {
         weeklyBotPrint("Invalid limit provided");
         return;
     }
 
-    weeklyBotPrint(`Set rate limit to ${seconds} seconds`);
-    broadcast(`Poopcam (TM) Rate limit is now ${seconds} seconds`);
+    weeklyBotPrint(`Set cam rate limit to ${seconds} seconds`);
+    broadcast(`Cam rate limit is now ${seconds} seconds`);
 }
 
 async function add(args: string[], state: undefined) {

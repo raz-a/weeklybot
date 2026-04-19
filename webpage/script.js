@@ -185,22 +185,36 @@
     setTimeout(() => { clipBtn.textContent = '📎 Take Clip'; }, 3000);
   });
 
-  // ── PoopCam Tab ──
+  // ── Cam Stats Tab ──
   function loadPoopCam() {
     socket.emit('get_poopcam', (data) => {
-      $('poopTotalRequests').textContent = data.totalRequests.toLocaleString();
+      $('poopTotalRequests').textContent = data.poopCam.totalRequests.toLocaleString();
+      $('pissTotalRequests').textContent = data.pissCam.totalRequests.toLocaleString();
       $('poopRateLimit').textContent = data.rateLimit;
-      const tbody = $('poopLeaderboard').querySelector('tbody');
-      tbody.innerHTML = '';
-      if (data.leaderboard.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted);font-style:italic">No data yet</td></tr>';
-        return;
+
+      const poopTbody = $('poopLeaderboard').querySelector('tbody');
+      poopTbody.innerHTML = '';
+      if (data.poopCam.leaderboard.length === 0) {
+        poopTbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted);font-style:italic">No data yet</td></tr>';
+      } else {
+        data.poopCam.leaderboard.forEach((entry) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${entry.rank}</td><td>${esc(entry.userName)}</td><td>${entry.requestCount}</td>`;
+          poopTbody.appendChild(tr);
+        });
       }
-      data.leaderboard.forEach((entry) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${entry.rank}</td><td>${esc(entry.userName)}</td><td>${entry.requestCount}</td>`;
-        tbody.appendChild(tr);
-      });
+
+      const pissTbody = $('pissLeaderboard').querySelector('tbody');
+      pissTbody.innerHTML = '';
+      if (data.pissCam.leaderboard.length === 0) {
+        pissTbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted);font-style:italic">No data yet</td></tr>';
+      } else {
+        data.pissCam.leaderboard.forEach((entry) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${entry.rank}</td><td>${esc(entry.userName)}</td><td>${entry.requestCount}</td>`;
+          pissTbody.appendChild(tr);
+        });
+      }
     });
   }
 

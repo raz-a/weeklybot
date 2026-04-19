@@ -476,16 +476,16 @@ async function pissCam(args: string[], state: UserCommandState) {
 
     const totalRequests = await PissCam.getTotalRequests();
     if (totalRequests == 1) {
-        broadcast(`PissCam has been requested 1 time. Keep it up!`);
+        broadcast(`PissCam (Patent Pending) has been requested 1 time. I guess that's cool... but have you tried !poopcam?`);
     } else {
-        broadcast(`PissCam has been requested ${totalRequests} times. Keep it up!`);
+        broadcast(`PissCam (Patent Pending) has been requested ${totalRequests} times. Not bad... but PoopCam (TM) is where the real action is.`);
     }
 
     const newTopCammer = await PissCam.getTopCammer();
 
     if (newTopCammer !== topCammer && newTopCammer !== undefined) {
         broadcast(
-            `${newTopCammer.userName} is now the #1 pisscammer with ${newTopCammer.requestCount} requests!`
+            `${newTopCammer.userName} is now the #1 pisscammer with ${newTopCammer.requestCount} requests! (PoopCam (TM) leaderboard is more prestigious though)`
         );
     }
 }
