@@ -20,7 +20,7 @@ export type PissStreakData = {
 };
 
 export type FeatureRequestData = {
-    requests: { index: number; requester: string; request: string; date: string }[];
+    requests: { issueNumber: number; requester: string; request: string; date: string; url: string }[];
 };
 
 export type DictionaryData = {
@@ -43,7 +43,7 @@ type GetPoopCamCallback = () => Promise<PoopCamData>;
 type SetRateLimitCallback = (seconds: number) => boolean;
 type GetPissStreakCallback = () => Promise<PissStreakData>;
 type GetRequestsCallback = () => Promise<FeatureRequestData>;
-type DeleteRequestCallback = (index: number) => Promise<void>;
+type DeleteRequestCallback = (issueNumber: number) => Promise<void>;
 type GetDictionaryCallback = () => Promise<DictionaryData>;
 type GetWordCallback = (word: string) => Promise<DictionaryWordData>;
 type AddDefinitionCallback = (word: string, definition: string) => Promise<void>;
@@ -178,10 +178,10 @@ class WebServer {
             }
         });
 
-        socket.on("delete_request", async (index: number, callback: (success: boolean) => void) => {
+        socket.on("delete_request", async (issueNumber: number, callback: (success: boolean) => void) => {
             if (this.#callbacks?.deleteRequest) {
                 try {
-                    await this.#callbacks.deleteRequest(index);
+                    await this.#callbacks.deleteRequest(issueNumber);
                     callback(true);
                 } catch {
                     callback(false);

@@ -11,6 +11,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@octokit/rest": "^22.0.1",
     "@twurple/api": "^5.3.3",
     "@twurple/auth": "^5.3.3",
     "@twurple/chat": "^5.3.3",

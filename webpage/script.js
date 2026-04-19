@@ -238,16 +238,16 @@
         div.className = 'request-item';
         div.innerHTML =
           `<div class="request-info">` +
-            `<div class="request-text">${esc(req.request)}</div>` +
+            `<div class="request-text"><a href="${esc(req.url)}" target="_blank" rel="noopener">#${req.issueNumber}</a> ${esc(req.request)}</div>` +
             `<div class="request-meta">by ${esc(req.requester)} · ${esc(req.date)}</div>` +
           `</div>` +
-          `<button class="btn-remove" data-index="${req.index}" title="Delete">×</button>`;
+          `<button class="btn-remove" data-issue="${req.issueNumber}" title="Close">×</button>`;
         container.appendChild(div);
       });
       container.querySelectorAll('.btn-remove').forEach((btn) => {
         btn.addEventListener('click', () => {
-          const idx = parseInt(btn.dataset.index, 10);
-          socket.emit('delete_request', idx, (success) => {
+          const issueNumber = parseInt(btn.dataset.issue, 10);
+          socket.emit('delete_request', issueNumber, (success) => {
             if (success) loadRequests();
           });
         });

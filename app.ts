@@ -79,20 +79,21 @@ const dashboardCallbacks: DashboardCallbacks = {
         try {
             const raw = await FeatureRequestDB.GetRequests();
             return {
-                requests: raw.map((r, i) => ({
-                    index: i,
+                requests: raw.map((r) => ({
+                    issueNumber: r.issueNumber,
                     requester: r.requester,
                     request: r.request,
                     date: r.date?.toString() ?? "Unknown",
+                    url: r.url,
                 })),
             };
         } catch {
             return { requests: [] };
         }
     },
-    deleteRequest: async (index: number) => {
-        await FeatureRequestDB.RemoveRequestByIndex(index);
-        weeklyBotPrint(`Deleted feature request #${index} via dashboard.`);
+    deleteRequest: async (issueNumber: number) => {
+        await FeatureRequestDB.CloseRequest(issueNumber);
+        weeklyBotPrint(`Closed feature request #${issueNumber} via dashboard.`);
     },
     getDictionary: async () => ({
         words: await MemeDictionary.getAllWords(),

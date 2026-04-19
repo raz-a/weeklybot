@@ -29,15 +29,15 @@ export const termcommands = new CommandSet(
         relay,
         "[on|off] Enables or disables message relaying to all connected broadcasters."
     ),
-    new Command(requests, "Gets the list of requested features."),
+    new Command(requests, "Gets the list of requested features. Use '!requests close <number>' to close one."),
     new Command(newdefine, "Adds a new meme definition. Usage: !newdefine <word> <definition>"),
     new Command(deldefine, "Deletes meme definitions. Usage: !deldefine <word> [index|all]")
 );
 
 async function requests(args: string[], state: undefined) {
-    if (args.length == 2 && args[0].toLocaleLowerCase() === "delete" && !isNaN(+args[1])) {
-        await FeatureRequestDB.RemoveRequestByIndex(+args[1]);
-        weeklyBotPrint(`Deleted feature request #${+args[1]}`);
+    if (args.length == 2 && args[0].toLocaleLowerCase() === "close" && !isNaN(+args[1])) {
+        await FeatureRequestDB.CloseRequest(+args[1]);
+        weeklyBotPrint(`Closed feature request #${+args[1]}`);
         return;
     }
 
@@ -50,8 +50,8 @@ async function requests(args: string[], state: undefined) {
 
     let msg = "Requested Features:";
 
-    requests.forEach((request, index) => {
-        msg += `\n\t[${index}]: ${JSON.stringify(request)}`;
+    requests.forEach((request) => {
+        msg += `\n\t[#${request.issueNumber}]: ${request.request} (by ${request.requester}) ${request.url}`;
     });
 
     weeklyBotPrint(msg);
