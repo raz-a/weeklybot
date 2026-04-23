@@ -78,17 +78,19 @@ async function zoop(args: string[], state: UserCommandState) {
     broadcast(`ZOOP! -Love ${userName}`);
 }
 
-async function discord(args: string[], state: UserCommandState) {
-    let msg;
-    switch (state.channel.substring(1).toLowerCase()) {
-        case "naircat":
-            msg = `Naircat Community Discord: https://discord.gg/MCedstXWgH`;
-            break;
+const discordLinks: { [channel: string]: { name: string; url: string } } = {
+    naircat: { name: "Naircat Community Discord", url: "https://discord.gg/MCedstXWgH" },
+};
 
-        default:
-            msg = `${state.channel} does not have a registered discord community.`;
+async function discord(args: string[], state: UserCommandState) {
+    const entries = Object.values(discordLinks);
+
+    if (entries.length === 0) {
+        send(state.channel, "No discord communities are currently registered.");
+        return;
     }
 
+    const msg = entries.map((d) => `${d.name}: ${d.url}`).join(" | ");
     send(state.channel, msg);
 }
 
