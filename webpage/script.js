@@ -122,6 +122,7 @@
     socket.emit('get_state', (state) => {
       renderBroadcasters(state.broadcasters);
       relayToggle.checked = state.relayEnabled;
+      renderChatGroups(state.chatGroups);
     });
   }
 
@@ -161,13 +162,29 @@
 
   socket.on('broadcasters_updated', (list) => renderBroadcasters(list));
 
-  // ── Relay toggle ──
-  relayToggle.addEventListener('change', () => {
-    socket.emit('toggle_relay', relayToggle.checked);
-  });
+  // ── Relay status (read-only, set automatically by the bot) ──
   socket.on('relay_updated', (enabled) => {
     relayToggle.checked = enabled;
   });
+
+  // ── Chat groups ──
+  const chatGroupList = $('chatGroupList');
+  function renderChatGroups(groups) {
+    chatGroupList.innerHTML = '';
+    if (!groups || groups.length === 0) {
+      chatGroupList.innerHTML = '<li style="color:var(--text-muted);font-style:italic">No channels connected</li>';
+      return;
+    }
+    groups.forEach((group) => {
+      const li = document.createElement('li');
+      const shared = group.length > 1;
+      const label = group.map((c) => esc(c)).join(' + ');
+      const tag = shared ? ' <span style="color:var(--text-muted)">(shared chat)</span>' : '';
+      li.innerHTML = `<span class="item-name">${label}${tag}</span>`;
+      chatGroupList.appendChild(li);
+    });
+  }
+  socket.on('chat_groups_updated', (groups) => renderChatGroups(groups));
 
   // ── Reboot ──
   rebootBtn.addEventListener('click', () => rebootModal.classList.remove('hidden'));

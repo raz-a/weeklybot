@@ -4,7 +4,6 @@ import { chatClient, apiClient } from "./client.js";
 import {
     getBroadcasterChannels,
     getBroadcasterIdFromChannel,
-    getFirstBroadcasterChannel,
 } from "./broadcaster.js";
 import { ChatUser } from "@twurple/chat";
 import { webServer } from "./webserver.js";
@@ -62,25 +61,185 @@ export async function timeout(
     }
 }
 
-let relayEnabled = true;
+// ── Twitch Shared Chat aware relaying ────────────────────────────────────────
+//
+// WeeklyBot's connected channels are partitioned into "chat groups". A Twitch
+// Shared Chat session forms one group (Twitch natively mirrors messages between
+// its participants); every channel that is not in a session is its own singleton
+// group. WeeklyBot must therefore:
+//   * NOT relay within a group (Twitch already does), and
+//   * relay/broadcast BETWEEN groups by posting to a single representative channel
+//     of each group (Twitch mirrors that post to the rest of the group).
+//
+// Groups are discovered dynamically from the `source-room-id` IRC tag that Twitch
+// adds to messages during a Shared Chat session, so no manual toggle or polling is
+// needed. A message received in room R that carries `source-room-id` S (S != R)
+// proves that R and the room S currently share a session, which we record as an
+// edge. Connected components of these edges are the groups.
 
-export function setRelayMode(enabled: boolean) {
-    relayEnabled = enabled;
+// How long an unrefreshed shared-chat edge is trusted before it is pruned. Acts as
+// a backstop for sessions that end while their channels are quiet (an explicit
+// non-shared message clears edges immediately).
+const SHARED_CHAT_EDGE_TTL_MS = 15 * 60 * 1000;
+
+// Undirected graph of room ids that are currently sharing a chat session.
+// edges: roomId -> (neighbourRoomId -> lastSeenEpochMs)
+const sharedChatEdges = new Map<string, Map<string, number>>();
+
+function addSharedChatEdge(roomA: string, roomB: string, when: number) {
+    if (!sharedChatEdges.has(roomA)) sharedChatEdges.set(roomA, new Map());
+    if (!sharedChatEdges.has(roomB)) sharedChatEdges.set(roomB, new Map());
+    sharedChatEdges.get(roomA)!.set(roomB, when);
+    sharedChatEdges.get(roomB)!.set(roomA, when);
 }
 
-export function getRelayMode(): boolean {
-    return relayEnabled;
+function refreshSharedChatEdges(room: string, when: number) {
+    const neighbours = sharedChatEdges.get(room);
+    if (!neighbours) return;
+    for (const neighbour of neighbours.keys()) {
+        neighbours.set(neighbour, when);
+        sharedChatEdges.get(neighbour)?.set(room, when);
+    }
+}
+
+function clearSharedChatEdgesFor(room: string) {
+    const neighbours = sharedChatEdges.get(room);
+    if (!neighbours) return;
+    for (const neighbour of neighbours.keys()) {
+        const back = sharedChatEdges.get(neighbour);
+        back?.delete(room);
+        if (back && back.size === 0) sharedChatEdges.delete(neighbour);
+    }
+    sharedChatEdges.delete(room);
+}
+
+function pruneStaleSharedChatEdges() {
+    const cutoff = Date.now() - SHARED_CHAT_EDGE_TTL_MS;
+    for (const [room, neighbours] of sharedChatEdges) {
+        for (const [neighbour, when] of neighbours) {
+            if (when < cutoff) {
+                neighbours.delete(neighbour);
+                sharedChatEdges.get(neighbour)?.delete(room);
+            }
+        }
+        if (neighbours.size === 0) sharedChatEdges.delete(room);
+    }
+}
+
+// A message is "native" to the room it was received in when it did not originate in
+// another channel's Shared Chat room. Only native messages are processed, so a single
+// user message is handled exactly once even though Twitch delivers a mirrored copy to
+// every participating channel WeeklyBot has joined.
+export function isNativeMessage(roomId: string | null, sourceRoomId: string | undefined): boolean {
+    return !sourceRoomId || sourceRoomId === roomId;
+}
+
+// Records what an incoming message tells us about the current Shared Chat topology.
+// `roomId` is the message's `room-id` tag (the channel it was received in) and
+// `sourceRoomId` is its `source-room-id` tag (undefined when no session is active).
+export function recordSharedChatMessage(roomId: string | null, sourceRoomId: string | undefined) {
+    if (!roomId) return;
+    const now = Date.now();
+
+    if (!sourceRoomId) {
+        // Not part of a Shared Chat session: this room is on its own again.
+        clearSharedChatEdgesFor(roomId);
+    } else if (sourceRoomId !== roomId) {
+        // Mirrored from another room: the two rooms currently share a session.
+        addSharedChatEdge(roomId, sourceRoomId, now);
+    } else {
+        // Native copy during a session: keep the room's known edges alive.
+        refreshSharedChatEdges(roomId, now);
+    }
+}
+
+export function isSharedChatActive(): boolean {
+    pruneStaleSharedChatEdges();
+    return sharedChatEdges.size > 0;
+}
+
+function getRoomId(channel: string): string | undefined {
+    return getBroadcasterIdFromChannel(channel)?.id;
+}
+
+// Partitions the connected broadcaster channels into groups, where each group is a
+// set of channels that currently share a Twitch chat (a Shared Chat session or a lone
+// channel). Channels are returned in connection order; the first channel of each group
+// is used as its representative for relaying/broadcasting.
+export function getChatGroups(): string[][] {
+    pruneStaleSharedChatEdges();
+
+    const channels = [...getBroadcasterChannels()];
+    const assigned = new Set<string>();
+    const groups: string[][] = [];
+
+    for (const channel of channels) {
+        if (assigned.has(channel)) continue;
+
+        const roomId = getRoomId(channel);
+        // Discover every room reachable from this channel through shared-chat edges.
+        const reachableRooms = new Set<string>();
+        if (roomId) {
+            const queue = [roomId];
+            reachableRooms.add(roomId);
+            while (queue.length > 0) {
+                const current = queue.pop()!;
+                for (const neighbour of sharedChatEdges.get(current)?.keys() ?? []) {
+                    if (!reachableRooms.has(neighbour)) {
+                        reachableRooms.add(neighbour);
+                        queue.push(neighbour);
+                    }
+                }
+            }
+        }
+
+        // Collect the connected channels whose rooms fall in this component.
+        const group: string[] = [];
+        for (const candidate of channels) {
+            if (assigned.has(candidate)) continue;
+            const candidateRoom = getRoomId(candidate);
+            if (candidate === channel || (candidateRoom && reachableRooms.has(candidateRoom))) {
+                group.push(candidate);
+                assigned.add(candidate);
+            }
+        }
+
+        groups.push(group);
+    }
+
+    return groups;
+}
+
+// One representative channel per group: posting to each reaches every connected
+// channel exactly once (Twitch mirrors within Shared Chat groups).
+function getBroadcastTargets(): string[] {
+    return getChatGroups().map((group) => group[0]);
+}
+
+// Representatives of every group except the one containing `sourceChannel`. Used to
+// relay a message to the other groups without echoing it back into its own group
+// (which Twitch already mirrors).
+function getRelayTargets(sourceChannel: string): string[] {
+    const source = sourceChannel.toLowerCase();
+    const targets: string[] = [];
+
+    for (const group of getChatGroups()) {
+        const containsSource = group.some((channel) => channel.toLowerCase() === source);
+        if (!containsSource) {
+            targets.push(group[0]);
+        }
+    }
+
+    return targets;
 }
 
 export async function relay(sourceChannel: string, msg: string) {
     var promises: Promise<void>[] = [];
 
-    if (getRelayMode()) {
-        for (const channel of getBroadcasterChannels()) {
-            if (channel != sourceChannel) {
-                promises.push(send(channel, msg));
-            }
-        }
+    // Forward to one representative of every other chat group. Channels in the source
+    // message's own group already see it (directly, or mirrored by Twitch Shared Chat).
+    for (const channel of getRelayTargets(sourceChannel)) {
+        promises.push(send(channel, msg));
     }
 
     await Promise.all(promises);
@@ -89,12 +248,9 @@ export async function relay(sourceChannel: string, msg: string) {
 export async function broadcast(msg: string) {
     var promises: Promise<void>[] = [];
 
-    if (getRelayMode()) {
-        for (const channel of getBroadcasterChannels()) {
-            promises.push(send(channel, msg));
-        }
-    } else {
-        promises.push(send(getFirstBroadcasterChannel()!, msg));
+    // Post once per chat group so every connected channel sees the message exactly once.
+    for (const channel of getBroadcastTargets()) {
+        promises.push(send(channel, msg));
     }
 
     await Promise.all(promises);

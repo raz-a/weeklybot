@@ -1,6 +1,6 @@
 // Contains commands usable from the terminal.
 
-import { broadcast, clipIt, getRelayMode, setRelayMode, weeklyBotPrint } from "./util.js";
+import { broadcast, clipIt, getChatGroups, isSharedChatActive, weeklyBotPrint } from "./util.js";
 import { Command, CommandSet } from "./commands.js";
 import { PoopCam } from "./poopcam.js";
 import { PissCam } from "./pisscam.js";
@@ -28,7 +28,7 @@ export const termcommands = new CommandSet(
     new Command(list, "Gets the list of broadcasters currently connected."),
     new Command(
         relay,
-        "[on|off] Enables or disables message relaying to all connected broadcasters."
+        "Shows the current relay status (automatic, based on Twitch Shared Chat)."
     ),
     new Command(requests, "Gets the list of requested features. Use '!requests close <number>' to close one."),
     new Command(newdefine, "Adds a new meme definition. Usage: !newdefine <word> <definition>"),
@@ -60,21 +60,15 @@ async function requests(args: string[], state: undefined) {
 }
 
 function relay(args: string[], state: undefined) {
-    if (args.length < 1) {
-        weeklyBotPrint(`Relay mode is currently ${getRelayMode() ? "ON" : "OFF"}`);
-        return;
-    }
-
-    const option = args[0].toLowerCase();
-
-    if (option === "on") {
-        setRelayMode(true);
-        weeklyBotPrint("Relay mode enabled.");
-    } else if (option === "off") {
-        setRelayMode(false);
-        weeklyBotPrint("Relay mode disabled.");
+    if (isSharedChatActive()) {
+        const groups = getChatGroups()
+            .map((group) => group.join(" + "))
+            .join(", ");
+        weeklyBotPrint(`Relay is automatic. Shared Chat active. Bridging chat groups: ${groups}`);
     } else {
-        weeklyBotPrint("Invalid option. Use 'on' or 'off'.");
+        weeklyBotPrint(
+            "Relay is automatic. No Shared Chat session detected; relaying between all connected channels."
+        );
     }
 }
 

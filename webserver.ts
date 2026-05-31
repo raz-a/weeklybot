@@ -7,6 +7,7 @@ type CommandHandler = (text: string) => Promise<void>;
 export type DashboardState = {
     broadcasters: string[];
     relayEnabled: boolean;
+    chatGroups: string[][];
 };
 
 export type CamData = {
@@ -40,7 +41,6 @@ export type DictionaryWordData = {
 
 // Callback types for dashboard controls
 type GetStateCallback = () => Promise<DashboardState>;
-type ToggleRelayCallback = (enabled: boolean) => void;
 type AddBroadcasterCallback = (channel: string) => Promise<boolean>;
 type RemoveBroadcasterCallback = (channel: string) => boolean;
 type RebootCallback = () => Promise<void>;
@@ -59,7 +59,6 @@ type SetUserDefinitionsEnabledCallback = (enabled: boolean) => void;
 
 export interface DashboardCallbacks {
     getState: GetStateCallback;
-    toggleRelay: ToggleRelayCallback;
     addBroadcaster: AddBroadcasterCallback;
     removeBroadcaster: RemoveBroadcasterCallback;
     reboot: RebootCallback;
@@ -120,12 +119,6 @@ class WebServer {
                 const state = await this.#callbacks.getState();
                 callback(state);
             }
-        });
-
-        // Relay toggle
-        socket.on("toggle_relay", (enabled: boolean) => {
-            this.#callbacks?.toggleRelay(enabled);
-            this.#io.emit("relay_updated", enabled);
         });
 
         // Broadcaster management
@@ -255,6 +248,18 @@ class WebServer {
 
     printChatMessage(displayName: string, color: string, text: string, emotes?: { id: string; start: number; end: number }[]) {
         this.#io.emit("chat_message", { displayName, color, text, emotes: emotes ?? [] });
+    }
+
+    // Pushes the current relay state (true when WeeklyBot is relaying itself, false
+    // while a Twitch Shared Chat session is handling mirroring) to the dashboard.
+    emitRelayState(relayActive: boolean) {
+        this.#io.emit("relay_updated", relayActive);
+    }
+
+    // Pushes the current chat groups (Shared Chat sessions and standalone channels) to
+    // the dashboard. Each inner array is one group of channels that share a chat.
+    emitChatGroups(groups: string[][]) {
+        this.#io.emit("chat_groups_updated", groups);
     }
 }
 

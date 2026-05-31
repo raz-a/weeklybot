@@ -8,14 +8,16 @@ import {
     me,
     get_wb_color,
     relay,
-    getRelayMode,
-    setRelayMode,
+    isSharedChatActive,
+    isNativeMessage,
+    recordSharedChatMessage,
+    getChatGroups,
     clipIt,
 } from "./util.js";
 import { usercommands } from "./usercommands.js";
 import { termcommands } from "./termcommands.js";
 import { modcommands } from "./modcommands.js";
-import { addBroadcaster, broadcastercommands, getBroadcasterChannels, getFirstBroadcasterChannel, removeBroadcaster } from "./broadcaster.js";
+import { addBroadcaster, broadcastercommands, getBroadcasterChannels, removeBroadcaster } from "./broadcaster.js";
 import { PissStreak } from "./piss.js";
 import { PoopCam } from "./poopcam.js";
 import { PissCam } from "./pisscam.js";
@@ -32,12 +34,9 @@ webServer.onCommand(onTextInput);
 const dashboardCallbacks: DashboardCallbacks = {
     getState: async () => ({
         broadcasters: [...getBroadcasterChannels()],
-        relayEnabled: getRelayMode(),
+        relayEnabled: !isSharedChatActive(),
+        chatGroups: getChatGroups(),
     }),
-    toggleRelay: (enabled: boolean) => {
-        setRelayMode(enabled);
-        weeklyBotPrint(`Relay mode ${enabled ? "enabled" : "disabled"} via dashboard.`);
-    },
     addBroadcaster: async (channel: string) => {
         const result = await addBroadcaster(channel);
         if (result) weeklyBotPrint(`Added ${channel} via dashboard.`);
@@ -159,11 +158,34 @@ chatClient.onRegister(async () => {
 // Connect to the twitch server.
 chatClient.connect();
 
+// Pushes relay state and chat groups to the dashboard, but only when the grouping
+// actually changes, to avoid spamming the socket on every message.
+let lastChatGroupSignature = "";
+function refreshDashboardChatGroups() {
+    const groups = getChatGroups();
+    const signature = JSON.stringify(groups);
+    if (signature === lastChatGroupSignature) {
+        return;
+    }
+
+    lastChatGroupSignature = signature;
+    webServer.emitRelayState(!isSharedChatActive());
+    webServer.emitChatGroups(groups);
+}
+
 async function onMessageHandler(target: string, user: string, text: string, msg: PrivateMessage) {
-    if (!getRelayMode()) {
-        if (target.slice(1).toLowerCase() != getFirstBroadcasterChannel()) {
-            return;
-        }
+    const sourceRoomId = msg.tags.get("source-room-id");
+
+    // Learn the current Shared Chat topology from every copy Twitch delivers, then
+    // reflect any change to the relay state / chat groups on the dashboard.
+    recordSharedChatMessage(msg.channelId, sourceRoomId);
+    refreshDashboardChatGroups();
+
+    // During a Shared Chat session Twitch delivers a mirrored copy of each message to
+    // every participating channel. Only process the copy native to its origin channel
+    // so commands and relays run exactly once.
+    if (!isNativeMessage(msg.channelId, sourceRoomId)) {
+        return;
     }
 
     var userInfo = msg.userInfo;

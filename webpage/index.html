@@ -53,9 +53,9 @@
                     <div class="panel-header">Controls</div>
                     <div class="panel-body controls-body">
                         <div class="control-row">
-                            <span class="control-label">Relay Mode</span>
+                            <span class="control-label">Relay Mode (auto)</span>
                             <label class="toggle">
-                                <input type="checkbox" id="relayToggle">
+                                <input type="checkbox" id="relayToggle" disabled title="Automatic: on when relaying between channels, off during a Twitch Shared Chat session">
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
@@ -65,6 +65,14 @@
                         <div class="control-row">
                             <button id="rebootBtn" class="btn btn-danger">Reboot WeeklyBot</button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Chat Groups Panel -->
+                <div class="panel">
+                    <div class="panel-header">Chat Groups</div>
+                    <div class="panel-body">
+                        <ul id="chatGroupList" class="item-list"></ul>
                     </div>
                 </div>
             </div>

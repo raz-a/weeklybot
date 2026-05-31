@@ -2,7 +2,7 @@ import { HelixUser } from "@twurple/api";
 import { apiClient, chatClient } from "./client.js";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
-import { broadcast, getRelayMode, send, setRelayMode, weeklyBotPrint } from "./util.js";
+import { broadcast, getChatGroups, isSharedChatActive, send, weeklyBotPrint } from "./util.js";
 
 let broadcasterSet = new Map<string, HelixUser>();
 
@@ -60,7 +60,7 @@ export const broadcastercommands = new CommandSet(
     new Command(list, "Gets the list of broadcasters currently connected."),
     new Command(
         relay,
-        "[on|off] Enables or disables message relaying to all connected broadcasters."
+        "Shows the current relay status (automatic, based on Twitch Shared Chat)."
     ),
     new Command(reboot, "Reboots WeeklyBot")
 );
@@ -84,21 +84,19 @@ function relay(args: string[], broadcaster: ChatUser) {
 
     broadcastercommands.log(`${channel} ~relay`);
 
-    if (args.length < 1) {
-        send(channel, `Relay mode is currently ${getRelayMode() ? "ON" : "OFF"}`);
-        return;
-    }
-
-    const option = args[0].toLowerCase();
-
-    if (option === "on") {
-        setRelayMode(true);
-        send(channel, "Relay mode enabled.");
-    } else if (option === "off") {
-        setRelayMode(false);
-        send(channel, "Relay mode disabled.");
+    if (isSharedChatActive()) {
+        const groups = getChatGroups()
+            .map((group) => group.join(" + "))
+            .join(", ");
+        send(
+            channel,
+            `Relay is automatic. A Twitch Shared Chat session is active; WeeklyBot is bridging these chat groups: ${groups}`
+        );
     } else {
-        send(channel, "Invalid option. Use 'on' or 'off'.");
+        send(
+            channel,
+            "Relay is automatic. No Shared Chat session detected, so WeeklyBot is relaying between all connected channels."
+        );
     }
 }
 async function add(args: string[], broadcaster: ChatUser) {
