@@ -35,17 +35,22 @@ async function ban(args: string[], mod: ChatUser) {
                 }
 
                 for (const broadcaster of getBroadcasterIds()) {
-                    const result = await apiClient.moderation.banUser(broadcaster, me, {
-                        reason: `${mod.displayName} has banned you via WeeklyBot.`,
-                        userId: user,
-                    });
+                    try {
+                        const result = await apiClient.moderation.banUser(broadcaster, me, {
+                            reason: `${mod.displayName} has banned you via WeeklyBot.`,
+                            userId: user,
+                        });
 
-                    if (result) {
-                        send(
-                            broadcaster.name,
-                            `${userToBeBanned} has been banned by ${mod.displayName}.`
-                        );
-                    } else {
+                        if (result) {
+                            send(
+                                broadcaster.name,
+                                `${userToBeBanned} has been banned by ${mod.displayName}.`
+                            );
+                        } else {
+                            send(broadcaster.name, `Could not ban ${userToBeBanned}.`);
+                        }
+                    } catch (err) {
+                        weeklyBotPrint(`Error banning ${userToBeBanned} in ${broadcaster.name}: ${err}`);
                         send(broadcaster.name, `Could not ban ${userToBeBanned}.`);
                     }
                 }
@@ -70,11 +75,16 @@ async function unban(args: string[], mod: ChatUser) {
             const user = await apiClient.users.getUserByName(userToBeUnbanned);
             if (user !== null) {
                 for (const broadcaster of getBroadcasterIds()) {
-                    await apiClient.moderation.unbanUser(broadcaster, me, user);
-                    send(
-                        broadcaster.name,
-                        `${userToBeUnbanned} has been unbanned by ${mod.displayName}.`
-                    );
+                    try {
+                        await apiClient.moderation.unbanUser(broadcaster, me, user);
+                        send(
+                            broadcaster.name,
+                            `${userToBeUnbanned} has been unbanned by ${mod.displayName}.`
+                        );
+                    } catch (err) {
+                        weeklyBotPrint(`Error unbanning ${userToBeUnbanned} in ${broadcaster.name}: ${err}`);
+                        send(broadcaster.name, `Could not unban ${userToBeUnbanned}.`);
+                    }
                 }
             } else {
                 broadcast(`${userToBeUnbanned} could not be found`);
