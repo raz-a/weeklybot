@@ -18,6 +18,10 @@ import { FeatureRequestDB } from "./feature_requests.js";
 
 export type UserCommandState = { channel: string; user: ChatUser };
 
+// Per-user throttle for !request so chat can't spam the GitHub repo with issues.
+const REQUEST_COOLDOWN_MS = 60 * 1000;
+const requestCooldowns = new Map<string, number>();
+
 // TODO: Search for log commands and Print weeklybot output instead of just log command
 
 export const usercommands = new CommandSet(
@@ -282,10 +286,29 @@ function plates(args: string[], state: UserCommandState) {
 
 async function request(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
-    let request = args.join(" ");
-    usercommands.log(`${userName} is requesting a feature: ${request}`);
+    const text = args.join(" ").trim();
 
-    const issueUrl = await FeatureRequestDB.AddNewRequest(userName, request);
+    if (text.length === 0) {
+        send(state.channel, `${userName}, what do you want to request? Usage: !request <feature>`);
+        return;
+    }
+    if (text.length > 200) {
+        send(state.channel, `${userName}, that's too long. Keep requests under 200 characters.`);
+        return;
+    }
+
+    const now = Date.now();
+    const last = requestCooldowns.get(userName) ?? 0;
+    if (now - last < REQUEST_COOLDOWN_MS) {
+        const wait = Math.ceil((REQUEST_COOLDOWN_MS - (now - last)) / 1000);
+        send(state.channel, `${userName}, hold on ${wait}s before requesting again.`);
+        return;
+    }
+    requestCooldowns.set(userName, now);
+
+    usercommands.log(`${userName} is requesting a feature: ${text}`);
+
+    const issueUrl = await FeatureRequestDB.AddNewRequest(userName, text);
     broadcast(`Feature requested! ${issueUrl}`);
 }
 
