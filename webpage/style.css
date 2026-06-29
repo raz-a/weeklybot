@@ -548,7 +548,8 @@ input::placeholder, #commandBox::placeholder { color: var(--text-muted); }
 
 /* Write controls are hidden by default; revealed only for authenticated admins. */
 .requires-admin { display: none; }
-body.is-admin .requires-admin { display: revert; }
+body.is-admin .requires-admin { display: flex; }
+body.is-admin .panel-body.requires-admin { display: block; }
 
 .tabBar-auth { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 .tabBar-auth #adminPassword {
