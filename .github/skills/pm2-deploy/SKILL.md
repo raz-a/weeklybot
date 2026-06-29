@@ -32,6 +32,14 @@ npm run build
 
 If this fails, **stop immediately** and fix the build errors before attempting to deploy. Do NOT proceed with a broken build.
 
+Then run the test suite:
+
+```
+npm test
+```
+
+If any test fails, **stop** and fix it before deploying.
+
 ### 2. Check git status
 
 Run `git status` to see if there are uncommitted changes.
