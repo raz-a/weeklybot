@@ -541,3 +541,19 @@ input::placeholder, #commandBox::placeholder { color: var(--text-muted); }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(253, 224, 71, 0.15); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(253, 224, 71, 0.3); }
+
+/* ── Auth: read for all, write-controls hidden until login ── */
+
+.hidden { display: none !important; }
+
+/* Write controls are hidden by default; revealed only for authenticated admins. */
+.requires-admin { display: none; }
+body.is-admin .requires-admin { display: revert; }
+
+.tabBar-auth { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.tabBar-auth #adminPassword {
+    background: var(--surface-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 4px 8px; font-size: 13px; width: 130px;
+}
+.admin-badge { color: var(--accent); font-weight: 600; font-size: 13px; }

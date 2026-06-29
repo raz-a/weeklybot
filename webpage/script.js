@@ -1,5 +1,6 @@
 (() => {
-  const socket = io();
+  const TOKEN_KEY = 'wb_token';
+  const socket = io({ auth: { token: localStorage.getItem(TOKEN_KEY) || undefined } });
 
   // ── DOM refs ──
   const $ = (id) => document.getElementById(id);
@@ -15,6 +16,40 @@
   const broadcasterList = $('broadcasterList');
   const addBroadcasterInput = $('addBroadcasterInput');
   const addBroadcasterBtn = $('addBroadcasterBtn');
+  const adminPassword = $('adminPassword');
+  const loginBtn = $('loginBtn');
+  const logoutBtn = $('logoutBtn');
+  const adminBadge = $('adminBadge');
+
+  // ── Auth (read for all, write needs login) ──
+  function setAdmin(isAdmin) {
+    document.body.classList.toggle('is-admin', isAdmin);
+    adminBadge.classList.toggle('hidden', !isAdmin);
+    loginBtn.classList.toggle('hidden', isAdmin);
+    adminPassword.classList.toggle('hidden', isAdmin);
+    logoutBtn.classList.toggle('hidden', !isAdmin);
+  }
+  socket.on('auth_state', setAdmin);
+  function login() {
+    const pw = adminPassword.value;
+    if (!pw) return;
+    socket.emit('authenticate', pw, (res) => {
+      adminPassword.value = '';
+      if (res && res.ok) {
+        localStorage.setItem(TOKEN_KEY, res.token);
+        setAdmin(true);
+      } else {
+        appendChat('[Dashboard] Incorrect password');
+      }
+    });
+  }
+  loginBtn.addEventListener('click', login);
+  adminPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); login(); } });
+  logoutBtn.addEventListener('click', () => {
+    socket.emit('logout', localStorage.getItem(TOKEN_KEY));
+    localStorage.removeItem(TOKEN_KEY);
+    setAdmin(false);
+  });
 
   // ── Helpers ──
   function esc(s) {
@@ -133,7 +168,7 @@
       const li = document.createElement('li');
       li.innerHTML = `<span class="item-name">${esc(name)}</span>` +
         (name.toLowerCase() !== 'razstrats'
-          ? `<button class="btn-remove" data-channel="${esc(name)}" title="Remove">×</button>`
+          ? `<button class="btn-remove requires-admin" data-channel="${esc(name)}" title="Remove">×</button>`
           : '');
       broadcasterList.appendChild(li);
     });
@@ -272,7 +307,7 @@
             `<div class="request-text"><a href="${esc(req.url)}" target="_blank" rel="noopener">#${req.issueNumber}</a> ${esc(req.request)}</div>` +
             `<div class="request-meta">by ${esc(req.requester)} · ${esc(req.date)}</div>` +
           `</div>` +
-          `<button class="btn-remove" data-issue="${req.issueNumber}" title="Close">×</button>`;
+          `<button class="btn-remove requires-admin" data-issue="${req.issueNumber}" title="Close">×</button>`;
         container.appendChild(div);
       });
       container.querySelectorAll('.btn-remove').forEach((btn) => {
@@ -329,7 +364,7 @@
         div.className = 'dict-def-item';
         div.innerHTML =
           `<span>${esc(def)}</span>` +
-          `<button class="btn-remove" data-word="${esc(word)}" data-index="${i}" title="Delete">×</button>`;
+          `<button class="btn-remove requires-admin" data-word="${esc(word)}" data-index="${i}" title="Delete">×</button>`;
         container.appendChild(div);
       });
       container.querySelectorAll('.btn-remove').forEach((btn) => {

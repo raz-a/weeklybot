@@ -17,6 +17,12 @@
             <button class="tab" data-tab="dictionary">Dictionary</button>
         </div>
         <div class="tabBar-status" id="connectionStatus">● Connecting...</div>
+        <div class="tabBar-auth">
+            <span id="adminBadge" class="admin-badge hidden">🔓 Admin</span>
+            <input id="adminPassword" type="password" placeholder="Password" autocomplete="off">
+            <button id="loginBtn" class="btn btn-sm btn-accent" type="button">Login</button>
+            <button id="logoutBtn" class="btn btn-sm btn-muted hidden" type="button">Logout</button>
+        </div>
     </nav>
 
     <!-- Dashboard Tab -->
@@ -28,7 +34,7 @@
                 <div class="panel-body">
                     <div id="chatLog" class="chatLog" aria-live="polite"></div>
                 </div>
-                <div class="panel-footer">
+                <div class="panel-footer requires-admin">
                     <input id="commandBox" type="text" placeholder="Send a message or command..." autocomplete="off">
                     <button id="sendBtn" class="btn btn-accent" type="button">Send</button>
                 </div>
@@ -41,7 +47,7 @@
                     <div class="panel-header">Broadcasters</div>
                     <div class="panel-body">
                         <ul id="broadcasterList" class="item-list"></ul>
-                        <div class="inline-form">
+                        <div class="inline-form requires-admin">
                             <input id="addBroadcasterInput" type="text" placeholder="Channel name..." autocomplete="off">
                             <button id="addBroadcasterBtn" class="btn btn-accent btn-sm">Add</button>
                         </div>
@@ -59,10 +65,10 @@
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
-                        <div class="control-row">
+                        <div class="control-row requires-admin">
                             <button id="clipBtn" class="btn btn-accent" style="width:100%">📎 Take Clip</button>
                         </div>
-                        <div class="control-row">
+                        <div class="control-row requires-admin">
                             <button id="rebootBtn" class="btn btn-danger">Reboot WeeklyBot</button>
                         </div>
                     </div>
@@ -105,7 +111,7 @@
                     Rate Limit
                 </div>
                 <div class="panel-body">
-                    <div class="inline-form">
+                    <div class="inline-form requires-admin">
                         <input id="rateLimitInput" type="number" min="0" placeholder="Seconds..." autocomplete="off">
                         <button id="setRateLimitBtn" class="btn btn-accent btn-sm">Set</button>
                     </div>
@@ -176,7 +182,7 @@
             </div>
             <div class="panel">
                 <div class="panel-header">Add Definition</div>
-                <div class="panel-body">
+                <div class="panel-body requires-admin">
                     <div class="control-row" style="margin-bottom: 0.75rem">
                         <span class="control-label">Allow Chat Definitions</span>
                         <label class="toggle">

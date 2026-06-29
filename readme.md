@@ -37,7 +37,7 @@ information provided.
 WeeklyBot expects a folder named "private" to be located in the directory that node is being run
 from.
 
-The private folder needs to contain the following three files:
+The private folder needs to contain the following files (the first three are required; `dashboard.json` is optional but recommended):
 
 1. `clientinfo.json` : Contains the client id and secret.
 
@@ -76,7 +76,25 @@ The private folder needs to contain the following three files:
 }
 ```
 
+4. `dashboard.json` : Password that unlocks write controls on the web dashboard. The dashboard is read-only for anyone on the network; entering this password grants control (reboot, channel management, clip, dictionary edits, etc.). If the file is missing, the dashboard stays read-only for everyone.
+```json
+{
+    "password": "[DASHBOARD_PASSWORD]"
+}
+```
+
 For more information about creating the appropriate Twitch credentials and tokens, see [Twurple's documentation](https://twurple.js.org/docs/auth/) and [Twitch's Documentation](https://dev.twitch.tv/docs/authentication/). For GitHub tokens, see [GitHub's documentation on fine-grained personal access tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token).
+
+## Web Dashboard
+
+WeeklyBot serves a web dashboard on port **3000** (e.g. `http://localhost:3000`). It shows the live combined chat, connected broadcasters and chat groups, cam stats, the piss streak, feature requests, and the meme dictionary. From it you can also send messages/commands, reboot, take clips, manage channels, and edit the dictionary.
+
+Access is split into two tiers:
+
+- **Read-only (no login):** anyone who can reach the page can view chat and stats.
+- **Control (login required):** all write actions — sending commands, reboot, clip, adding/removing channels, rate limits, closing requests, dictionary edits — require entering the password from `private/dashboard.json`. Logging in stores a token in the browser so you stay in control across refreshes and devices. If `dashboard.json` is absent, the dashboard is read-only for everyone.
+
+The password protects only LAN viewers from making changes; it is sent over plain HTTP, so put the dashboard behind a TLS reverse proxy if you ever expose it beyond a trusted network.
 
 ## License
 
