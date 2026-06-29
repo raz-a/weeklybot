@@ -151,6 +151,14 @@ class WebServer {
         return false;
     }
 
+    // Direct (non-browser) socket clients can send anything, so validate payloads.
+    #str(value: unknown, max: number): string | null {
+        return typeof value === "string" && value.length > 0 && value.length <= max ? value : null;
+    }
+    #int(value: unknown, min: number, max: number): number | null {
+        return typeof value === "number" && Number.isInteger(value) && value >= min && value <= max ? value : null;
+    }
+
     #registerSocketEvents(socket: Socket) {
         // Tell the client whether this connection already has control (token reuse).
         socket.emit("auth_state", !!socket.data.isAdmin);
@@ -177,6 +185,7 @@ class WebServer {
         // Chat command from the web UI
         socket.on("command", (command: string) => {
             if (!this.#requireAdmin(socket)) return;
+            if (!this.#str(command, 500)) return;
             if (this.#commandHandler) {
                 this.#commandHandler(command);
             }
@@ -193,6 +202,7 @@ class WebServer {
         // Broadcaster management
         socket.on("add_broadcaster", async (channel: string, callback: (success: boolean) => void) => {
             if (!this.#requireAdmin(socket, callback)) return;
+            if (!this.#str(channel, 50)) { callback(false); return; }
             if (this.#callbacks?.addBroadcaster) {
                 const success = await this.#callbacks.addBroadcaster(channel);
                 callback(success);
@@ -205,6 +215,7 @@ class WebServer {
 
         socket.on("remove_broadcaster", async (channel: string, callback: (success: boolean) => void) => {
             if (!this.#requireAdmin(socket, callback)) return;
+            if (!this.#str(channel, 50)) { callback(false); return; }
             if (this.#callbacks?.removeBroadcaster) {
                 const success = this.#callbacks.removeBroadcaster(channel);
                 callback(success);
@@ -236,6 +247,7 @@ class WebServer {
 
         socket.on("set_rate_limit", (seconds: number, callback: (success: boolean) => void) => {
             if (!this.#requireAdmin(socket, callback)) return;
+            if (this.#int(seconds, 0, 86400) === null) { callback(false); return; }
             if (this.#callbacks?.setRateLimit) {
                 callback(this.#callbacks.setRateLimit(seconds));
             }
@@ -257,6 +269,7 @@ class WebServer {
 
         socket.on("delete_request", async (issueNumber: number, callback: (success: boolean) => void) => {
             if (!this.#requireAdmin(socket, callback)) return;
+            if (this.#int(issueNumber, 1, Number.MAX_SAFE_INTEGER) === null) { callback(false); return; }
             if (this.#callbacks?.deleteRequest) {
                 try {
                     await this.#callbacks.deleteRequest(issueNumber);
@@ -275,6 +288,7 @@ class WebServer {
         });
 
         socket.on("get_word", async (word: string, callback: (data: DictionaryWordData) => void) => {
+            if (!this.#str(word, 50)) return;
             if (this.#callbacks?.getWord) {
                 callback(await this.#callbacks.getWord(word));
             }
@@ -282,6 +296,7 @@ class WebServer {
 
         socket.on("add_definition", async (data: { word: string; definition: string }, callback: (success: boolean) => void) => {
             if (!this.#requireAdmin(socket, callback)) return;
+            if (!data || !this.#str(data.word, 50) || !this.#str(data.definition, 500)) { callback(false); return; }
             if (this.#callbacks?.addDefinition) {
                 try {
                     await this.#callbacks.addDefinition(data.word, data.definition);
@@ -294,6 +309,7 @@ class WebServer {
 
         socket.on("delete_definition", async (data: { word: string; index?: number }, callback: (success: boolean) => void) => {
             if (!this.#requireAdmin(socket, callback)) return;
+            if (!data || !this.#str(data.word, 50)) { callback(false); return; }
             if (this.#callbacks?.deleteDefinition) {
                 callback(await this.#callbacks.deleteDefinition(data.word, data.index));
             }
@@ -307,6 +323,7 @@ class WebServer {
 
         socket.on("set_user_definitions_enabled", (enabled: boolean) => {
             if (!this.#requireAdmin(socket)) return;
+            if (typeof enabled !== "boolean") return;
             this.#callbacks?.setUserDefinitionsEnabled(enabled);
             this.#io.emit("user_definitions_enabled_updated", enabled);
         });
