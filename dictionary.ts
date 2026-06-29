@@ -15,9 +15,19 @@ export abstract class MemeDictionary {
     static #db = new JsonDB(new Config("./save/memedictionary.json", true, true));
     static readonly #rootkey = "/definitions";
 
+    // Words become node-json-db path segments, where "/", "[", "]" and empty
+    // strings have structural meaning. Restrict keys to a safe set so a crafted
+    // word can't escape its node or wipe the dictionary root.
+    static #normalize(word: string): string | null {
+        const key = word.trim().toLowerCase();
+        return /^[a-z0-9]{1,50}$/.test(key) ? key : null;
+    }
+
     static async getDefinitions(word: string): Promise<string[]> {
+        const key = this.#normalize(word);
+        if (!key) return [];
         try {
-            const defs = await this.#db.getData(`${this.#rootkey}/${word.toLowerCase()}`);
+            const defs = await this.#db.getData(`${this.#rootkey}/${key}`);
             return Array.isArray(defs) ? defs : [];
         } catch {
             return [];
@@ -25,14 +35,16 @@ export abstract class MemeDictionary {
     }
 
     static async addDefinition(word: string, definition: string): Promise<void> {
-        const key = word.toLowerCase();
+        const key = this.#normalize(word);
+        if (!key) return;
         const existing = await this.getDefinitions(key);
         existing.push(definition);
         await this.#db.push(`${this.#rootkey}/${key}`, existing);
     }
 
     static async removeDefinition(word: string, index?: number): Promise<boolean> {
-        const key = word.toLowerCase();
+        const key = this.#normalize(word);
+        if (!key) return false;
         try {
             if (index === undefined) {
                 await this.#db.delete(`${this.#rootkey}/${key}`);
