@@ -1,6 +1,6 @@
 import { weeklyBotPrint } from "./util.js";
 
-type CommandFn<CallingState> = (args: string[], state: CallingState) => void;
+type CommandFn<CallingState> = (args: string[], state: CallingState) => void | Promise<void>;
 type StateValidator<CallingState> = (state: CallingState) => Promise<boolean>;
 
 export class Command<CallingState> {
@@ -14,8 +14,12 @@ export class Command<CallingState> {
         this.#fn = fn;
     }
 
-    invoke(args: string[], state: CallingState): void {
-        this.#fn(args, state);
+    async invoke(args: string[], state: CallingState): Promise<void> {
+        try {
+            await this.#fn(args, state);
+        } catch (err) {
+            weeklyBotPrint(`Command "${this.name}" failed: ${err}`);
+        }
     }
 }
 
@@ -42,7 +46,12 @@ export class CommandSet<CallingState> {
     }
 
     async processInput(input: string, state: CallingState) {
-        if (!(await this.#stateValidator(state)) || !input.startsWith(this.prefix)) {
+        try {
+            if (!(await this.#stateValidator(state)) || !input.startsWith(this.prefix)) {
+                return false;
+            }
+        } catch (err) {
+            weeklyBotPrint(`[${this.name}] state validation failed: ${err}`);
             return false;
         }
 
@@ -51,7 +60,7 @@ export class CommandSet<CallingState> {
         const args = tokens.slice(1);
 
         if (command in this.#commands) {
-            this.#commands[command].invoke(args, state);
+            await this.#commands[command].invoke(args, state);
             return true;
         }
 

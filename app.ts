@@ -25,6 +25,16 @@ import { FeatureRequestDB } from "./feature_requests.js";
 import { MemeDictionary, getUserDefinitionsEnabled, setUserDefinitionsEnabled } from "./dictionary.js";
 import { webServer, DashboardCallbacks } from "./webserver.js";
 
+// Last-resort safety net: a stray rejection or thrown error in a handler should be
+// logged, not crash the bot mid-stream. Command/handler errors are caught locally;
+// these only fire for anything that slips through.
+process.on("unhandledRejection", (reason) => {
+    weeklyBotPrint(`Unhandled rejection: ${reason}`);
+});
+process.on("uncaughtException", (err) => {
+    weeklyBotPrint(`Uncaught exception: ${err}`);
+});
+
 // Register the text input handler.
 // TODO: Remove stdin.
 process.stdin.on("data", onTextInput);
