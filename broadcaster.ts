@@ -3,6 +3,7 @@ import { apiClient, chatClient } from "./client.js";
 import { Command, CommandSet } from "./commands.js";
 import { ChatUser } from "@twurple/chat";
 import { broadcast, getChatGroups, isSharedChatActive, send, weeklyBotPrint } from "./util.js";
+import { getConfig } from "./config.js";
 
 let broadcasterSet = new Map<string, HelixUser>();
 
@@ -26,7 +27,7 @@ export async function addBroadcaster(channel: string): Promise<boolean> {
 }
 
 export function removeBroadcaster(channel: string): boolean {
-    if (channel == "razstrats") {
+    if (channel == getConfig().protectedChannel) {
         return false;
     }
 

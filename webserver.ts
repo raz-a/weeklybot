@@ -3,6 +3,7 @@ import http, { Server as HttpServer } from "http";
 import { Server as SocketIOServer, Socket } from "socket.io";
 import { createHash, randomBytes, timingSafeEqual } from "crypto";
 import { readFileSync } from "fs";
+import { getConfig } from "./config.js";
 
 type CommandHandler = (text: string) => Promise<void>;
 
@@ -82,7 +83,7 @@ class WebServer {
     #expressApp: Express;
     #httpServer: HttpServer;
     #io: SocketIOServer;
-    #port: number;
+    #port: number = 3000;
     #commandHandler?: CommandHandler;
     #callbacks?: DashboardCallbacks;
     // SHA-256 of the dashboard password (32 bytes), or undefined when no password
@@ -91,10 +92,7 @@ class WebServer {
     // Tokens handed out to authenticated clients so they stay admin across reloads.
     #adminTokens = new Set<string>();
 
-    constructor(port: number = 3000) {
-        this.#port = port;
-        this.#passwordHash = this.#loadPasswordHash();
-
+    constructor() {
         this.#expressApp = express();
         this.#expressApp.use(express.static("webpage"));
 
@@ -113,7 +111,15 @@ class WebServer {
         this.#io.on("connection", (socket: Socket) => {
             this.#registerSocketEvents(socket);
         });
+    }
 
+    // Loads the dashboard password and starts listening. Deferred out of the
+    // constructor so importing this module has no side effects (no file read, no bound
+    // port); call once from app.ts during startup.
+    start(): void {
+        const cfg = getConfig();
+        this.#port = cfg.webPort;
+        this.#passwordHash = this.#loadPasswordHash();
         this.#httpServer.listen(this.#port);
     }
 
@@ -121,7 +127,7 @@ class WebServer {
     // anything is open to the LAN; only changes require this password.
     #loadPasswordHash(): Buffer | undefined {
         try {
-            const { password } = JSON.parse(readFileSync("./private/dashboard.json", "utf-8"));
+            const { password } = JSON.parse(readFileSync(getConfig().dashboardPasswordPath, "utf-8"));
             if (typeof password === "string" && password.length > 0) {
                 return createHash("sha256").update(password).digest();
             }

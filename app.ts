@@ -1,11 +1,11 @@
 import chalk from "chalk";
 
-import { chatClient, apiClient, PrivateMessage } from "./client.js";
+import { chatClient, PrivateMessage, initClient } from "./client.js";
 import {
     weeklyBotPrint,
     broadcast,
     timeout,
-    me,
+    initBot,
     get_wb_color,
     relay,
     isSharedChatActive,
@@ -24,6 +24,7 @@ import { PissCam } from "./pisscam.js";
 import { FeatureRequestDB } from "./feature_requests.js";
 import { MemeDictionary, getUserDefinitionsEnabled, setUserDefinitionsEnabled } from "./dictionary.js";
 import { webServer, DashboardCallbacks } from "./webserver.js";
+import { loadConfig, getConfig } from "./config.js";
 
 // Last-resort safety net: a stray rejection or thrown error in a handler should be
 // logged, not crash the bot mid-stream. Command/handler errors are caught locally;
@@ -34,6 +35,14 @@ process.on("unhandledRejection", (reason) => {
 process.on("uncaughtException", (err) => {
     weeklyBotPrint(`Uncaught exception: ${err}`);
 });
+
+// Load configuration, then bring up the Twitch client and bot state before wiring up
+// handlers or connecting. These were previously import-time side effects; doing them
+// explicitly here keeps the underlying modules importable (e.g. in tests) with no I/O.
+loadConfig();
+await initClient();
+await initBot();
+webServer.start();
 
 // Register the text input handler.
 // TODO: Remove stdin.
@@ -152,16 +161,11 @@ chatClient.onMessage(onMessageHandler);
 chatClient.onRegister(async () => {
     weeklyBotPrint("Weekly Bot has (re)started.");
 
-    //
-    // Default channels
-    //
-
-    if (!(await addBroadcaster("razstrats"))) {
-        weeklyBotPrint("Could not connect to razstrats");
-    }
-
-    if (!(await addBroadcaster("naircat"))) {
-        weeklyBotPrint("Could not connect to naircat");
+    // Join the configured default channels.
+    for (const channel of getConfig().defaultChannels) {
+        if (!(await addBroadcaster(channel))) {
+            weeklyBotPrint(`Could not connect to ${channel}`);
+        }
     }
 });
 

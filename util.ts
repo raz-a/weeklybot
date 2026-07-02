@@ -1,5 +1,5 @@
 // Common utiliy functions.
-import { HelixChatUserColor } from "@twurple/api";
+import { HelixChatUserColor, HelixUser } from "@twurple/api";
 import { chatClient, apiClient } from "./client.js";
 import {
     getBroadcasterChannels,
@@ -9,7 +9,9 @@ import { ChatUser } from "@twurple/chat";
 import { webServer } from "./webserver.js";
 import { SharedChatState } from "./sharedchat.js";
 
-export const me = await apiClient.users.getMe();
+// WeeklyBot's own Twitch user. Assigned by initBot() after the client is ready, so it
+// is a live binding rather than a top-level await (which would run at import time).
+export let me: HelixUser;
 
 // TODO: Make weeklyBotPrint have better customizable colors.
 
@@ -20,7 +22,13 @@ export function weeklyBotPrint(message: string) {
 }
 
 let wb_color = "#FFFFFF";
-set_wb_color(await apiClient.chat.getColorForUser(me.id));
+
+// One-time async startup for this module: resolve WeeklyBot's user and current chat
+// colour. Call once from app.ts after initClient().
+export async function initBot(): Promise<void> {
+    me = await apiClient.users.getMe();
+    set_wb_color(await apiClient.chat.getColorForUser(me.id));
+}
 
 export function set_wb_color(colorHex: string | null | undefined) {
     if (colorHex) {
