@@ -46,6 +46,7 @@ export const usercommands = new CommandSet(
     new Command(define, "Have WeeklyBot define an english word for you!"),
     new Command(pissStreak, "Find out how well chat is holding their bladder."),
     new Command(pissCheck, "[Alias] Find out how well chat is holding their bladder."),
+    new Command(destro, "A random verse from the Holy Gospel of Destro."),
     new Command(destro450, "The Holy Gospel of Chained Together"),
     new Command(destro1259, "The Holy Gospel of Destro"),
     new Command(destro1019, "The Holy Gospel of Freedom"),
@@ -99,31 +100,40 @@ async function discord(args: string[], state: UserCommandState) {
     send(state.channel, msg);
 }
 
+type DestroQuote = { timestamp: string; quote: string };
+
+// The Holy Gospel of Destro. Each verse is rendered as "<quote> (Destro <timestamp>)".
+// The specific !destroXXXX commands and the generic random !destro command all draw
+// from this single list so they never drift out of sync.
+const DESTRO_450: DestroQuote = { timestamp: "4:50", quote: "My sons, we have gotten better." };
+const DESTRO_1259: DestroQuote = {
+    timestamp: "12:59",
+    quote: "I demand the succulent meat of your finest mare!",
+};
+const DESTRO_1019: DestroQuote = { timestamp: "10:19", quote: "My tub is freedom" };
+
+const destroGospel: DestroQuote[] = [DESTRO_450, DESTRO_1259, DESTRO_1019];
+
+function preachDestro(state: UserCommandState, verse: DestroQuote) {
+    usercommands.log(`Preaching the Gospel of Destro to ${state.user.displayName} (${verse.timestamp}).`);
+    broadcast(`${verse.quote} (Destro ${verse.timestamp})`);
+}
+
+async function destro(args: string[], state: UserCommandState) {
+    const verse = destroGospel[Math.floor(Math.random() * destroGospel.length)];
+    preachDestro(state, verse);
+}
+
 async function destro450(args: string[], state: UserCommandState) {
-    const userName = state.user.displayName;
-
-    usercommands.log(`Preaching the Gospel of Destro to ${userName} (4:50).`);
-
-    const msg = `My sons, we have gotten better. (Destro 4:50)`;
-    broadcast(msg);
+    preachDestro(state, DESTRO_450);
 }
 
 async function destro1259(args: string[], state: UserCommandState) {
-    const userName = state.user.displayName;
-
-    usercommands.log(`Preaching the Gospel of Destro to ${userName} (12:59).`);
-
-    const msg = `I demand the succulent meat of your finest mare! (Destro 12:59)`;
-    broadcast(msg);
+    preachDestro(state, DESTRO_1259);
 }
 
 async function destro1019(args: string[], state: UserCommandState) {
-    const userName = state.user.displayName;
-
-    usercommands.log(`Preaching the Gospel of Destro to ${userName} (10:19).`);
-
-    const msg = `My tub is freedom (Destro 10:19)`;
-    broadcast(msg);
+    preachDestro(state, DESTRO_1019);
 }
 
 async function pissStreak(args: string[], state: UserCommandState) {
