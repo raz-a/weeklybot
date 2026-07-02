@@ -13,17 +13,21 @@ Direction to keep in mind when proposing or designing changes:
 
 ## Deployment target
 
-Production is a **small Linux machine on the maintainer's home network** (`weeklybot.lan`), managed by PM2. Keep resource use and setup modest — don't assume cloud-scale infrastructure.
+Production is a **small Linux machine on the maintainer's home network** (`weeklybot.lan`), managed by PM2. Keep resource use and setup modest — don't assume cloud-scale infrastructure. When not on the same network as the server, it is also reachable over the maintainer's **Tailscale** network at **`100.85.28.97`**.
 
 ## Working with the maintainer
 
 razstrats is an experienced **Windows kernel developer (~10 years)** who is **new to web development** and uses this project to learn it. When making web-related changes, **explain what you're doing and why, call out web-dev best practices, and relate concepts to kernel/systems ideas** he already knows (e.g. the Node event loop vs. DPCs/work items, sockets vs. IRP-based I/O) wherever a genuinely useful analogy exists.
 
+## Debugging workflow
+
+**Always reproduce a bug before fixing it.** When working on any bug, first produce a concrete, deterministic reproduction that demonstrates the defect — ideally a failing unit test, or otherwise a small standalone script — and only then implement the fix. Keep the reproduction as a regression test wherever practical.
+
 ## Build / run / deploy
 
 - **Build:** `npm run build` (runs `tsc`). Compiled output goes to `weeklybot/` (the `outDir`), not next to the sources.
 - **Run:** `npm start` (`node weeklybot/app.js`). Build first. **Must be run from the repo root** — `client.ts` reads `./private/*.json`, the JSON DBs live in `./save/`, and Express serves `webpage/`, all via cwd-relative paths.
-- **No test suite and no linter exist yet.** Validate changes by getting a clean `npm run build`. (Building an automated integration-test framework is a current goal — see *Goals & roadmap*.)
+- **Tests:** a small [Vitest](https://vitest.dev) suite lives in `tests/` (`npm test`, or `npm run test:watch`). It covers dependency-free logic modules (e.g. `sharedchat.ts`, `cam.ts`, `piss.ts`); modules that import `client.ts` can't be unit-tested yet because it does top-level `await` on `./private/*.json`. No linter exists. Validate changes with a clean `npm test` **and** `npm run build`. (A broader automated integration-test framework is still a goal — see *Goals & roadmap*.)
 - **Deploy:** to the `weeklybot.lan` production box via `pm2 deploy ecosystem.config.cjs production`. Prefer the `pm2-deploy` skill (`.github/skills/pm2-deploy/`), which enforces "build must pass before deploy". Never deploy a failing build.
 
 ## Architecture (the big picture)
@@ -44,9 +48,11 @@ The sets and their gates:
 | `usercommands` | `usercommands.ts` | `!` | anyone in chat |
 | `termcommands` | `termcommands.ts` | `!` | terminal stdin + web UI command box |
 
-### Shared-Chat-aware relaying (`util.ts`) — the subtlest logic
+### Shared-Chat-aware relaying — the subtlest logic
 
-Twitch "Shared Chat" natively mirrors messages between channels in a session, so naive relaying would duplicate. WeeklyBot partitions connected channels into **chat groups** discovered dynamically from each message's `source-room-id` IRC tag (`recordSharedChatMessage` / `getChatGroups`). Consequences any change here must preserve:
+Twitch "Shared Chat" natively mirrors messages between channels in a session, so naive relaying would duplicate. The topology + grouping logic lives in **`sharedchat.ts`** (`SharedChatState`), kept free of any Twitch-client/IO dependency so it can be unit-tested; **`util.ts`** owns the singleton plus the actual chat IO (`recordSharedChatMessage`, `getChatGroups`, `relay`, `broadcast`, `send`). Consequences any change here must preserve:
+- A session is detected from the **`source-room-id`** IRC tag, which Twitch stamps on *every* delivered copy of a message during a session — **including the origin channel's own copy**, where `source-room-id === room-id`. So a channel's own message alone proves a session is active; don't wait for a mirrored copy from another channel (doing so caused a duplicated first-message relay — see the regression test in `tests/sharedchat.test.ts`).
+- Connected channels are partitioned into **chat groups**: while a session is active they collapse into **one** group (Twitch fans messages out, so WeeklyBot posts a single copy and never relays between them); otherwise each channel is its own group and WeeklyBot bridges them. Known limitation: this assumes all connected channels in a live session belong to the same session (true for the razstrats + naircat setup).
 - Only **native** messages are processed (`isNativeMessage`), so each user message is handled exactly once.
 - `broadcast()` posts once per group; `relay(source, msg)` posts to every group except the source's; `send(channel, msg)` hits one channel.
 - **Always emit chat via `broadcast` / `relay` / `send`, never `chatClient.say` directly**, so grouping is respected.
