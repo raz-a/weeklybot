@@ -48,6 +48,7 @@ export const usercommands = new CommandSet(
     new Command(pissCheck, "[Alias] Find out how well chat is holding their bladder."),
     new Command(destro450, "The Holy Gospel of Chained Together"),
     new Command(destro1259, "The Holy Gospel of Destro"),
+    new Command(destro1019, "The Holy Gospel of Freedom"),
     new Command(discord, "Get access to the Discord!"),
     new Command(zoop, "Testing out the zoop"),
     new Command(extension, "Get the WeeklyBot Chrome Extension!"),
@@ -113,6 +114,15 @@ async function destro1259(args: string[], state: UserCommandState) {
     usercommands.log(`Preaching the Gospel of Destro to ${userName} (12:59).`);
 
     const msg = `I demand the succulent meat of your finest mare! (Destro 12:59)`;
+    broadcast(msg);
+}
+
+async function destro1019(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+
+    usercommands.log(`Preaching the Gospel of Destro to ${userName} (10:19).`);
+
+    const msg = `My tub is freedom (Destro 10:19)`;
     broadcast(msg);
 }
 
