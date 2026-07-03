@@ -514,7 +514,13 @@ async function newdefine(args: string[], state: UserCommandState) {
     const word = args[0];
     const definition = args.slice(1).join(" ");
 
-    await MemeDictionary.addDefinition(word, definition, userName);
+    const stored = await MemeDictionary.addDefinition(word, definition, userName);
+    if (!stored) {
+        broadcast(`Sorry ${userName}, "${word}" can't be defined (letters and numbers only, max 50 characters).`);
+        usercommands.log(`${userName} tried to add a definition for an invalid word: "${word}"`);
+        return;
+    }
+
     const outcome = await economy.record({ type: "definitionAdded", user: userName });
     usercommands.log(`${userName} added meme definition for "${word}": ${definition}`);
     usercommands.log(outcome.description);

@@ -79,12 +79,13 @@ export abstract class MemeDictionary {
         word: string,
         definition: string,
         author: string | null = null
-    ): Promise<void> {
+    ): Promise<boolean> {
         const key = this.#normalize(word);
-        if (!key) return;
+        if (!key) return false;
         const existing = await this.getDefinitionEntries(key);
         existing.push({ text: definition, author });
         await this.#db.push(`${this.#rootkey}/${key}`, existing);
+        return true;
     }
 
     static async removeDefinition(word: string, index?: number): Promise<boolean> {
