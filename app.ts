@@ -25,6 +25,7 @@ import { FeatureRequestDB } from "./feature_requests.js";
 import { MemeDictionary, getUserDefinitionsEnabled, setUserDefinitionsEnabled } from "./dictionary.js";
 import { webServer, DashboardCallbacks } from "./webserver.js";
 import { loadConfig, getConfig } from "./config.js";
+import { economy } from "./economy.js";
 
 // Last-resort safety net: a stray rejection or thrown error in a handler should be
 // logged, not crash the bot mid-stream. Command/handler errors are caught locally;
@@ -151,6 +152,16 @@ const dashboardCallbacks: DashboardCallbacks = {
         setUserDefinitionsEnabled(enabled);
         weeklyBotPrint(`User meme definitions ${enabled ? "enabled" : "disabled"} via dashboard.`);
     },
+    getWeWeCoin: async () => {
+        const balances = await economy.ledger.getAllBalances();
+        return {
+            balances: balances.map((b, index) => ({
+                rank: index + 1,
+                userName: b.userName,
+                balance: b.balance,
+            })),
+        };
+    },
 };
 webServer.registerCallbacks(dashboardCallbacks);
 
@@ -260,7 +271,7 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
     }
 
     // Special non-command checks.
-    await nonCommandProcessInput(text);
+    await nonCommandProcessInput(text, userInfo.displayName);
 }
 
 // Allow for commandline text input.
@@ -279,15 +290,23 @@ function isFilteredUser(user: string) {
     return filteredUsers.includes(lc);
 }
 
-async function nonCommandProcessInput(text: string) {
+async function nonCommandProcessInput(text: string, user: string) {
     const result = await PissStreak.inspectMessageForPisser(text);
     if (result.pissOccurred) {
-        await handlePissMessage(result.lastDaysSince);
+        await handlePissMessage(user, result.lastDaysSince);
     }
 }
 
-async function handlePissMessage(daysSince: number) {
+async function handlePissMessage(user: string, daysSince: number) {
     const msg = `DAYS WITHOUT CHAT PISSING THEMSELVES: [̶ ̶${daysSince}\u{0336} ̶]̶ [0]`;
     weeklyBotPrint("PISSER DETECTED");
     broadcast(msg);
+
+    // Whoever broke the streak pays for it: max(10, streak length in days), saturating at 0.
+    const outcome = await economy.record({
+        type: "pissStreakRuined",
+        user,
+        streakSize: daysSince,
+    });
+    weeklyBotPrint(outcome.description);
 }

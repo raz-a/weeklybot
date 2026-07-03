@@ -11,9 +11,40 @@ export function setUserDefinitionsEnabled(enabled: boolean): void {
     userDefinitionsEnabled = enabled;
 }
 
+// A stored meme definition. `author` is the chat user who added it, or null for
+// legacy entries (added before authorship was tracked) and dashboard/terminal adds.
+export type MemeDefinition = {
+    text: string;
+    author: string | null;
+};
+
+// A definition resolved for chat display: either a meme definition (possibly authored)
+// or an external dictionary-API result (never authored).
+export type ResolvedDefinition = {
+    text: string;
+    author: string | null;
+};
+
 export abstract class MemeDictionary {
     static #db = new JsonDB(new Config("./save/memedictionary.json", true, true));
     static readonly #rootkey = "/definitions";
+
+    // Coerces a stored entry into a MemeDefinition. Entries were originally plain
+    // strings; authored objects are the current format. Normalizing on read lets old
+    // save files keep working (they migrate to the object form on the next write).
+    static #asDefinition(entry: unknown): MemeDefinition | null {
+        if (typeof entry === "string") {
+            return { text: entry, author: null };
+        }
+        if (entry && typeof entry === "object" && typeof (entry as MemeDefinition).text === "string") {
+            const author = (entry as MemeDefinition).author;
+            return {
+                text: (entry as MemeDefinition).text,
+                author: typeof author === "string" ? author : null,
+            };
+        }
+        return null;
+    }
 
     // Words become node-json-db path segments, where "/", "[", "]" and empty
     // strings have structural meaning. Restrict keys to a safe set so a crafted
@@ -23,22 +54,36 @@ export abstract class MemeDictionary {
         return /^[a-z0-9]{1,50}$/.test(key) ? key : null;
     }
 
-    static async getDefinitions(word: string): Promise<string[]> {
+    // Authored definitions for a word (legacy string entries surface with author null).
+    static async getDefinitionEntries(word: string): Promise<MemeDefinition[]> {
         const key = this.#normalize(word);
         if (!key) return [];
         try {
-            const defs = await this.#db.getData(`${this.#rootkey}/${key}`);
-            return Array.isArray(defs) ? defs : [];
+            const raw = await this.#db.getData(`${this.#rootkey}/${key}`);
+            if (!Array.isArray(raw)) return [];
+            return raw
+                .map((entry) => this.#asDefinition(entry))
+                .filter((def): def is MemeDefinition => def !== null);
         } catch {
             return [];
         }
     }
 
-    static async addDefinition(word: string, definition: string): Promise<void> {
+    // Definition text only. Kept for callers (dashboard, terminal, API merge) that
+    // don't care who authored a definition.
+    static async getDefinitions(word: string): Promise<string[]> {
+        return (await this.getDefinitionEntries(word)).map((def) => def.text);
+    }
+
+    static async addDefinition(
+        word: string,
+        definition: string,
+        author: string | null = null
+    ): Promise<void> {
         const key = this.#normalize(word);
         if (!key) return;
-        const existing = await this.getDefinitions(key);
-        existing.push(definition);
+        const existing = await this.getDefinitionEntries(key);
+        existing.push({ text: definition, author });
         await this.#db.push(`${this.#rootkey}/${key}`, existing);
     }
 
@@ -51,7 +96,7 @@ export abstract class MemeDictionary {
                 return true;
             }
 
-            const existing = await this.getDefinitions(key);
+            const existing = await this.getDefinitionEntries(key);
             if (index < 0 || index >= existing.length) {
                 return false;
             }
@@ -105,11 +150,14 @@ async function define_word_api(word: string): Promise<string[]> {
     return definitions;
 }
 
-export async function define_word(word: string): Promise<string[]> {
+export async function define_word(word: string): Promise<ResolvedDefinition[]> {
     const [memeDefinitions, apiDefinitions] = await Promise.all([
-        MemeDictionary.getDefinitions(word),
+        MemeDictionary.getDefinitionEntries(word),
         define_word_api(word),
     ]);
 
-    return [...memeDefinitions, ...apiDefinitions];
+    return [
+        ...memeDefinitions,
+        ...apiDefinitions.map((text): ResolvedDefinition => ({ text, author: null })),
+    ];
 }

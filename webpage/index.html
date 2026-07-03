@@ -15,6 +15,7 @@
             <button class="tab" data-tab="pissstreak">Piss Streak</button>
             <button class="tab" data-tab="requests">Requests</button>
             <button class="tab" data-tab="dictionary">Dictionary</button>
+            <button class="tab" data-tab="wewecoin">WeWeCoin</button>
         </div>
         <div class="tabBar-status" id="connectionStatus">● Connecting...</div>
         <div class="tabBar-auth">
@@ -203,6 +204,37 @@
                     <div id="dictionaryContent" class="dictionary-content">
                         <p class="empty-state">Loading...</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WeWeCoin Tab -->
+    <div class="tabContent" id="tab-wewecoin">
+        <div class="tab-page">
+            <div class="page-header">
+                <h2>WeWeCoin</h2>
+                <button id="refreshWeWeCoin" class="btn btn-accent btn-sm">Refresh</button>
+            </div>
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value" id="weweTotalCoins">—</div>
+                    <div class="stat-label">Coins in Circulation</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="weweHolders">—</div>
+                    <div class="stat-label">Holders</div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-header">Balances</div>
+                <div class="panel-body">
+                    <table class="data-table" id="weweLeaderboard">
+                        <thead>
+                            <tr><th>#</th><th>User</th><th>WeWeCoin</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </div>

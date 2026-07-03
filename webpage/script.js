@@ -76,6 +76,7 @@
       if (tabName === 'pissstreak') loadPissStreak();
       if (tabName === 'requests') loadRequests();
       if (tabName === 'dictionary') loadDictionary();
+      if (tabName === 'wewecoin') loadWeWeCoin();
     });
   });
 
@@ -289,6 +290,30 @@
     });
   }
   $('refreshPissStreak').addEventListener('click', loadPissStreak);
+
+  // ── WeWeCoin Tab ──
+  function loadWeWeCoin() {
+    socket.emit('get_wewecoin', (data) => {
+      const balances = data.balances || [];
+      const total = balances.reduce((sum, b) => sum + b.balance, 0);
+      $('weweTotalCoins').textContent = total.toLocaleString();
+      $('weweHolders').textContent = balances.length.toLocaleString();
+
+      const tbody = $('weweLeaderboard').querySelector('tbody');
+      tbody.innerHTML = '';
+      if (balances.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted);font-style:italic">No balances yet</td></tr>';
+        return;
+      }
+      balances.forEach((entry) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${entry.rank}</td><td>${esc(entry.userName)}</td><td>${entry.balance.toLocaleString()}</td>`;
+        tbody.appendChild(tr);
+      });
+    });
+  }
+  $('refreshWeWeCoin').addEventListener('click', loadWeWeCoin);
+
 
   // ── Feature Requests Tab ──
   function loadRequests() {

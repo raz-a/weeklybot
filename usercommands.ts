@@ -15,6 +15,7 @@ import { PissCam } from "./pisscam.js";
 import { PissStreak } from "./piss.js";
 import { define_word, getUserDefinitionsEnabled, MemeDictionary } from "./dictionary.js";
 import { FeatureRequestDB } from "./feature_requests.js";
+import { economy } from "./economy.js";
 
 export type UserCommandState = { channel: string; user: ChatUser };
 
@@ -213,6 +214,10 @@ async function poopCamInternal(args: string[], state: UserCommandState) {
     if (blocked) {
         return;
     }
+
+    // Each counted PoopCam request earns a WeWeCoin (two for a rapid repeat).
+    const coinOutcome = await economy.record({ type: "poopcamRequested", user: userName });
+    usercommands.log(coinOutcome.description);
 
     const totalRequests = await PoopCam.getTotalRequests();
     if (totalRequests == 1) {
@@ -460,16 +465,25 @@ async function define(args: string[], state: UserCommandState) {
         return;
     }
 
-    // Pick a defitinition at random.
-    const definition = definitions[Math.floor(Math.random() * definitions.length)];
+    // Pick a definition at random.
+    const chosen = definitions[Math.floor(Math.random() * definitions.length)];
     const otherDefinitionsCount = definitions.length - 1;
 
-    msg = `${word}: ${definition}`;
+    msg = `${word}: ${chosen.text}`;
     if (otherDefinitionsCount != 0) {
         msg += ` (${otherDefinitionsCount} additional definitions)`;
     }
 
     broadcast(msg);
+
+    // Looking up a definition costs a WeWeCoin, paid to whoever wrote the shown
+    // definition (burned if it came from the dictionary API or has no known author).
+    const outcome = await economy.record({
+        type: "definitionRequested",
+        requestor: userName,
+        author: chosen.author,
+    });
+    usercommands.log(outcome.description);
 }
 
 function ssn(args: string[], state: UserCommandState) {
@@ -500,8 +514,10 @@ async function newdefine(args: string[], state: UserCommandState) {
     const word = args[0];
     const definition = args.slice(1).join(" ");
 
-    await MemeDictionary.addDefinition(word, definition);
+    await MemeDictionary.addDefinition(word, definition, userName);
+    const outcome = await economy.record({ type: "definitionAdded", user: userName });
     usercommands.log(`${userName} added meme definition for "${word}": ${definition}`);
+    usercommands.log(outcome.description);
     broadcast(`${userName} added a meme definition for "${word}"!`);
 }
 

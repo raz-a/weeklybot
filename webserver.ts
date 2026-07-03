@@ -42,6 +42,10 @@ export type DictionaryWordData = {
     definitions: string[];
 };
 
+export type WeWeCoinData = {
+    balances: { rank: number; userName: string; balance: number }[];
+};
+
 // Callback types for dashboard controls
 type GetStateCallback = () => Promise<DashboardState>;
 type AddBroadcasterCallback = (channel: string) => Promise<boolean>;
@@ -59,6 +63,7 @@ type AddDefinitionCallback = (word: string, definition: string) => Promise<void>
 type DeleteDefinitionCallback = (word: string, index?: number) => Promise<boolean>;
 type GetUserDefinitionsEnabledCallback = () => boolean;
 type SetUserDefinitionsEnabledCallback = (enabled: boolean) => void;
+type GetWeWeCoinCallback = () => Promise<WeWeCoinData>;
 
 export interface DashboardCallbacks {
     getState: GetStateCallback;
@@ -77,6 +82,7 @@ export interface DashboardCallbacks {
     deleteDefinition: DeleteDefinitionCallback;
     getUserDefinitionsEnabled: GetUserDefinitionsEnabledCallback;
     setUserDefinitionsEnabled: SetUserDefinitionsEnabledCallback;
+    getWeWeCoin: GetWeWeCoinCallback;
 }
 
 class WebServer {
@@ -332,6 +338,13 @@ class WebServer {
             if (typeof enabled !== "boolean") return;
             this.#callbacks?.setUserDefinitionsEnabled(enabled);
             this.#io.emit("user_definitions_enabled_updated", enabled);
+        });
+
+        // WeWeCoin — read-only balances leaderboard (open to the LAN, like the cams).
+        socket.on("get_wewecoin", async (callback: (data: WeWeCoinData) => void) => {
+            if (this.#callbacks?.getWeWeCoin) {
+                callback(await this.#callbacks.getWeWeCoin());
+            }
         });
     }
 
