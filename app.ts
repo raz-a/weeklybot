@@ -137,10 +137,10 @@ const dashboardCallbacks: DashboardCallbacks = {
     }),
     getWord: async (word: string) => ({
         word,
-        definitions: await MemeDictionary.getDefinitions(word),
+        definitions: await MemeDictionary.getDefinitionEntries(word),
     }),
     addDefinition: async (word: string, definition: string) => {
-        await MemeDictionary.addDefinition(word, definition);
+        await MemeDictionary.addDefinition(word, definition, "WeeklyBot");
         weeklyBotPrint(`Added meme definition for "${word}" via dashboard.`);
     },
     deleteDefinition: async (word: string, index?: number) => {
@@ -185,14 +185,14 @@ chatClient.onRegister(async () => {
 chatClient.connect();
 
 // Every few minutes, draw a WeWeCoin lottery winner weighted by how many messages each
-// viewer sent during the window, award them a coin, announce it, and reset the counts for
-// the next window. Runs on a timer (Node's event loop, analogous to a periodic DPC/timer
-// callback) rather than reacting to a single message.
+// viewer sent during the window, award them a coin, and reset the counts for the next
+// window. Runs on a timer (Node's event loop, analogous to a periodic DPC/timer callback)
+// rather than reacting to a single message. This feature is secret: the win is recorded
+// silently and never announced in chat — only logged to the operator/dashboard.
 const MESSAGE_LOTTERY_INTERVAL_MS = 5 * 60 * 1000;
 
 async function runMessageLottery() {
     const winner = messageActivity.pickWeightedWinner();
-    const totalMessages = messageActivity.total();
     messageActivity.clear();
 
     if (!winner) {
@@ -201,9 +201,6 @@ async function runMessageLottery() {
 
     const outcome = await economy.record({ type: "messageLotteryWon", user: winner });
     weeklyBotPrint(outcome.description);
-    await broadcast(
-        `🪙 ${winner} won this round's WeWeCoin lottery out of ${totalMessages} message(s) and earned 1 WeWeCoin! Keep chatting for a shot at the next draw.`
-    );
 }
 
 setInterval(() => {

@@ -39,7 +39,9 @@ export type DictionaryData = {
 
 export type DictionaryWordData = {
     word: string;
-    definitions: string[];
+    // Each definition carries its author (the chat user who added it), or null for
+    // legacy entries and dashboard/terminal adds where no author was recorded.
+    definitions: { text: string; author: string | null }[];
 };
 
 export type WeWeCoinData = {

@@ -387,8 +387,11 @@
       data.definitions.forEach((def, i) => {
         const div = document.createElement('div');
         div.className = 'dict-def-item';
+        const author = def.author
+          ? `<span class="dict-def-author">— ${esc(def.author)}</span>`
+          : '';
         div.innerHTML =
-          `<span>${esc(def)}</span>` +
+          `<span class="dict-def-text">${esc(def.text)}${author}</span>` +
           `<button class="btn-remove requires-admin" data-word="${esc(word)}" data-index="${i}" title="Delete">×</button>`;
         container.appendChild(div);
       });

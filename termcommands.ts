@@ -175,7 +175,7 @@ async function newdefine(args: string[], state: undefined) {
     const word = args[0];
     const definition = args.slice(1).join(" ");
 
-    await MemeDictionary.addDefinition(word, definition);
+    await MemeDictionary.addDefinition(word, definition, "WeeklyBot");
     weeklyBotPrint(`Added meme definition for "${word}": ${definition}`);
 }
 

@@ -6,6 +6,7 @@ import { Command, CommandSet } from "./commands.js";
 import { broadcast, me, send, weeklyBotPrint } from "./util.js";
 import { getBroadcasterIds } from "./broadcaster.js";
 import { MemeDictionary } from "./dictionary.js";
+import { economy } from "./economy.js";
 
 export const modcommands = new CommandSet(
     "Mod Command",
@@ -107,8 +108,17 @@ async function newdefine(args: string[], mod: ChatUser) {
 
     const word = args[0];
     const definition = args.slice(1).join(" ");
+    const author = mod.displayName;
 
-    await MemeDictionary.addDefinition(word, definition);
-    modcommands.log(`${mod.displayName} added meme definition for "${word}": ${definition}`);
-    broadcast(`New meme definition for "${word}" added!`);
+    const stored = await MemeDictionary.addDefinition(word, definition, author);
+    if (!stored) {
+        broadcast(`Sorry ${author}, "${word}" can't be defined (letters and numbers only, max 50 characters).`);
+        modcommands.log(`${author} tried to add a definition for an invalid word: "${word}"`);
+        return;
+    }
+
+    const outcome = await economy.record({ type: "definitionAdded", user: author });
+    modcommands.log(`${author} added meme definition for "${word}": ${definition}`);
+    modcommands.log(outcome.description);
+    broadcast(`New meme definition for "${word}" added by ${author}!`);
 }
