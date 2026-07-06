@@ -104,3 +104,17 @@ describe("Economy — piss streak", () => {
         expect(outcome.changes).toEqual([{ userName: "alice", delta: -4 }]);
     });
 });
+
+describe("Economy — message lottery", () => {
+    it("awards 1 coin to the lottery winner", async () => {
+        const outcome = await economy.record({ type: "messageLotteryWon", user: "alice" });
+        expect(await ledger.getBalance("alice")).toBe(1);
+        expect(outcome.changes).toEqual([{ userName: "alice", delta: 1 }]);
+    });
+
+    it("accumulates across repeated wins", async () => {
+        await economy.record({ type: "messageLotteryWon", user: "alice" });
+        await economy.record({ type: "messageLotteryWon", user: "alice" });
+        expect(await ledger.getBalance("alice")).toBe(2);
+    });
+});

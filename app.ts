@@ -26,6 +26,7 @@ import { MemeDictionary, getUserDefinitionsEnabled, setUserDefinitionsEnabled } 
 import { webServer, DashboardCallbacks } from "./webserver.js";
 import { loadConfig, getConfig } from "./config.js";
 import { economy } from "./economy.js";
+import { messageActivity } from "./activity.js";
 
 // Last-resort safety net: a stray rejection or thrown error in a handler should be
 // logged, not crash the bot mid-stream. Command/handler errors are caught locally;
@@ -183,6 +184,32 @@ chatClient.onRegister(async () => {
 // Connect to the twitch server.
 chatClient.connect();
 
+// Every few minutes, draw a WeWeCoin lottery winner weighted by how many messages each
+// viewer sent during the window, award them a coin, announce it, and reset the counts for
+// the next window. Runs on a timer (Node's event loop, analogous to a periodic DPC/timer
+// callback) rather than reacting to a single message.
+const MESSAGE_LOTTERY_INTERVAL_MS = 5 * 60 * 1000;
+
+async function runMessageLottery() {
+    const winner = messageActivity.pickWeightedWinner();
+    const totalMessages = messageActivity.total();
+    messageActivity.clear();
+
+    if (!winner) {
+        return;
+    }
+
+    const outcome = await economy.record({ type: "messageLotteryWon", user: winner });
+    weeklyBotPrint(outcome.description);
+    await broadcast(
+        `🪙 ${winner} won this round's WeWeCoin lottery out of ${totalMessages} message(s) and earned 1 WeWeCoin! Keep chatting for a shot at the next draw.`
+    );
+}
+
+setInterval(() => {
+    runMessageLottery().catch((err) => weeklyBotPrint(`Message lottery failed: ${err}`));
+}, MESSAGE_LOTTERY_INTERVAL_MS);
+
 // Pushes relay state and chat groups to the dashboard, but only when the grouping
 // actually changes, to avoid spamming the socket on every message.
 let lastChatGroupSignature = "";
@@ -237,6 +264,11 @@ async function onMessageHandler(target: string, user: string, text: string, msg:
 
         return;
     }
+
+    // Count this message toward the current WeWeCoin lottery window. This runs after the
+    // moderation timeout checks above so messages that get the user timed out don't earn
+    // lottery odds. The more a viewer chats, the better their odds in the periodic draw.
+    messageActivity.record(userInfo.displayName);
 
     if (userInfo.color) {
         console.log(`${chalk.hex(userInfo.color)(userInfo.displayName + `:`)} ${text}`);

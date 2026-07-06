@@ -8,6 +8,7 @@ const POOPCAM_BURST_WINDOW_MS = 5000;
 const DEFINITION_REQUEST_COST = 1;
 const DEFINITION_ADDED_REWARD = 5;
 const PISS_RUIN_MIN_PENALTY = 10;
+const MESSAGE_LOTTERY_REWARD = 1;
 
 // User actions the economy reacts to. Each variant is emitted from wherever that action
 // is handled in the bot; the Economy engine turns it into ledger mutations.
@@ -21,7 +22,10 @@ export type EconomyEvent =
     // Someone added a meme definition via !newdefine.
     | { type: "definitionAdded"; user: string }
     // A user broke the piss streak. `streakSize` is the streak (in days) that was lost.
-    | { type: "pissStreakRuined"; user: string; streakSize: number };
+    | { type: "pissStreakRuined"; user: string; streakSize: number }
+    // A user won the periodic chat-activity lottery (a random draw weighted by how many
+    // messages each chatter sent during the window).
+    | { type: "messageLotteryWon"; user: string };
 
 export type CoinChange = { userName: string; delta: number };
 
@@ -70,6 +74,8 @@ export class Economy {
                 return this.#handleDefinitionAdded(event);
             case "pissStreakRuined":
                 return this.#handlePissStreakRuined(event);
+            case "messageLotteryWon":
+                return this.#handleMessageLotteryWon(event);
         }
     }
 
@@ -142,6 +148,16 @@ export class Economy {
         return {
             changes: lost > 0 ? [{ userName: event.user, delta: -lost }] : [],
             description: `${event.user} ruined the piss streak and lost ${lost} WeWeCoin`,
+        };
+    }
+
+    async #handleMessageLotteryWon(
+        event: Extract<EconomyEvent, { type: "messageLotteryWon" }>
+    ): Promise<EconomyOutcome> {
+        await this.#ledger.award(event.user, MESSAGE_LOTTERY_REWARD);
+        return {
+            changes: [{ userName: event.user, delta: MESSAGE_LOTTERY_REWARD }],
+            description: `${event.user} won the chat lottery and earned ${MESSAGE_LOTTERY_REWARD} WeWeCoin`,
         };
     }
 }
