@@ -500,8 +500,11 @@ function reggie(args: string[], state: UserCommandState) {
 
 async function newdefine(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
+    // Mods and broadcasters can always add definitions; the "Allow Chat Definitions"
+    // toggle only gates regular viewers.
+    const isPrivileged = state.user.isBroadcaster || state.user.isMod;
 
-    if (!getUserDefinitionsEnabled()) {
+    if (!getUserDefinitionsEnabled() && !isPrivileged) {
         broadcast(`Sorry ${userName}, meme definitions are currently disabled.`);
         return;
     }

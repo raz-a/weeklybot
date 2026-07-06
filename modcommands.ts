@@ -5,16 +5,13 @@ import { apiClient } from "./client.js";
 import { Command, CommandSet } from "./commands.js";
 import { broadcast, me, send, weeklyBotPrint } from "./util.js";
 import { getBroadcasterIds } from "./broadcaster.js";
-import { MemeDictionary } from "./dictionary.js";
-import { economy } from "./economy.js";
 
 export const modcommands = new CommandSet(
     "Mod Command",
     "!",
     isMod,
     new Command(ban, "Bans a user on all streams"),
-    new Command(unban, "Unbans a user on all streams"),
-    new Command(newdefine, "Adds a new meme definition. Usage: !newdefine <word> <definition>")
+    new Command(unban, "Unbans a user on all streams")
 );
 
 async function isMod(mod: ChatUser) {
@@ -98,27 +95,4 @@ async function unban(args: string[], mod: ChatUser) {
         modcommands.log(`${mod.displayName} is attempting to unban nobody?`);
         broadcast(`${mod.displayName}, you forgot to mention who you wanted to unban...`);
     }
-}
-
-async function newdefine(args: string[], mod: ChatUser) {
-    if (args.length < 2) {
-        broadcast(`${mod.displayName}, usage: !newdefine <word> <definition>`);
-        return;
-    }
-
-    const word = args[0];
-    const definition = args.slice(1).join(" ");
-    const author = mod.displayName;
-
-    const stored = await MemeDictionary.addDefinition(word, definition, author);
-    if (!stored) {
-        broadcast(`Sorry ${author}, "${word}" can't be defined (letters and numbers only, max 50 characters).`);
-        modcommands.log(`${author} tried to add a definition for an invalid word: "${word}"`);
-        return;
-    }
-
-    const outcome = await economy.record({ type: "definitionAdded", user: author });
-    modcommands.log(`${author} added meme definition for "${word}": ${definition}`);
-    modcommands.log(outcome.description);
-    broadcast(`New meme definition for "${word}" added by ${author}!`);
 }
