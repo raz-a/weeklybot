@@ -54,18 +54,32 @@ export const usercommands = new CommandSet(
     new Command(discord, "Get access to the Discord!"),
     new Command(zoop, "Testing out the zoop"),
     new Command(extension, "Get the WeeklyBot Chrome Extension!"),
-    new Command(rules, "Get Pokemon Soullocke rules"),
+    new Command(rules, "Get the BeerioKart Rules."),
+    //new Command(rules, "Get Pokemon Soullocke rules"),
     new Command(ssn, "Print Nair's ACTUAL social security number."),
     new Command(reggie, "The Holy Gospel of Reggie"),
     new Command(newdefine, "Add a meme definition. Usage: !newdefine <word> <definition>"),
-    new Command(pissCam, "Keep up to date with the latest PissCam news!")
+    new Command(pissCam, "Keep up to date with the latest PissCam news!"),
+    new Command(bracket, "Get the Beerio Kart Bracket")
 );
+
+async function bracket(args: string[], state: UserCommandState) {
+    const userName = state.user.displayName;
+
+    usercommands.log(`${userName} asked for the braacket.`);
+
+    let msg = `Beerio Kart Bracket: https://beeriokart.win`;
+
+    broadcast(msg);
+}
 
 async function rules(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
 
     usercommands.log(`${userName} asked for the rules.`);
-    let msg = `Soullocke rules: Faint = Release. Can only catch first encounter of each area (must release it if anyone fails). Pokemon are linked by name across our 3 games, if one dies other players are forced to release it too (boxing also synced). Level cap of 15 + badges x5, must release if go over. Forced set, no research, no reloading.`;
+    //let msg = `Soullocke rules: Faint = Release. Can only catch first encounter of each area (must release it if anyone fails). Pokemon are linked by name across our 3 games, if one dies other players are forced to release it too (boxing also synced). Level cap of 15 + badges x5, must release if go over. Forced set, no research, no reloading.`;
+
+    let msg = `Beerio Kart Rules: https://beeriokart.win/rules`;
 
     broadcast(msg);
 }
