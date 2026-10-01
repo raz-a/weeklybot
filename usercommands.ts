@@ -84,10 +84,10 @@ async function vinny(args: string[], state: UserCommandState) {
     }
     lastVinnyAt = now;
 
-    const spent = await economy.ledger.deduct("naircat", 1);
+    await economy.ledger.deduct("naircat", 1);
     const count = await vinnyCounter.increment();
     usercommands.log(`${state.user.displayName} incremented the Vinny counter to ${count}.`);
-    broadcast(`Vinny has been mentioned ${count} times! (${spent} WeWeCoin removed from naircat)`);
+    broadcast(`Vinny has been mentioned ${count} times!`);
 }
 
 async function rules(args: string[], state: UserCommandState) {
