@@ -16,15 +16,13 @@ import { PissStreak } from "./piss.js";
 import { define_word, getUserDefinitionsEnabled, MemeDictionary } from "./dictionary.js";
 import { FeatureRequestDB } from "./feature_requests.js";
 import { economy } from "./economy.js";
-import { vinnyCounter } from "./vinny.js";
+import { recordVinnyMention } from "./vinny.js";
 
 export type UserCommandState = { channel: string; user: ChatUser };
 
 // Per-user throttle for !request so chat can't spam the GitHub repo with issues.
 const REQUEST_COOLDOWN_MS = 60 * 1000;
 const requestCooldowns = new Map<string, number>();
-const VINNY_COOLDOWN_MS = 60 * 1000;
-let lastVinnyAt = 0;
 
 // TODO: Search for log commands and Print weeklybot output instead of just log command
 
@@ -78,16 +76,7 @@ async function bracket(args: string[], state: UserCommandState) {
 }
 
 async function vinny(args: string[], state: UserCommandState) {
-    const now = Date.now();
-    if (now - lastVinnyAt < VINNY_COOLDOWN_MS) {
-        return;
-    }
-    lastVinnyAt = now;
-
-    await economy.ledger.deduct("naircat", 1);
-    const count = await vinnyCounter.increment();
-    usercommands.log(`${state.user.displayName} incremented the Vinny counter to ${count}.`);
-    broadcast(`Vinny has been mentioned ${count} times!`);
+    await recordVinnyMention(state.user.displayName);
 }
 
 async function rules(args: string[], state: UserCommandState) {
