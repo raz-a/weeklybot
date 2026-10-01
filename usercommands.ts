@@ -16,12 +16,15 @@ import { PissStreak } from "./piss.js";
 import { define_word, getUserDefinitionsEnabled, MemeDictionary } from "./dictionary.js";
 import { FeatureRequestDB } from "./feature_requests.js";
 import { economy } from "./economy.js";
+import { vinnyCounter } from "./vinny.js";
 
 export type UserCommandState = { channel: string; user: ChatUser };
 
 // Per-user throttle for !request so chat can't spam the GitHub repo with issues.
 const REQUEST_COOLDOWN_MS = 60 * 1000;
 const requestCooldowns = new Map<string, number>();
+const VINNY_COOLDOWN_MS = 60 * 1000;
+let lastVinnyAt = 0;
 
 // TODO: Search for log commands and Print weeklybot output instead of just log command
 
@@ -60,7 +63,8 @@ export const usercommands = new CommandSet(
     new Command(reggie, "The Holy Gospel of Reggie"),
     new Command(newdefine, "Add a meme definition. Usage: !newdefine <word> <definition>"),
     new Command(pissCam, "Keep up to date with the latest PissCam news!"),
-    new Command(bracket, "Get the Beerio Kart Bracket")
+    new Command(bracket, "Get the Beerio Kart Bracket"),
+    new Command(vinny, "Count mentions of Vinny.")
 );
 
 async function bracket(args: string[], state: UserCommandState) {
@@ -71,6 +75,19 @@ async function bracket(args: string[], state: UserCommandState) {
     let msg = `Beerio Kart Bracket: https://beeriokart.win`;
 
     broadcast(msg);
+}
+
+async function vinny(args: string[], state: UserCommandState) {
+    const now = Date.now();
+    if (now - lastVinnyAt < VINNY_COOLDOWN_MS) {
+        return;
+    }
+    lastVinnyAt = now;
+
+    const spent = await economy.ledger.deduct("naircat", 1);
+    const count = await vinnyCounter.increment();
+    usercommands.log(`${state.user.displayName} incremented the Vinny counter to ${count}.`);
+    broadcast(`Vinny has been mentioned ${count} times! (${spent} WeWeCoin removed from naircat)`);
 }
 
 async function rules(args: string[], state: UserCommandState) {
