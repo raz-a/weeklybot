@@ -478,7 +478,13 @@ async function define(args: string[], state: UserCommandState) {
 
     usercommands.log(`Defining ${word} for ${userName}`);
 
-    const definitions = await define_word(word);
+    let definitions: Awaited<ReturnType<typeof define_word>>;
+    try {
+        definitions = await define_word(word);
+    } catch (err) {
+        broadcast(`Sorry ${userName}, the dictionary lookup failed. Try again in a moment.`);
+        throw err;
+    }
 
     if (definitions.length == 0) {
         broadcast(`I have no clue what ${word} means.`);

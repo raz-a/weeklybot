@@ -126,39 +126,69 @@ export abstract class MemeDictionary {
     }
 }
 
+function collectDefinitions(senses: unknown, definitions: string[]): void {
+    if (!Array.isArray(senses)) {
+        throw new Error("Invalid dictionary API senses");
+    }
+    for (const sense of senses as unknown[]) {
+        if (!sense || typeof sense !== "object" ||
+            !("definition" in sense) || typeof sense.definition !== "string" ||
+            !("subsenses" in sense)) {
+            throw new Error("Invalid dictionary API sense");
+        }
+        definitions.push(JSON.stringify(sense.definition));
+        collectDefinitions(sense.subsenses, definitions);
+    }
+}
+
 async function define_word_api(word: string): Promise<string[]> {
-    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
-    if (!response.ok) {
-        return [];
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2000);
+    try {
+        const response = await fetch(
+            `https://freedictionaryapi.com/api/v1/entries/en/${encodeURIComponent(word)}`,
+            { signal: controller.signal }
+        );
+        if (!response.ok) {
+            throw new Error(`Dictionary API returned HTTP ${response.status}`);
+        }
+        const result: unknown = await response.json();
+        if (!result || typeof result !== "object" ||
+            !("entries" in result) || !Array.isArray(result.entries)) {
+            throw new Error("Invalid dictionary API entries");
+        }
+        const definitions: string[] = [];
+        for (const entry of result.entries as unknown[]) {
+            if (!entry || typeof entry !== "object" || !("senses" in entry)) {
+                throw new Error("Invalid dictionary API entry");
+            }
+            collectDefinitions(entry.senses, definitions);
+        }
+        return definitions;
+    } finally {
+        clearTimeout(timeout);
     }
-
-    const result = await response.json();
-
-    if (!Array.isArray(result)) {
-        return [];
-    }
-
-    let definitions: string[] = [];
-
-    result.forEach((entry) => {
-        entry.meanings.forEach((meaning: any) => {
-            meaning.definitions.forEach((definition: any) => {
-                definitions.push(JSON.stringify(definition.definition));
-            });
-        });
-    });
-
-    return definitions;
 }
 
 export async function define_word(word: string): Promise<ResolvedDefinition[]> {
-    const [memeDefinitions, apiDefinitions] = await Promise.all([
+    const [memeResult, apiResult] = await Promise.allSettled([
         MemeDictionary.getDefinitionEntries(word),
         define_word_api(word),
     ]);
+    if (memeResult.status === "rejected") {
+        throw memeResult.reason;
+    }
+    const memeDefinitions = memeResult.value;
+    if (apiResult.status === "rejected") {
+        weeklyBotPrint(`Dictionary API lookup failed for "${word}": ${apiResult.reason}`);
+        if (memeDefinitions.length === 0) {
+            throw apiResult.reason;
+        }
+        return memeDefinitions;
+    }
 
     return [
         ...memeDefinitions,
-        ...apiDefinitions.map((text): ResolvedDefinition => ({ text, author: null })),
+        ...apiResult.value.map((text): ResolvedDefinition => ({ text, author: null })),
     ];
 }

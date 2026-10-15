@@ -85,6 +85,20 @@ The private folder needs to contain the following files (the first three are req
 
 For more information about creating the appropriate Twitch credentials and tokens, see [Twurple's documentation](https://twurple.js.org/docs/auth/) and [Twitch's Documentation](https://dev.twitch.tv/docs/authentication/). For GitHub tokens, see [GitHub's documentation on fine-grained personal access tokens](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token).
 
+## Dictionary lookups
+
+`!define <word>` combines local meme definitions with English definitions from
+[FreeDictionaryAPI.com](https://freedictionaryapi.com/). All senses, including nested
+subsenses, participate in the random selection and additional-definition count.
+An empty API entries list means the word was not found in that dictionary.
+API requests have a two-second timeout; failures are logged and local definitions
+remain available. If no local definitions are available during a failure, chat
+receives a lookup-failed message rather than an incorrect "unknown word" response.
+
+External definitions are sourced from [Wiktionary](https://en.wiktionary.org/) under
+[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/); local meme definitions
+are stored separately.
+
 ## Web Dashboard
 
 WeeklyBot serves a web dashboard on port **3000** (e.g. `http://localhost:3000`). It shows the live combined chat, connected broadcasters and chat groups, cam stats, the piss streak, feature requests, and the meme dictionary. From it you can also send messages/commands, reboot, take clips, manage channels, and edit the dictionary.
