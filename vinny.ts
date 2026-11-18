@@ -6,7 +6,7 @@ const VINNY_COOLDOWN_MS = 60 * 1000;
 let lastVinnyAt = 0;
 
 const VINNY_SNARKS = [
-    "Guys. Nair was there BEFROE Vinny was cool.",
+    "Guys. Nair was there BEFORE Vinny was cool.",
     "Why are we even here? Let's just jump on to Vinny's stream.",
     "Sent a whisper to Vinny to let him know!",
     "Don't forget to check out NairLovesVinny.biz",
@@ -52,7 +52,7 @@ export async function recordVinnyMention(userName: string): Promise<void> {
     weeklyBotPrint(`[User Command]: ${userName} incremented the Vinny counter to ${count}.`);
 
     const snark =
-        Math.random() < 1 / 20
+        Math.random() < 1 / 5
             ? ` ${VINNY_SNARKS[Math.floor(Math.random() * VINNY_SNARKS.length)]}`
             : "";
     broadcast(`Nair has mentioned Vinny ${count} times. ${snark}`);
