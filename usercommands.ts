@@ -589,10 +589,10 @@ async function pissCam(args: string[], state: UserCommandState) {
     }
 
     let found = false;
-    for (const b in getBroadcasterChannels()) {
+    for (const b of getBroadcasterChannels()) {
         let c = b as keyof typeof pissCammers;
         if (c in pissCammers) {
-            broadcast(pissCammers[c as keyof typeof pissCammers]);
+            broadcast(pissCammers[c]);
             found = true;
         }
     }
