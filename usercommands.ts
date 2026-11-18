@@ -17,6 +17,7 @@ import { define_word, getUserDefinitionsEnabled, MemeDictionary } from "./dictio
 import { FeatureRequestDB } from "./feature_requests.js";
 import { economy } from "./economy.js";
 import { recordVinnyMention } from "./vinny.js";
+import { getBroadcasterChannels } from "./broadcaster.js";
 
 export type UserCommandState = { channel: string; user: ChatUser };
 
@@ -569,6 +570,10 @@ const pissCamHints = [
     "PissCam is temporary. PoopCam (TM) is forever.",
 ];
 
+const pissCammers = {
+    naircat: "We did it! Naircat officially pissed LIVE ON STREAM on November 13th, 2026 at 8:15 p.m. EST"
+};
+
 async function pissCam(args: string[], state: UserCommandState) {
     const userName = state.user.displayName;
 
@@ -583,15 +588,25 @@ async function pissCam(args: string[], state: UserCommandState) {
         return;
     }
 
-    const totalRequests = await PissCam.getTotalRequests();
-    const hint = pissCamHints[Math.floor(Math.random() * pissCamHints.length)];
-    broadcast(`PissCam has been requested ${totalRequests} time${totalRequests === 1 ? "" : "s"}. ${hint}`);
+    let found = false;
+    for (const b in getBroadcasterChannels()) {
+        if (b in pissCammers) {
+            broadcast(pissCammers[b as keyof typeof pissCammers]);
+            found = true;
+        }
+    }
+
+    if (!found) {
+        const totalRequests = await PissCam.getTotalRequests();
+        const hint = pissCamHints[Math.floor(Math.random() * pissCamHints.length)];
+        broadcast(`PissCam has been requested ${totalRequests} time${totalRequests === 1 ? "" : "s"}. ${hint}`);
+    }
 
     const newTopCammer = await PissCam.getTopCammer();
 
     if (newTopCammer !== topCammer && newTopCammer !== undefined) {
         broadcast(
-            `${newTopCammer.userName} is now the #1 pisscammer with ${newTopCammer.requestCount} requests!`
+            `${newTopCammer.userName} is now the #1 pisscam requester with ${newTopCammer.requestCount} requests!`
         );
     }
 }
